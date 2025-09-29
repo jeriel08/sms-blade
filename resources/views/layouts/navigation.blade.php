@@ -1,14 +1,15 @@
 <nav x-data="{ open: false, mobileOpen: false }" class="bg-white border-r border-gray-200 w-64 shrink-0 fixed left-0 top-0 h-screen flex flex-col">
     <!-- Logo Section -->
-    <div class="p-4 border-b border-gray-200 bg-white shrink-0">
-        <div class="flex items-center">
-            <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
-                <x-application-logo class="block h-8 w-auto fill-current text-gray-800" />
-                <span class="text-xl font-bold text-gray-900">{{ config('app.name', 'Laravel') }}</span>
-            </a>
-        </div>
+<div class="p-4 border-b border-gray-200 bg-white shrink-0">
+    <div class="flex flex-col items-center text-center">
+        <a href="{{ route('dashboard') }}" class="flex flex-col items-center space-y-2">
+            <x-application-logo class="block h-24 w-auto fill-current text-gray-800" />
+            <div class="flex flex-col">
+                <span class="text-sm font-bold text-1">Student Management System</span>
+            </div>
+        </a>
     </div>
-
+</div>
     <!-- Navigation Links - This will grow to take available space -->
     <div class="flex-1 px-4 py-4 space-y-2">
         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="!justify-start !px-4 !py-3">
