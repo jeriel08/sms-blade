@@ -1,0 +1,1 @@
+<img src="{{ asset('favicon.svg') }}" alt="Application Logo" {{ $attributes }}>
