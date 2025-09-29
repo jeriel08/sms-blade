@@ -16,10 +16,8 @@
     </head>
     <body class="min-h-screen flex flex-col items-center justify-center font-sans bg-cover bg-center bg-no-repeat text-gray-900 antialiased" style="background-image: url('{{ asset('images/background.png') }}')">
     <div class="w-full sm:max-w-md mt-6 shadow-md overflow-hidden sm:rounded-lg">
-        <!-- Blue Header -->
-        <div class="h-24 bg-blue-900 flex items-end justify-center rounded-t-xl">
-            <!-- Logo container with negative margin to push it down -->
-            <div class="-mb-8">
+        <div class="h-32 bg-1 flex items-end justify-center rounded-t-xl">
+            <div class="-mb-14">
                 <a href="/">
                     <x-application-logo class="w-28 h-28 fill-current rounded-full bg-white p-2" />
                 </a>

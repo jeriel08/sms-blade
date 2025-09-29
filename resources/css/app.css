@@ -1,4 +1,5 @@
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
 
 @plugin '@tailwindcss/forms';
 
@@ -6,9 +7,9 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-  --font-sans:
-    Figtree, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: Montserrat, ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
 }
 
 /*
@@ -20,11 +21,21 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentcolor);
+    }
+}
+
+@theme {
+    --color-1: #0101f8;
+    --color-2: #0189f8;
+    --color-3: #555795;
+    --color-4: #b2b2b2;
+    --color-5: #ffffff;
+    --color-6: #ff0000;
+    --color-7: #1e1e1e;
 }
