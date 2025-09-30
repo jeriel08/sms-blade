@@ -11,12 +11,42 @@
     </div>
 </div>
     <!-- Navigation Links - This will grow to take available space -->
-    <div class="flex-1 px-4 py-4 space-y-2">
-        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="flex gap-2 !justify-start !px-4 !py-3">
+    <div class="flex-1 px-4 py-4 space-y-3">
+        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" 
+                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-dashboard-square-02 />
             {{ __('Dashboard') }}
         </x-nav-link>
+
+        <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.index')" 
+                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+            <x-hugeicons-student />
+            {{ __('Students') }}
+        </x-nav-link>
+
+        <x-nav-link :href="route('courses')" :active="request()->routeIs('courses')" 
+                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+            <x-hugeicons-course />
+            {{ __('Courses') }}
+        </x-nav-link>
         
+        <x-nav-link :href="route('enrollments.index')" :active="request()->routeIs('enrollments.index')" 
+                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+            <x-hugeicons-user-add-01 />
+            {{ __('Enrollment') }}
+        </x-nav-link>
+
+        <x-nav-link :href="route('assessments')" :active="request()->routeIs('assessments')" 
+                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+            <x-hugeicons-presentation-bar-chart-01 />
+            {{ __('Assessments') }}
+        </x-nav-link>
+
+        <x-nav-link :href="route('reports')" :active="request()->routeIs('reports')" 
+                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+            <x-hugeicons-chart-line-data-01 />
+            {{ __('Reports') }}
+        </x-nav-link>
         <!-- Add more navigation links here as needed -->
     </div>
 
