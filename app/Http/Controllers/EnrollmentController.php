@@ -20,6 +20,17 @@ class EnrollmentController extends Controller
         $query = Enrollment::with(['student', 'section'])
             ->join('students', 'enrollments.student_id', '=', 'students.student_id');
 
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('students.first_name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('students.last_name', 'LIKE', "%{$searchTerm}%")
+                    ->orWhere('students.lrn', 'LIKE', "%{$searchTerm}%")
+                    ->orWhereRaw("CONCAT(students.first_name, ' ', students.last_name) LIKE ?", ["%{$searchTerm}%"]);
+            });
+        }
+
         $sortBy = $request->get('sort_by', 'name_asc');
         switch ($sortBy) {
             case 'name_asc':
@@ -91,9 +102,29 @@ class EnrollmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(Request $request)
     {
-        //
+        $studentType = $request->query('type', 'new'); // Use query() to safely get 'type'
+        $currentStep = $request->query('step', 'learner'); // Use query() to safely get 'step'
+
+        // Define valid steps based on student type
+        $validSteps = ['learner', 'address', 'guardian', 'review'];
+        if ($studentType === 'transferee') {
+            $validSteps = ['learner', 'address', 'guardian', 'school', 'review'];
+        }
+
+        // Validate current step
+        if (!in_array($currentStep, $validSteps)) {
+            $currentStep = 'learner';
+        }
+
+        return view('enrollments.create', [
+            'studentType' => $studentType,
+            'currentStep' => $currentStep,
+        ]);
     }
 
     /**

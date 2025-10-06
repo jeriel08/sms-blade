@@ -7,59 +7,93 @@
 
     <div class="bg-white rounded-lg shadow-sm min-h-screen mx-auto sm:p-6 lg:p-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="mb-4 flex justify-end gap-2">
-                <x-dropdown align="left" width="48">
-                    <x-slot name="trigger">
-                        <button class="flex items-center justify-between w-full px-5 py-3 text-sm rounded-md text-gray-700 hover:bg-gray-100 focus:outline-hidden transition ease-in-out duration-150 border border-gray-300 bg-white">
-                            Sort By
-                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                    </x-slot>
+            <div class="mb-4 flex justify-between items-center gap-2">
+                <!-- Search Input on the left -->
+                <div class="flex-1 max-w-md">
+                    <form method="GET" action="{{ route('enrollments.index') }}" class="flex gap-2">
+                        <x-text-input 
+                            name="search"
+                            type="text"
+                            class="w-full"
+                            placeholder="Search by name or LRN..."
+                            value="{{ request('search') }}"
+                        />
+                        <x-primary-button type="submit">
+                            <x-hugeicons-search-01 />
+                        </x-primary-button>
+                        @if(request('search'))
+                            <a href="{{ route('enrollments.index') }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-150 ease-in-out">
+                                Clear
+                            </a>
+                        @endif
+                    </form>
+                </div>
 
-                    <x-slot name="content">
-                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'name_asc']) }}" class="flex items-center gap-2">
-                            Name (A-Z)
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'name_desc']) }}" class="flex items-center gap-2">
-                            Name (Z-A)
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'lrn_asc']) }}" class="flex items-center gap-2">
-                            LRN (Ascending)
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'lrn_desc']) }}" class="flex items-center gap-2">
-                            LRN (Descending)
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'grade_asc']) }}" class="flex items-center gap-2">
-                            Grade Level (Ascending)
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'grade_desc']) }}" class="flex items-center gap-2">
-                            Grade Level (Descending)
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'status_asc']) }}" class="flex items-center gap-2">
-                            Status (Ascending)
-                        </x-dropdown-link>
-                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'status_desc']) }}" class="flex items-center gap-2">
-                            Status (Descending)
-                        </x-dropdown-link>
-                    </x-slot>
-                </x-dropdown>
+                <!-- Filter Dropdown and Buttons on the right -->
+                <div class="flex items-center gap-2">
+                    <x-dropdown align="left" width="48">
+                        <x-slot name="trigger">
+                            <button class="flex items-center justify-between w-full px-5 py-3 text-sm rounded-md text-gray-700 hover:bg-gray-100 focus:outline-hidden transition ease-in-out duration-150 border border-gray-300 bg-white">
+                                Sort By
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                        </x-slot>
 
-                @if($canAccessSettings)
-                    <x-secondary-button 
-                        class="ms-3 px-7 gap-2" 
-                        x-data="{}" 
-                        @click="$dispatch('open-modal', 'enrollment-settings')"
-                    >
-                        <x-hugeicons-settings-01 />
-                    </x-secondary-button>
-                @endif
-                
-                <x-primary-button>
-                    <x-hugeicons-add-01 />
-                    {{ __('Add Student') }}
-                </x-primary-button>
+                        <x-slot name="content">
+                            <x-dropdown-link href="{{ route('enrollments.index', array_merge(request()->query(), ['sort_by' => 'name_asc'])) }}" class="flex items-center gap-2">
+                                Name (A-Z)
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ route('enrollments.index', array_merge(request()->query(), ['sort_by' => 'name_desc'])) }}" class="flex items-center gap-2">
+                                Name (Z-A)
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ route('enrollments.index', array_merge(request()->query(), ['sort_by' => 'lrn_asc'])) }}" class="flex items-center gap-2">
+                                LRN (Ascending)
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ route('enrollments.index', array_merge(request()->query(), ['sort_by' => 'lrn_desc'])) }}" class="flex items-center gap-2">
+                                LRN (Descending)
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ route('enrollments.index', array_merge(request()->query(), ['sort_by' => 'grade_asc'])) }}" class="flex items-center gap-2">
+                                Grade Level (Ascending)
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ route('enrollments.index', array_merge(request()->query(), ['sort_by' => 'grade_desc'])) }}" class="flex items-center gap-2">
+                                Grade Level (Descending)
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ route('enrollments.index', array_merge(request()->query(), ['sort_by' => 'status_asc'])) }}" class="flex items-center gap-2">
+                                Status (Ascending)
+                            </x-dropdown-link>
+                            <x-dropdown-link href="{{ route('enrollments.index', array_merge(request()->query(), ['sort_by' => 'status_desc'])) }}" class="flex items-center gap-2">
+                                Status (Descending)
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
+
+                    {{-- Settings button with tooltip --}}
+                    @if($canAccessSettings)
+                        <x-tooltip text="Enrollment Setup" position="bottom">
+                            <x-secondary-button 
+                                class="ms-3 px-7 gap-2" 
+                                x-data="{}" 
+                                @click="$dispatch('open-modal', 'enrollment-settings')"
+                            >
+                                <x-hugeicons-settings-01 />
+                            </x-secondary-button>
+                        </x-tooltip>
+                    @endif
+                    
+                    {{-- In the buttons section --}}
+                    <x-tooltip text="Register a Student" position="bottom">
+                        <x-primary-button 
+                            class="gap-2 px-5" 
+                            x-data="{}" 
+                            @click="$dispatch('open-modal', 'select-student-type')"
+                        >
+                            <x-hugeicons-add-01 />
+                            {{ __('Add Student') }}
+                        </x-primary-button>
+                    </x-tooltip>
+                </div>
             </div>
 
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg border">
@@ -104,109 +138,25 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-center">No enrollments found.</td>
+                                <td colspan="5" class="px-6 py-4 text-center">
+                                    @if(request('search'))
+                                        No enrollments found for your search criteria.
+                                    @else
+                                        No enrollments found.
+                                    @endif
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            {{ $enrollments->links() }}
+            {{ $enrollments->appends(request()->query())->links() }}
         </div>
     </div>
 
-    @if($canAccessSettings)
-    <x-modal name="enrollment-settings" maxWidth="2xl">
-        <div class="p-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-6">
-                {{ __('Enrollment Settings') }}
-            </h2>
-
-            <form id="enrollment-settings-form">
-                <div class="mb-6">
-                    <x-input-label for="school_year" :value="__('School Year')" />
-                    <x-text-input 
-                        id="school_year" 
-                        name="school_year" 
-                        type="text" 
-                        class="mt-1 block w-full" 
-                        placeholder="e.g., 2024-2025"
-                        value="{{ $schoolYear }}"
-                        required 
-                    />
-                </div>
-
-                <div class="mb-6">
-                    <x-input-label for="grade_level" :value="__('Select Grade Level')" />
-                    <select 
-                        id="grade_level" 
-                        name="grade_level"
-                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs cursor-pointer"
-                        onchange="loadSectionsForGrade(this.value)"
-                    >
-                        <option value="">Choose a grade level</option>
-                        @foreach(range(7, 12) as $grade)
-                            <option value="{{ $grade }}">Grade {{ $grade }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div id="sections-container" class="hidden">
-                    <div class="flex items-center justify-between mb-4">
-                        <x-input-label :value="__('Sections for Grade')" class="!mb-0" />
-                        <span id="current-grade-label" class="text-lg font-semibold text-gray-700"></span>
-                    </div>
-
-                    <div id="sections-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-md">
-                        <!-- Dynamic sections -->
-                    </div>
-
-                    <div class="flex gap-2 mb-4">
-                        <x-text-input 
-                            id="new-section-input" 
-                            type="text" 
-                            class="flex-1" 
-                            placeholder="Enter new section name..."
-                        />
-                        <select id="new-adviser-select" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            <option value="">No Adviser</option>
-                            @foreach($teachers as $teacher)
-                                <option value="{{ $teacher['id'] }}">{{ $teacher['name'] }}</option>
-                            @endforeach
-                        </select>
-                        <x-primary-button 
-                            type="button" 
-                            onclick="addSection()"
-                            class="whitespace-nowrap"
-                        >
-                            Add Section
-                        </x-primary-button>
-                    </div>
-
-                    <p class="text-xs text-gray-500 mt-2">
-                        Add, edit, or remove sections and assign advisers for the selected grade level.
-                    </p>
-                </div>
-            </form>
-
-            <div class="flex justify-end gap-3 mt-6">
-                <x-secondary-button 
-                    type="button" 
-                    @click="$dispatch('close-modal', 'enrollment-settings')"
-                >
-                    {{ __('Cancel') }}
-                </x-secondary-button>
-                
-                <x-primary-button 
-                    type="button" 
-                    onclick="saveSettings()"
-                >
-                    {{ __('Save Settings') }}
-                </x-primary-button>
-            </div>
-        </div>
-    </x-modal>
-    @endif
+    @include('enrollments.modals.enrollment-settings')
+    @include('enrollments.modals.student-classification')
 
     @push('scripts')
     <script>
