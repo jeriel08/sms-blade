@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             FamilyContactSeeder::class,
             EnrollmentSeeder::class,
             StudentDisabilitySeeder::class,
+            SectionSeeder::class,
         ]);
     }
 }

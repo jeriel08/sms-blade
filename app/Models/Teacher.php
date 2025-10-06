@@ -27,4 +27,9 @@ class Teacher extends Model
     {
         return $this->hasMany(Enrollment::class, 'enrolled_by_teacher_id');
     }
+
+    public function sections()
+    {
+        return $this->hasMany(Section::class, 'adviser_teacher_id');
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Enrollment;
+use App\Models\Section;
 use Illuminate\Http\Request;
 
 class EnrollmentController extends Controller
@@ -61,5 +62,51 @@ class EnrollmentController extends Controller
     public function destroy(Enrollment $enrollment)
     {
         //
+    }
+
+    public function settings()
+    {
+        // Load current settings (e.g., from DB or config; for now, fetch sections grouped by grade)
+        $sectionsByGrade = Section::select('grade_level', 'name')
+            ->get()
+            ->groupBy('grade_level')
+            ->map(function ($group) {
+                return $group->pluck('name')->toArray();
+            });
+
+        // Assume school year from config or latest enrollment; hardcode for now
+        $schoolYear = '2025-2026';
+        $gradeLevels = ['Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12']; // Or fetch dynamically
+
+        return response()->json([
+            'school_year' => $schoolYear,
+            'grade_levels' => $gradeLevels,
+            'sections' => $sectionsByGrade,
+        ]);
+    }
+
+    public function saveSettings(Request $request)
+    {
+        // Validate input
+        $data = $request->validate([
+            'school_year' => 'required|string|max:9',
+            'sections' => 'required|array', // e.g., ['Grade 7' => ['Lanzones', 'Strawberry'], ...]
+        ]);
+
+        // Save sections: Delete old ones for simplicity, then create new
+        Section::truncate(); // Careful in production; use soft deletes if needed
+
+        foreach ($data['sections'] as $grade => $sectionNames) {
+            foreach ($sectionNames as $name) {
+                Section::create([
+                    'grade_level' => $grade,
+                    'name' => $name,
+                ]);
+            }
+        }
+
+        // Save school year somewhere (e.g., config, or add to a new table if needed)
+
+        return response()->json(['message' => 'Settings saved successfully']);
     }
 }

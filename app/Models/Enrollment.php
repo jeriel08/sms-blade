@@ -36,4 +36,9 @@ class Enrollment extends Model
     {
         return $this->belongsTo(Teacher::class, 'enrolled_by_teacher_id', 'teacher_id');
     }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class, 'section_id');
+    }
 }

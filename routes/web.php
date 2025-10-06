@@ -49,6 +49,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/', [EnrollmentController::class, 'store'])->name('enrollments.store');
         Route::get('/{enrollment_id}', [EnrollmentController::class, 'show'])->name('enrollments.show');
         Route::post('/{enrollment_id}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
+        Route::get('/settings', [EnrollmentController::class, 'settings'])->name('enrollments.settings');
+        Route::post('/settings', [EnrollmentController::class, 'saveSettings'])->name('enrollments.saveSettings');
     });
 });
 
