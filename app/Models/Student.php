@@ -8,10 +8,11 @@ class Student extends Model
 {
     //
     protected $table = 'students';
-    protected $primaryKey = 'lrn';
+    protected $primaryKey = 'student_id';
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
+        'student_id',
         'lrn',
         'last_name',
         'first_name',
@@ -41,16 +42,16 @@ class Student extends Model
 
     public function familyContacts()
     {
-        return $this->hasMany(FamilyContact::class, 'student_lrn', 'lrn');
+        return $this->hasMany(FamilyContact::class, 'student_id', 'student_id');
     }
 
     public function enrollments()
     {
-        return $this->hasMany(Enrollment::class, 'student_lrn', 'lrn');
+        return $this->hasMany(Enrollment::class, 'student_id', 'student_id');
     }
 
     public function disabilities()
     {
-        return $this->belongsToMany(Disability::class, 'student_disabilities', 'student_lrn', 'disability_id');
+        return $this->belongsToMany(Disability::class, 'student_disabilities', 'student_id', 'disability_id');
     }
 }

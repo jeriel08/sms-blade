@@ -10,7 +10,7 @@ class FamilyContact extends Model
     protected $table = 'family_contacts';
     protected $primaryKey = 'contact_id';
     protected $fillable = [
-        'student_lrn',
+        'student_id',
         'contact_type',
         'last_name',
         'first_name',
@@ -20,6 +20,6 @@ class FamilyContact extends Model
 
     public function student()
     {
-        return $this->belongsTo(Student::class, 'student_lrn', 'lrn');
+        return $this->belongsTo(Student::class, 'student_id', 'student_id');
     }
 }

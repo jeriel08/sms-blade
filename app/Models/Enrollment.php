@@ -10,7 +10,7 @@ class Enrollment extends Model
     protected $table = 'enrollments';
     protected $primaryKey = 'enrollment_id';
     protected $fillable = [
-        'student_lrn',
+        'student_id',
         'school_year',
         'grade_level',
         'enrollment_type',
@@ -29,7 +29,7 @@ class Enrollment extends Model
 
     public function student()
     {
-        return $this->belongsTo(Student::class, 'student_lrn', 'lrn');
+        return $this->belongsTo(Student::class, 'student_id', 'student_id');
     }
 
     public function teacher()

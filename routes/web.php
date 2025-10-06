@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\SectionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -49,9 +50,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/', [EnrollmentController::class, 'store'])->name('enrollments.store');
         Route::get('/{enrollment_id}', [EnrollmentController::class, 'show'])->name('enrollments.show');
         Route::post('/{enrollment_id}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
-        Route::get('/settings', [EnrollmentController::class, 'settings'])->name('enrollments.settings');
-        Route::post('/settings', [EnrollmentController::class, 'saveSettings'])->name('enrollments.saveSettings');
     });
+
+    // Sections Sync
+    Route::resource('enrollments', EnrollmentController::class);
+    Route::post('/sections/sync', [SectionController::class, 'sync'])->name('sections.sync');
 });
 
 require __DIR__ . '/auth.php';

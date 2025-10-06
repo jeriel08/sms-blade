@@ -3,17 +3,89 @@
 namespace App\Http\Controllers;
 
 use App\Models\Enrollment;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\Settings;
 use App\Models\Section;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EnrollmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('enrollments.index');
+        $query = Enrollment::with(['student', 'section'])
+            ->join('students', 'enrollments.student_id', '=', 'students.student_id');
+
+        $sortBy = $request->get('sort_by', 'name_asc');
+        switch ($sortBy) {
+            case 'name_asc':
+                $query->orderBy('students.last_name', 'asc')->orderBy('students.first_name', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('students.last_name', 'desc')->orderBy('students.first_name', 'desc');
+                break;
+            case 'lrn_asc':
+                $query->orderBy('students.lrn', 'asc');
+                break;
+            case 'lrn_desc':
+                $query->orderBy('students.lrn', 'desc');
+                break;
+            case 'grade_asc':
+                $query->orderBy('enrollments.grade_level', 'asc');
+                break;
+            case 'grade_desc':
+                $query->orderBy('enrollments.grade_level', 'desc');
+                break;
+            case 'status_asc':
+                $query->orderBy('enrollments.status', 'asc');
+                break;
+            case 'status_desc':
+                $query->orderBy('enrollments.status', 'desc');
+                break;
+            default:
+                $query->orderBy('students.last_name', 'asc')->orderBy('students.first_name', 'asc');
+        }
+
+        $enrollments = $query->paginate(10);
+        $currentSort = $sortBy;
+
+        // Global school year
+        $schoolYear = Settings::where('key', 'school_year')->value('value') ?? '2024-2025';
+
+        // Sections for modal
+        $sectionsByGrade = Section::all()->groupBy('grade_level')->map(function ($group) {
+            return $group->map(function ($section) {
+                return [
+                    'name' => $section->name,
+                    'adviser_id' => $section->adviser_teacher_id,
+                ];
+            })->toArray();
+        });
+
+        // Teachers for adviser dropdown
+        $teachers = Teacher::all()->map(function ($teacher) {
+            return [
+                'id' => $teacher->teacher_id,
+                'name' => $teacher->user->name ?? trim($teacher->first_name . ' ' . $teacher->last_name), // Adjust if no full_name accessor
+            ];
+        });
+
+        // Authorization for settings
+        $user = Auth::user();
+        $canAccessSettings = $user && in_array($user->role, ['Principal', 'Head Teacher']);
+
+        return view('enrollments.index', compact(
+            'enrollments',
+            'currentSort',
+            'schoolYear',
+            'sectionsByGrade',
+            'teachers',
+            'canAccessSettings',
+        ));
     }
 
     /**
@@ -62,51 +134,5 @@ class EnrollmentController extends Controller
     public function destroy(Enrollment $enrollment)
     {
         //
-    }
-
-    public function settings()
-    {
-        // Load current settings (e.g., from DB or config; for now, fetch sections grouped by grade)
-        $sectionsByGrade = Section::select('grade_level', 'name')
-            ->get()
-            ->groupBy('grade_level')
-            ->map(function ($group) {
-                return $group->pluck('name')->toArray();
-            });
-
-        // Assume school year from config or latest enrollment; hardcode for now
-        $schoolYear = '2025-2026';
-        $gradeLevels = ['Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12']; // Or fetch dynamically
-
-        return response()->json([
-            'school_year' => $schoolYear,
-            'grade_levels' => $gradeLevels,
-            'sections' => $sectionsByGrade,
-        ]);
-    }
-
-    public function saveSettings(Request $request)
-    {
-        // Validate input
-        $data = $request->validate([
-            'school_year' => 'required|string|max:9',
-            'sections' => 'required|array', // e.g., ['Grade 7' => ['Lanzones', 'Strawberry'], ...]
-        ]);
-
-        // Save sections: Delete old ones for simplicity, then create new
-        Section::truncate(); // Careful in production; use soft deletes if needed
-
-        foreach ($data['sections'] as $grade => $sectionNames) {
-            foreach ($sectionNames as $name) {
-                Section::create([
-                    'grade_level' => $grade,
-                    'name' => $name,
-                ]);
-            }
-        }
-
-        // Save school year somewhere (e.g., config, or add to a new table if needed)
-
-        return response()->json(['message' => 'Settings saved successfully']);
     }
 }

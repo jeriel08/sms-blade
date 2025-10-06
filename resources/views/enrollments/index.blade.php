@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class=" bg-white rounded-lg shadow-sm min-h-screen mx-auto sm:p-6 lg:p-8">
+    <div class="bg-white rounded-lg shadow-sm min-h-screen mx-auto sm:p-6 lg:p-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-4 flex justify-end gap-2">
                 <x-dropdown align="left" width="48">
@@ -19,36 +19,44 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link href="#" class="flex items-center gap-2">
+                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'name_asc']) }}" class="flex items-center gap-2">
                             Name (A-Z)
                         </x-dropdown-link>
-                        <x-dropdown-link href="#" class="flex items-center gap-2">
+                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'name_desc']) }}" class="flex items-center gap-2">
                             Name (Z-A)
                         </x-dropdown-link>
-                        <x-dropdown-link href="#" class="flex items-center gap-2">
+                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'lrn_asc']) }}" class="flex items-center gap-2">
                             LRN (Ascending)
                         </x-dropdown-link>
-                        <x-dropdown-link href="#" class="flex items-center gap-2">
+                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'lrn_desc']) }}" class="flex items-center gap-2">
                             LRN (Descending)
                         </x-dropdown-link>
-                        <x-dropdown-link href="#" class="flex items-center gap-2">
-                            Grade Level
+                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'grade_asc']) }}" class="flex items-center gap-2">
+                            Grade Level (Ascending)
                         </x-dropdown-link>
-                        <x-dropdown-link href="#" class="flex items-center gap-2">
-                            Status
+                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'grade_desc']) }}" class="flex items-center gap-2">
+                            Grade Level (Descending)
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'status_asc']) }}" class="flex items-center gap-2">
+                            Status (Ascending)
+                        </x-dropdown-link>
+                        <x-dropdown-link href="{{ route('enrollments.index', ['sort_by' => 'status_desc']) }}" class="flex items-center gap-2">
+                            Status (Descending)
                         </x-dropdown-link>
                     </x-slot>
                 </x-dropdown>
 
-                <x-secondary-button 
-                    class="ms-3 px-7 gap-2" 
-                    x-data="{}" 
-                    @click="$dispatch('open-modal', 'enrollment-settings')"
-                >
-                    <x-hugeicons-settings-01 />
-                </x-secondary-button>
-
-                <x-primary-button class="ms-3 px-7 gap-2">
+                @if($canAccessSettings)
+                    <x-secondary-button 
+                        class="ms-3 px-7 gap-2" 
+                        x-data="{}" 
+                        @click="$dispatch('open-modal', 'enrollment-settings')"
+                    >
+                        <x-hugeicons-settings-01 />
+                    </x-secondary-button>
+                @endif
+                
+                <x-primary-button>
                     <x-hugeicons-add-01 />
                     {{ __('Add Student') }}
                 </x-primary-button>
@@ -76,98 +84,38 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                               129558130011
-                            </th>
-                            <td class="px-6 py-4">
-                                Kristine Paula Coretico
-                            </td>
-                            <td class="px-6 py-4">
-                                12
-                            </td>
-                            <td class="px-6 py-4">
-                                Enrolled
-                            </td>
-                            <td class="px-6 py-4">
-                                <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>
-                            </td>
-                        </tr>
-                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                129558130012
-                            </th>
-                            <td class="px-6 py-4">
-                                Russel Labiaga
-                            </td>
-                            <td class="px-6 py-4">
-                                11
-                            </td>
-                            <td class="px-6 py-4">
-                                Enrolled
-                            </td>
-                            <td class="px-6 py-4">
-                                <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>
-                            </td>
-                        </tr>
-                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                129558130013
-                            </th>
-                            <td class="px-6 py-4">
-                                Jeriel Lian Sanao
-                            </td>
-                            <td class="px-6 py-4">
-                                10
-                            </td>
-                            <td class="px-6 py-4">
-                                Pending
-                            </td>
-                            <td class="px-6 py-4">
-                                <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>
-                            </td>
-                        </tr>
-                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                129558130014
-                            </th>
-                            <td class="px-6 py-4">
-                                Kevin Macuno
-                            </td>
-                            <td class="px-6 py-4">
-                                9
-                            </td>
-                            <td class="px-6 py-4">
-                                Enrolled
-                            </td>
-                            <td class="px-6 py-4">
-                                <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>
-                            </td>
-                        </tr>
-                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                129558130015
-                            </th>
-                            <td class="px-6 py-4">
-                                Glaiza Incio
-                            </td>
-                            <td class="px-6 py-4">
-                                8
-                            </td>
-                            <td class="px-6 py-4">
-                                Enrolled
-                            </td>
-                            <td class="px-6 py-4">
-                                <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>
-                            </td>
-                        </tr>
+                        @forelse ($enrollments as $enrollment)
+                            <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                    {{ $enrollment->student->lrn }}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{ $enrollment->student->first_name }} {{ $enrollment->student->last_name }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ $enrollment->grade_level }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ $enrollment->status }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <a href="{{ route('enrollments.edit', $enrollment) }}" class="font-medium text-blue-600 hover:underline">Edit</a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-4 text-center">No enrollments found.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
+
+            {{ $enrollments->links() }}
         </div>
     </div>
 
-    <!-- Settings Modal -->
+    @if($canAccessSettings)
     <x-modal name="enrollment-settings" maxWidth="2xl">
         <div class="p-6">
             <h2 class="text-lg font-medium text-gray-900 mb-6">
@@ -175,7 +123,6 @@
             </h2>
 
             <form id="enrollment-settings-form">
-                <!-- School Year Input -->
                 <div class="mb-6">
                     <x-input-label for="school_year" :value="__('School Year')" />
                     <x-text-input 
@@ -184,11 +131,11 @@
                         type="text" 
                         class="mt-1 block w-full" 
                         placeholder="e.g., 2024-2025"
+                        value="{{ $schoolYear }}"
                         required 
                     />
                 </div>
 
-                <!-- Grade Level Selector - Now using combobox/select -->
                 <div class="mb-6">
                     <x-input-label for="grade_level" :value="__('Select Grade Level')" />
                     <select 
@@ -204,26 +151,29 @@
                     </select>
                 </div>
 
-                <!-- Dynamic Sections Container -->
                 <div id="sections-container" class="hidden">
                     <div class="flex items-center justify-between mb-4">
                         <x-input-label :value="__('Sections for Grade')" class="!mb-0" />
                         <span id="current-grade-label" class="text-lg font-semibold text-gray-700"></span>
                     </div>
 
-                    <!-- Sections List -->
                     <div id="sections-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-md">
-                        <!-- Sections will be dynamically added here -->
+                        <!-- Dynamic sections -->
                     </div>
 
-                    <!-- Add Section Button -->
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 mb-4">
                         <x-text-input 
                             id="new-section-input" 
                             type="text" 
                             class="flex-1" 
                             placeholder="Enter new section name..."
                         />
+                        <select id="new-adviser-select" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                            <option value="">No Adviser</option>
+                            @foreach($teachers as $teacher)
+                                <option value="{{ $teacher['id'] }}">{{ $teacher['name'] }}</option>
+                            @endforeach
+                        </select>
                         <x-primary-button 
                             type="button" 
                             onclick="addSection()"
@@ -233,14 +183,12 @@
                         </x-primary-button>
                     </div>
 
-                    <!-- Helper Text -->
                     <p class="text-xs text-gray-500 mt-2">
-                        Add, edit, or remove sections for the selected grade level.
+                        Add, edit, or remove sections and assign advisers for the selected grade level.
                     </p>
                 </div>
             </form>
 
-            <!-- Modal Actions -->
             <div class="flex justify-end gap-3 mt-6">
                 <x-secondary-button 
                     type="button" 
@@ -258,13 +206,12 @@
             </div>
         </div>
     </x-modal>
+    @endif
 
     @push('scripts')
     <script>
-        let currentSections = {
-            // This will store sections for each grade level
-            // Example: 7: ['Section A', 'Section B'], 8: ['Section C'], etc.
-        };
+        let currentSections = @json($sectionsByGrade);
+        const teachers = @json($teachers);
 
         function loadSectionsForGrade(grade) {
             const sectionsContainer = document.getElementById('sections-container');
@@ -276,31 +223,24 @@
                 return;
             }
 
-            // Update the grade label
             currentGradeLabel.textContent = `Grade ${grade}`;
-            
-            // Show sections container
             sectionsContainer.classList.remove('hidden');
-            
-            // Clear existing sections
             sectionsList.innerHTML = '';
 
-            // Get sections for this grade or initialize empty array
             if (!currentSections[grade]) {
                 currentSections[grade] = [];
             }
 
-            // Display each section
             currentSections[grade].forEach((section, index) => {
-                const sectionElement = createSectionElement(grade, index, section);
+                const sectionElement = createSectionElement(grade, index, section.name, section.adviser_id);
                 sectionsList.appendChild(sectionElement);
             });
 
-            // Clear the new section input
             document.getElementById('new-section-input').value = '';
+            document.getElementById('new-adviser-select').value = '';
         }
 
-        function createSectionElement(grade, index, sectionName) {
+        function createSectionElement(grade, index, sectionName, adviserId) {
             const div = document.createElement('div');
             div.className = 'flex items-center gap-2 p-2 bg-gray-50 rounded-md';
             div.innerHTML = `
@@ -310,6 +250,13 @@
                     onchange="updateSection(${grade}, ${index}, this.value)"
                     class="flex-1 border-none bg-transparent focus:ring-0 focus:outline-none text-sm"
                 >
+                <select 
+                    onchange="updateSectionAdviser(${grade}, ${index}, this.value)"
+                    class="border-none bg-transparent focus:ring-0 focus:outline-none text-sm"
+                >
+                    <option value="">No Adviser</option>
+                    ${teachers.map(t => `<option value="${t.id}" ${t.id == adviserId ? 'selected' : ''}>${t.name}</option>`).join('')}
+                </select>
                 <button 
                     type="button" 
                     onclick="removeSection(${grade}, ${index})"
@@ -326,37 +273,33 @@
         function addSection() {
             const grade = document.getElementById('grade_level').value;
             const newSectionInput = document.getElementById('new-section-input');
+            const newAdviserSelect = document.getElementById('new-adviser-select');
             const sectionName = newSectionInput.value.trim();
+            const adviserId = newAdviserSelect.value || null;
 
-            if (!grade) {
-                alert('Please select a grade level first.');
-                return;
-            }
+            if (!grade) return alert('Please select a grade level first.');
+            if (!sectionName) return alert('Please enter a section name.');
 
-            if (!sectionName) {
-                alert('Please enter a section name.');
-                return;
-            }
+            if (!currentSections[grade]) currentSections[grade] = [];
 
-            // Initialize array if it doesn't exist
-            if (!currentSections[grade]) {
-                currentSections[grade] = [];
-            }
+            currentSections[grade].push({ name: sectionName, adviser_id: adviserId });
 
-            // Add new section
-            currentSections[grade].push(sectionName);
-            
-            // Reload sections
             loadSectionsForGrade(grade);
-            
-            // Clear input
+
             newSectionInput.value = '';
+            newAdviserSelect.value = '';
             newSectionInput.focus();
         }
 
         function updateSection(grade, index, newValue) {
             if (currentSections[grade] && currentSections[grade][index]) {
-                currentSections[grade][index] = newValue.trim();
+                currentSections[grade][index].name = newValue.trim();
+            }
+        }
+
+        function updateSectionAdviser(grade, index, newValue) {
+            if (currentSections[grade] && currentSections[grade][index]) {
+                currentSections[grade][index].adviser_id = newValue || null;
             }
         }
 
@@ -372,24 +315,33 @@
         function saveSettings() {
             const schoolYear = document.getElementById('school_year').value;
             const gradeLevel = document.getElementById('grade_level').value;
-            
+
             const settingsData = {
                 school_year: schoolYear,
-                active_grade_level: gradeLevel,
+                active_grade_level: gradeLevel, // Optional, if needed
                 sections: currentSections
             };
-            
-            // Here you would typically send the data to your backend
-            console.log('Saving settings:', settingsData);
-            
-            // Show success message or handle response
-            alert('Settings saved successfully!');
-            
-            // Close the modal
-            window.dispatchEvent(new CustomEvent('close-modal', { detail: 'enrollment-settings' }));
+
+            fetch('{{ route("sections.sync") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(settingsData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Settings saved successfully!');
+                window.dispatchEvent(new CustomEvent('close-modal', { detail: 'enrollment-settings' }));
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving settings.');
+            });
         }
 
-        // Optional: Add keyboard support for the new section input
         document.addEventListener('DOMContentLoaded', function() {
             const newSectionInput = document.getElementById('new-section-input');
             if (newSectionInput) {
