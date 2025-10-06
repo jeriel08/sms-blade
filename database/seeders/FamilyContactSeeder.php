@@ -14,8 +14,7 @@ class FamilyContactSeeder extends Seeder
     public function run(): void
     {
         FamilyContact::create([
-            'contact_id' => 1,
-            'student_lrn' => '123456789012',
+            'student_id' => 1, // From StudentSeeder (auto 1)
             'contact_type' => 'Father',
             'last_name' => 'Cruz',
             'first_name' => 'Pedro',
@@ -23,8 +22,7 @@ class FamilyContactSeeder extends Seeder
         ]);
 
         FamilyContact::create([
-            'contact_id' => 2,
-            'student_lrn' => '123456789013',
+            'student_id' => 2, // From StudentSeeder (auto 2)
             'contact_type' => 'Mother',
             'last_name' => 'Santos',
             'first_name' => 'Elena',

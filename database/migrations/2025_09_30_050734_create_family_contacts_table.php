@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('family_contacts', function (Blueprint $table) {
             $table->id('contact_id');
-            $table->string('student_lrn', 12)->notNullable();
+            $table->unsignedBigInteger('student_id')->notNullable()->index();
             $table->enum('contact_type', ['Father', 'Mother', 'Guardian'])->notNullable();
             $table->string('last_name', 100)->notNullable();
             $table->string('first_name', 100)->notNullable();
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('contact_number', 50)->nullable();
             $table->timestamps();
 
-            $table->foreign('student_lrn')->references('lrn')->on('students')->onDelete('cascade');
+            $table->foreign('student_id')->references('student_id')->on('students')->onDelete('cascade');
         });
     }
 

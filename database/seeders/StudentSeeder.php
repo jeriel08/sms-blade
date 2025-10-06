@@ -13,7 +13,7 @@ class StudentSeeder extends Seeder
      */
     public function run(): void
     {
-        Student::create([
+        $student1 = Student::create([
             'lrn' => '123456789012',
             'last_name' => 'Cruz',
             'first_name' => 'Juan',
@@ -31,7 +31,7 @@ class StudentSeeder extends Seeder
             'is_disabled' => 1,
         ]);
 
-        Student::create([
+        $student2 = Student::create([
             'lrn' => '123456789013',
             'last_name' => 'Santos',
             'first_name' => 'Maria',
@@ -47,5 +47,9 @@ class StudentSeeder extends Seeder
             'permanent_address_id' => 2,
             'is_disabled' => 0,
         ]);
+
+        // Store IDs for other seeders
+        $this->command->info('Student 1 ID: ' . $student1->student_id);
+        $this->command->info('Student 2 ID: ' . $student2->student_id);
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('enrollments', function (Blueprint $table) {
             $table->id('enrollment_id');
-            $table->string('student_lrn', 12)->notNullable();
+            $table->unsignedBigInteger('student_id')->notNullable()->index(); // Changed to student_id FK
             $table->string('school_year', 9)->notNullable();
             $table->string('grade_level', 50)->notNullable();
             $table->enum('enrollment_type', ['New', 'Old', 'Transferee', 'Returning'])->notNullable();
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('_4ps_household_id', 50)->nullable();
             $table->timestamps();
 
-            $table->foreign('student_lrn')->references('lrn')->on('students')->onDelete('cascade');
+            $table->foreign('student_id')->references('student_id')->on('students')->onDelete('cascade');
             $table->foreign('enrolled_by_teacher_id')->references('teacher_id')->on('teachers')->onDelete('set null');
         });
     }

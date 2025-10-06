@@ -16,7 +16,7 @@ class StudentDisabilitySeeder extends Seeder
         DB::table('student_disabilities')->insert([
             [
                 'disability_id' => 1, // Visual Impairment
-                'student_lrn' => '123456789012', // Juan Cruz
+                'student_id' => 1, // Juan Cruz
             ],
         ]);
     }

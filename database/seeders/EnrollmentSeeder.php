@@ -14,8 +14,7 @@ class EnrollmentSeeder extends Seeder
     public function run(): void
     {
         Enrollment::create([
-            'enrollment_id' => 1,
-            'student_lrn' => '123456789012',
+            'student_id' => 1,
             'school_year' => '2025-2026',
             'grade_level' => 'Grade 10',
             'enrollment_type' => 'New',
@@ -24,8 +23,7 @@ class EnrollmentSeeder extends Seeder
         ]);
 
         Enrollment::create([
-            'enrollment_id' => 2,
-            'student_lrn' => '123456789013',
+            'student_id' => 2,
             'school_year' => '2025-2026',
             'grade_level' => 'Grade 11',
             'enrollment_type' => 'Transferee',
