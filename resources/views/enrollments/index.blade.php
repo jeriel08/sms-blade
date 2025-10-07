@@ -72,7 +72,7 @@
                     {{-- Settings button with tooltip --}}
                     @if($canAccessSettings)
                         <x-tooltip text="Enrollment Setup" position="bottom">
-                            <a href="{{ route('enrollments.settings') }}" class="ms-3 px-7 gap-2 inline-flex items-center">
+                            <a href="{{ route('enrollments.settings') }}" class="gap-2 inline-flex items-center">
                                 <x-secondary-button class="gap-2">
                                     <x-hugeicons-settings-01 />
                                 </x-secondary-button>

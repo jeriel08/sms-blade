@@ -13,6 +13,8 @@
                 </div>
             @endif
 
+            <x-toast />
+
             <form id="enrollment-settings-form">
                 <div class="mb-6">
                     <x-input-label for="school_year" :value="__('School Year')" />
@@ -152,7 +154,7 @@
     @push('scripts')
     <script>
         let currentSections = @json($sectionsByGrade ?? []);
-        let currentDisabilities = @json($disabilities ?? []);
+        let currentDisabilities = @json($disabilities ?? ['ADHD']);
         const teachersByGrade = @json($teachersByGrade ?? []);
         const teachers = Object.values(teachersByGrade).flat();
         let sectionSearchTerm = '';
@@ -265,12 +267,19 @@
             const sectionName = newSectionInput.value.trim();
             const adviserId = newAdviserSelect.value || null;
 
-            if (!grade) return alert('Please select a grade level first.');
-            if (!sectionName) return alert('Please enter a section name.');
+            if (!grade) {
+                showToast('Please select a grade level first.', 'error');
+                return;
+            }
+            if (!sectionName) {
+                showToast('Please enter a section name.', 'error');
+                return;
+            }
 
             if (!currentSections[grade]) currentSections[grade] = [];
 
             currentSections[grade].push({ name: sectionName, adviser_id: adviserId });
+            showToast(`Section "${sectionName}" added!`, 'success');
 
             loadSectionsForGrade(grade);
             newSectionInput.value = '';
@@ -280,21 +289,28 @@
 
         function updateSection(grade, index, newValue) {
             if (currentSections[grade] && currentSections[grade][index]) {
+                const oldName = currentSections[grade][index].name;
                 currentSections[grade][index].name = newValue.trim();
+                showToast(`Section updated from "${oldName}" to "${newValue.trim()}"`, 'success');
                 filterSections(sectionSearchTerm);
             }
         }
 
         function updateSectionAdviser(grade, index, newValue) {
             if (currentSections[grade] && currentSections[grade][index]) {
+                const sectionName = currentSections[grade][index].name;
+                const teacher = teachers.find(t => t.id == newValue);
                 currentSections[grade][index].adviser_id = newValue || null;
+                showToast(`Adviser for "${sectionName}" updated to ${teacher ? teacher.name : 'None'}`, 'success');
             }
         }
 
         function removeSection(grade, index) {
             if (currentSections[grade] && currentSections[grade][index]) {
+                const sectionName = currentSections[grade][index].name;
                 if (confirm('Are you sure you want to remove this section?')) {
                     currentSections[grade].splice(index, 1);
+                    showToast(`Section "${sectionName}" removed`, 'success');
                     loadSectionsForGrade(grade);
                 }
             }
@@ -352,9 +368,18 @@
             const newDisabilityInput = document.getElementById('new-disability-input');
             const disabilityName = newDisabilityInput.value.trim();
 
-            if (!disabilityName) return alert('Please enter a disability name.');
+            if (!disabilityName) {
+                showToast('Please enter a disability name.', 'error');
+                return;
+            }
+
+            if (currentDisabilities.includes(disabilityName)) {
+                showToast('Disability already exists.', 'error');
+                return;
+            }
 
             currentDisabilities.push(disabilityName);
+            showToast(`Disability "${disabilityName}" added!`, 'success');
             loadDisabilities();
             newDisabilityInput.value = '';
             newDisabilityInput.focus();
@@ -362,15 +387,28 @@
 
         function updateDisability(index, newValue) {
             if (currentDisabilities[index]) {
-                currentDisabilities[index] = newValue.trim();
+                const oldName = currentDisabilities[index];
+                const newName = newValue.trim();
+                if (!newName) {
+                    showToast('Disability name cannot be empty.', 'error');
+                    return;
+                }
+                if (currentDisabilities.includes(newName) && newName !== oldName) {
+                    showToast('Disability already exists.', 'error');
+                    return;
+                }
+                currentDisabilities[index] = newName;
+                showToast(`Disability updated from "${oldName}" to "${newName}"`, 'success');
                 loadDisabilities();
             }
         }
 
         function removeDisability(index) {
             if (currentDisabilities[index]) {
+                const disabilityName = currentDisabilities[index];
                 if (confirm('Are you sure you want to remove this disability?')) {
                     currentDisabilities.splice(index, 1);
+                    showToast(`Disability "${disabilityName}" removed`, 'success');
                     loadDisabilities();
                 }
             }
@@ -379,6 +417,11 @@
         function saveSettings() {
             const schoolYear = document.getElementById('school_year').value;
             const gradeLevel = document.getElementById('grade_level').value;
+
+            if (!schoolYear.match(/^\d{4}-\d{4}$/)) {
+                showToast('Please enter a valid school year (e.g., 2024-2025).', 'error');
+                return;
+            }
 
             const settingsData = {
                 school_year: schoolYear,
@@ -398,15 +441,21 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Settings saved successfully!');
-                    window.location.href = '{{ route("enrollments.index") }}';
+                    showToast('Settings saved successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '{{ route("enrollments.index") }}';
+                    }, 1500); // Delay redirect to show toast
                 } else {
-                    alert(data.message || 'Error saving settings.');
+                    let errorMessage = data.message || 'Error saving settings.';
+                    if (data.errors) {
+                        errorMessage = Object.values(data.errors).flat().join(' ');
+                    }
+                    showToast(errorMessage, 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error saving settings.');
+                showToast('Error saving settings.', 'error');
             });
         }
 
