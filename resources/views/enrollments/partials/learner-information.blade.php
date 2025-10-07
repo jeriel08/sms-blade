@@ -25,8 +25,9 @@
                         id="with_lrn" 
                         name="with_lrn" 
                         type="radio" 
+                        value="yes"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('with_lrn') ? 'checked' : '' }}>
+                        {{ old('with_lrn') == 'yes' ? 'checked' : '' }}>
                     <x-input-label for="with_lrn" value="Yes" />
                 </div>
                 <div class="flex align-items-center justify-start gap-2">
@@ -34,8 +35,9 @@
                         id="without_lrn" 
                         name="with_lrn" 
                         type="radio" 
+                        value="no"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('without_lrn') ? 'checked' : '' }}>
+                        {{ old('with_lrn') == 'no' ? 'checked' : '' }}>
                     <x-input-label for="without_lrn" value="No" />
                 </div>
             </div>
@@ -46,8 +48,9 @@
                         id="returning_yes" 
                         name="returning" 
                         type="radio" 
+                        value="yes"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('returning_yes') ? 'checked' : '' }}>
+                        {{ old('returning') == 'yes' ? 'checked' : '' }}>
                     <x-input-label for="returning_yes" value="Yes" />
                 </div>
                 <div class="flex align-items-center justify-start gap-2">
@@ -55,8 +58,9 @@
                         id="returning_no" 
                         name="returning" 
                         type="radio" 
+                        value="no"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('returning_no') ? 'checked' : '' }}>
+                        {{ old('returning') == 'no' ? 'checked' : '' }}>
                     <x-input-label for="returning_no" value="No" />
                 </div>
             </div>
@@ -79,13 +83,13 @@
                     name="psa_birth_certification_no" 
                     type="text" 
                     class="mt-1 block w-sm" 
-                    value="{{ old('psn_birth_certification_no') }}"
+                    value="{{ old('psa_birth_certification_no') }}"
                     maxlength="12"
                     placeholder="Enter PSA Birth Certificate No."
                 />
             </div>
             <div>
-                <x-input-label for="lrn" value="Learner Reference Number (LRN)" />
+                <x-input-label for="lrn" value="Learner Reference Number (LRN)" important />
                 <x-text-input 
                     id="lrn" 
                     name="lrn" 
@@ -101,7 +105,7 @@
         {{-- Second Row --}}
         <div class="flex justify-start align-items-center gap-6 mb-6">
             <div>
-                <x-input-label for="first_name" value="First Name" />
+                <x-input-label for="first_name" value="First Name" important />
                 <x-text-input 
                     id="first_name" 
                     name="first_name" 
@@ -113,7 +117,7 @@
             </div>
             
             <div>
-                <x-input-label for="birthdate" value="Birthdate" />
+                <x-input-label for="birthdate" value="Birthdate" important />
                 <x-text-input 
                     id="birthdate" 
                     name="birthdate" 
@@ -139,7 +143,7 @@
         {{-- Third Row --}}
         <div class="flex justify-start align-items-center gap-6 mb-6">
            <div>
-                <x-input-label for="last_name" value="Last Name" />
+                <x-input-label for="last_name" value="Last Name" important />
                 <x-text-input 
                     id="last_name" 
                     name="last_name" 
@@ -151,7 +155,7 @@
             </div>
 
              <div>
-                <x-input-label for="gender" value="Gender" />
+                <x-input-label for="gender" value="Gender" important />
                 <select 
                     id="gender" 
                     name="gender"
@@ -164,7 +168,7 @@
             </div>
 
             <div>
-                <x-input-label for="age" value="Age" />
+                <x-input-label for="age" value="Age" important />
                 <x-text-input 
                     id="age" 
                     name="age" 
@@ -211,7 +215,7 @@
                                 id="ip_yes" 
                                 name="ip_community_member" 
                                 type="radio" 
-                                value="1"
+                                value="yes"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                                 {{ old('ip_community_member') == 'yes' ? 'checked' : '' }}>
                             <x-input-label for="ip_yes" value="Yes" class="mb-0" />
@@ -221,7 +225,7 @@
                                 id="ip_no" 
                                 name="ip_community_member" 
                                 type="radio" 
-                                value="0"
+                                value="no"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                                 {{ old('ip_community_member') == 'no' ? 'checked' : '' }}>
                             <x-input-label for="ip_no" value="No" class="mb-0" />
@@ -310,8 +314,9 @@
                         id="is_disabled_yes" 
                         name="is_disabled" 
                         type="radio" 
+                        value="yes"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('is_disabled_yes') ? 'checked' : '' }}>
+                        {{ old('is_disabled') == 'yes' ? 'checked' : '' }}>
                     <x-input-label for="is_disabled_yes" value="Yes" />
                 </div>
                 <div class="flex align-items-center justify-start gap-2">
@@ -319,8 +324,9 @@
                         id="is_disabled_no" 
                         name="is_disabled" 
                         type="radio" 
+                        value="no"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('is_disabled_no') ? 'checked' : '' }}>
+                        {{ old('is_disabled') == 'no' ? 'checked' : '' }}>
                     <x-input-label for="is_disabled_no" value="No" />
                 </div>
             </div>
@@ -332,30 +338,30 @@
                     <div class="flex flex-col gap-4">
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="visual_impairment_blind" 
-                                name="visual_impairment_blind" 
+                                id="disability_visual_blind" 
+                                name="disability_visual_blind" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('visual_impairment_blind') ? 'checked' : '' }}>
-                            <x-input-label for="visual_impairment_blind" value="Visual Impairment (Blind)" />
+                                {{ old('disability_visual_blind') ? 'checked' : '' }}>
+                            <x-input-label for="disability_visual_blind" value="Visual Impairment (Blind)" />
                         </div>
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="visual_impairment_low_vision" 
-                                name="visual_impairment_low_vision" 
+                                id="disability_visual_low_vision" 
+                                name="disability_visual_low_vision" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('visual_impairment_low_vision') ? 'checked' : '' }}>
-                            <x-input-label for="visual_impairment_low_vision" value="Visual Impairment (Low Vision)" />
+                                {{ old('disability_visual_low_vision') ? 'checked' : '' }}>
+                            <x-input-label for="disability_visual_low_vision" value="Visual Impairment (Low Vision)" />
                         </div>
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="multiple_disorder" 
-                                name="multiple_disorder" 
+                                id="disability_multiple_disorder" 
+                                name="disability_multiple_disorder" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('multiple_disorder') ? 'checked' : '' }}>
-                            <x-input-label for="multiple_disorder" value="Multiple Disorder" />
+                                {{ old('disability_multiple_disorder') ? 'checked' : '' }}>
+                            <x-input-label for="disability_multiple_disorder" value="Multiple Disorder" />
                         </div>
                     </div>
                 </div>
@@ -365,48 +371,48 @@
                     <div class="flex flex-col gap-4">
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="visual_impairment_blind" 
-                                name="visual_impairment_blind" 
+                                id="disability_hearing_impairment" 
+                                name="disability_hearing_impairment" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('visual_impairment_blind') ? 'checked' : '' }}>
-                            <x-input-label for="visual_impairment_blind" value="Hearing Impairment" />
+                                {{ old('disability_hearing_impairment') ? 'checked' : '' }}>
+                            <x-input-label for="disability_hearing_impairment" value="Hearing Impairment" />
                         </div>
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="visual_impairment_low_vision" 
-                                name="visual_impairment_low_vision" 
+                                id="disability_autism_spectrum" 
+                                name="disability_autism_spectrum" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('visual_impairment_low_vision') ? 'checked' : '' }}>
-                            <x-input-label for="visual_impairment_low_vision" value="Autism Spectrum Disorder" />
+                                {{ old('disability_autism_spectrum') ? 'checked' : '' }}>
+                            <x-input-label for="disability_autism_spectrum" value="Autism Spectrum Disorder" />
                         </div>
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="multiple_disorder" 
-                                name="multiple_disorder" 
+                                id="disability_speech_language" 
+                                name="disability_speech_language" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('multiple_disorder') ? 'checked' : '' }}>
-                            <x-input-label for="multiple_disorder" value="Speech/Language Disorder" />
+                                {{ old('disability_speech_language') ? 'checked' : '' }}>
+                            <x-input-label for="disability_speech_language" value="Speech/Language Disorder" />
                         </div>
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="multiple_disorder" 
-                                name="multiple_disorder" 
+                                id="disability_learning" 
+                                name="disability_learning" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('multiple_disorder') ? 'checked' : '' }}>
-                            <x-input-label for="multiple_disorder" value="Learning Disability" />
+                                {{ old('disability_learning') ? 'checked' : '' }}>
+                            <x-input-label for="disability_learning" value="Learning Disability" />
                         </div>
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="multiple_disorder" 
-                                name="multiple_disorder" 
+                                id="disability_emotional_behavioral" 
+                                name="disability_emotional_behavioral" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('multiple_disorder') ? 'checked' : '' }}>
-                            <x-input-label for="multiple_disorder" value="Emotional-Behavioral Disorder" />
+                                {{ old('disability_emotional_behavioral') ? 'checked' : '' }}>
+                            <x-input-label for="disability_emotional_behavioral" value="Emotional-Behavioral Disorder" />
                         </div>
                     </div>
                 </div>
@@ -416,39 +422,39 @@
                     <div class="flex flex-col gap-4">
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="visual_impairment_blind" 
-                                name="visual_impairment_blind" 
+                                id="disability_cerebral_palsy" 
+                                name="disability_cerebral_palsy" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('visual_impairment_blind') ? 'checked' : '' }}>
-                            <x-input-label for="visual_impairment_blind" value="Cerebral Palsy" />
+                                {{ old('disability_cerebral_palsy') ? 'checked' : '' }}>
+                            <x-input-label for="disability_cerebral_palsy" value="Cerebral Palsy" />
                         </div>
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="visual_impairment_low_vision" 
-                                name="visual_impairment_low_vision" 
+                                id="disability_intellectual" 
+                                name="disability_intellectual" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('visual_impairment_low_vision') ? 'checked' : '' }}>
-                            <x-input-label for="visual_impairment_low_vision" value="Intellectual Disability" />
+                                {{ old('disability_intellectual') ? 'checked' : '' }}>
+                            <x-input-label for="disability_intellectual" value="Intellectual Disability" />
                         </div>
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="multiple_disorder" 
-                                name="multiple_disorder" 
+                                id="disability_orthopedic" 
+                                name="disability_orthopedic" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('multiple_disorder') ? 'checked' : '' }}>
-                            <x-input-label for="multiple_disorder" value="Orthopedic/Physical Handicap" />
+                                {{ old('disability_orthopedic') ? 'checked' : '' }}>
+                            <x-input-label for="disability_orthopedic" value="Orthopedic/Physical Handicap" />
                         </div>
                         <div class="flex align-items-center justify-start gap-2">
                             <input 
-                                id="multiple_disorder" 
-                                name="multiple_disorder" 
+                                id="disability_special_health" 
+                                name="disability_special_health" 
                                 type="checkbox" 
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('multiple_disorder') ? 'checked' : '' }}>
-                            <x-input-label for="multiple_disorder" value="Special Health Problem / Chronic Disease" />
+                                {{ old('disability_special_health') ? 'checked' : '' }}>
+                            <x-input-label for="disability_special_health" value="Special Health Problem / Chronic Disease" />
                         </div>
                     </div>
                 </div>
@@ -457,4 +463,54 @@
     </div>
     
     @include('components.step-navigation')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to toggle text input state
+            function toggleTextInput(radioGroupName, targetInputId, enableValue) {
+                const radios = document.querySelectorAll(`input[name="${radioGroupName}"]`);
+                const targetInput = document.getElementById(targetInputId);
+
+                function updateState() {
+                    const isEnabled = Array.from(radios).some(radio => radio.checked && radio.value === enableValue);
+                    targetInput.disabled = !isEnabled;
+                    if (!isEnabled) {
+                        targetInput.value = ''; // Clear value when disabled
+                    }
+                }
+
+                // Listen for changes
+                radios.forEach(radio => radio.addEventListener('change', updateState));
+                // Initial state
+                updateState();
+            }
+
+            // Function to toggle checkbox states (for disabilities)
+            function toggleCheckboxes(radioGroupName, enableValue, checkboxSelector) {
+                const radios = document.querySelectorAll(`input[name="${radioGroupName}"]`);
+                const checkboxes = document.querySelectorAll(checkboxSelector);
+
+                function updateState() {
+                    const isEnabled = Array.from(radios).some(radio => radio.checked && radio.value === enableValue);
+                    checkboxes.forEach(checkbox => {
+                        checkbox.disabled = !isEnabled;
+                        if (!isEnabled) {
+                            checkbox.checked = false; // Uncheck when disabled
+                        }
+                    });
+                }
+
+                // Listen for changes
+                radios.forEach(radio => radio.addEventListener('change', updateState));
+                // Initial state
+                updateState();
+            }
+
+            // Apply to each radio group
+            toggleTextInput('with_lrn', 'lrn', 'yes');
+            toggleTextInput('ip_community_member', 'ip_community', 'yes');
+            toggleTextInput('4ps_beneficiary', '4ps_household_id', 'yes');
+            toggleCheckboxes('is_disabled', 'yes', 'input[name^="disability_"]');
+        });
+    </script>
 </div>

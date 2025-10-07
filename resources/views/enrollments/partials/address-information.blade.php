@@ -12,7 +12,7 @@
             {{-- First Row --}}
             <div class="flex justify-start align-items-center gap-6 mb-6">
                 <div>
-                    <x-input-label for="house_number" value="House No." />
+                    <x-input-label for="house_number" value="House No." important />
                     <x-text-input 
                         id="house_number" 
                         name="house_number" 
@@ -23,7 +23,7 @@
                     />
                 </div>
                 <div>
-                    <x-input-label for="street_name" value="Street Name" />
+                    <x-input-label for="street_name" value="Street Name" important />
                     <x-text-input 
                         id="street_name" 
                         name="street_name" 
@@ -34,7 +34,7 @@
                     />
                 </div>
                 <div>
-                    <x-input-label for="barangay" value="Barangay" />
+                    <x-input-label for="barangay" value="Barangay" important />
                     <x-text-input 
                         id="barangay" 
                         name="barangay" 
@@ -49,7 +49,7 @@
             {{-- Second Row --}}
             <div class="flex justify-start align-items-center gap-6 mb-4">
                 <div>
-                    <x-input-label for="city" value="Municipality/City" />
+                    <x-input-label for="city" value="Municipality/City" important />
                     <x-text-input 
                         id="city" 
                         name="city" 
@@ -60,7 +60,7 @@
                     />
                 </div>
                 <div>
-                    <x-input-label for="province" value="Province" />
+                    <x-input-label for="province" value="Province" important />
                     <x-text-input 
                         id="province" 
                         name="province" 
@@ -71,7 +71,7 @@
                     />
                 </div>
                 <div>
-                    <x-input-label for="country" value="Country" />
+                    <x-input-label for="country" value="Country" important />
                     <x-text-input 
                         id="country" 
                         name="country" 
@@ -82,7 +82,7 @@
                     />
                 </div>
                 <div>
-                    <x-input-label for="zip_code" value="Zip Code" />
+                    <x-input-label for="zip_code" value="Zip Code" important />
                     <x-text-input 
                         id="zip_code" 
                         name="zip_code" 
@@ -97,7 +97,6 @@
 
         <!-- Permanent Address (with same as current toggle) -->
         <div>
-
             <div id="permanent-address-section">
                 <div class="flex justify-start align-items-center gap-6 mb-4">
                     <h4 class="text-md font-bold text-gray-900">Permanent Address</h4>
@@ -105,12 +104,12 @@
                         <x-input-label for="same_as_current_address" value="Same with your current address?" class="italic mb-0" />
                         <div class="flex items-center gap-2">
                             <input 
-                                id=same_yes" 
+                                id="same_yes" 
                                 name="same_as_current_address" 
                                 type="radio" 
                                 value="1"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('same_as_current_address') == 'yes' ? 'checked' : '' }}>
+                                {{ old('same_as_current_address', 0) == 1 ? 'checked' : '' }}>
                             <x-input-label for="same_yes" value="Yes" class="mb-0" />
                         </div>
                         <div class="flex items-center gap-2">
@@ -120,7 +119,7 @@
                                 type="radio" 
                                 value="0"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('same_as_current_address') == 'no' ? 'checked' : '' }}>
+                                {{ old('same_as_current_address', 0) == 0 ? 'checked' : '' }}>
                             <x-input-label for="same_no" value="No" class="mb-0" />
                         </div>
                     </div>
@@ -129,7 +128,7 @@
                 {{-- First Row --}}
                 <div class="flex justify-start align-items-center gap-6 mb-6">
                     <div>
-                        <x-input-label for="permanent_house_number" value="House No." />
+                        <x-input-label for="permanent_house_number" value="House No." important />
                         <x-text-input 
                             id="permanent_house_number" 
                             name="permanent_house_number" 
@@ -140,7 +139,7 @@
                         />
                     </div>
                     <div>
-                        <x-input-label for="permanent_street_name" value="Street Name" />
+                        <x-input-label for="permanent_street_name" value="Street Name" important />
                         <x-text-input 
                             id="permanent_street_name" 
                             name="permanent_street_name" 
@@ -151,7 +150,7 @@
                         />
                     </div>
                     <div>
-                        <x-input-label for="permanent_barangay" value="Barangay" />
+                        <x-input-label for="permanent_barangay" value="Barangay" important />
                         <x-text-input 
                             id="permanent_barangay" 
                             name="permanent_barangay" 
@@ -166,7 +165,7 @@
                 {{-- Second Row --}}
                 <div class="flex justify-start align-items-center gap-6 mb-4">
                     <div>
-                        <x-input-label for="permanent_city" value="Municipality/City" />
+                        <x-input-label for="permanent_city" value="Municipality/City" important />
                         <x-text-input 
                             id="permanent_city" 
                             name="permanent_city" 
@@ -177,7 +176,7 @@
                         />
                     </div>
                     <div>
-                        <x-input-label for="permanent_province" value="Province" />
+                        <x-input-label for="permanent_province" value="Province" important />
                         <x-text-input 
                             id="permanent_province" 
                             name="permanent_province" 
@@ -188,7 +187,7 @@
                         />
                     </div>
                     <div>
-                        <x-input-label for="permanent_country" value="Country" />
+                        <x-input-label for="permanent_country" value="Country" important />
                         <x-text-input 
                             id="permanent_country" 
                             name="permanent_country" 
@@ -199,7 +198,7 @@
                         />
                     </div>
                     <div>
-                        <x-input-label for="permanent_zip_code" value="Zip Code" />
+                        <x-input-label for="permanent_zip_code" value="Zip Code" important />
                         <x-text-input 
                             id="permanent_zip_code" 
                             name="permanent_zip_code" 
@@ -215,33 +214,53 @@
     </div>
 
     <script>
-        function togglePermanentAddress() {
-            const sameAsCurrent = document.getElementById('same_as_current');
-            const permanentSection = document.getElementById('permanent-address-section');
-            const permanentInputs = permanentSection.querySelectorAll('input, select');
-            
-            if (sameAsCurrent.checked) {
-                permanentSection.style.opacity = '0.5';
-                permanentInputs.forEach(input => {
-                    input.disabled = true;
-                    // Copy values from current address
-                    const currentFieldName = input.name.replace('permanent_', 'current_');
-                    const currentField = document.querySelector(`[name="${currentFieldName}"]`);
-                    if (currentField) {
-                        input.value = currentField.value;
-                    }
-                });
-            } else {
-                permanentSection.style.opacity = '1';
-                permanentInputs.forEach(input => {
-                    input.disabled = false;
-                });
-            }
-        }
-        
-        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            togglePermanentAddress();
+            const radios = document.querySelectorAll('input[name="same_as_current_address"]');
+            const permanentSection = document.getElementById('permanent-address-section');
+            const permanentInputs = permanentSection.querySelectorAll('input[type="text"]');
+
+            function updatePermanentAddress() {
+                const isSame = Array.from(radios).some(radio => radio.checked && radio.value === '1');
+
+                if (isSame) {
+                    // Dim the section and disable inputs
+                    permanentSection.style.opacity = '0.5';
+                    permanentInputs.forEach(input => {
+                        input.disabled = true;
+                    });
+
+                    // Copy values from current address to permanent
+                    const fieldMappings = [
+                        { current: 'house_number', permanent: 'permanent_house_number' },
+                        { current: 'street_name', permanent: 'permanent_street_name' },
+                        { current: 'barangay', permanent: 'permanent_barangay' },
+                        { current: 'city', permanent: 'permanent_city' },
+                        { current: 'province', permanent: 'permanent_province' },
+                        { current: 'country', permanent: 'permanent_country' },
+                        { current: 'zip_code', permanent: 'permanent_zip_code' }
+                    ];
+
+                    fieldMappings.forEach(mapping => {
+                        const currentInput = document.getElementById(mapping.current);
+                        const permanentInput = document.getElementById(mapping.permanent);
+                        if (currentInput && permanentInput) {
+                            permanentInput.value = currentInput.value;
+                        }
+                    });
+                } else {
+                    // Restore opacity and enable inputs
+                    permanentSection.style.opacity = '1';
+                    permanentInputs.forEach(input => {
+                        input.disabled = false;
+                    });
+                }
+            }
+
+            // Listen for changes on radios
+            radios.forEach(radio => radio.addEventListener('change', updatePermanentAddress));
+
+            // Initial state check
+            updatePermanentAddress();
         });
     </script>
     

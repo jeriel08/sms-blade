@@ -12,7 +12,7 @@
             <div class="flex justify-start align-items-center gap-6 mb-6 q">
                 
                 <div>
-                    <x-input-label for="father_last_name" value="Last Name" />
+                    <x-input-label for="father_last_name" value="Last Name" important />
                     <x-text-input 
                         id="father_last_name" 
                         name="father_last_name" 
@@ -24,7 +24,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="father_first_name" value="First Name" />
+                    <x-input-label for="father_first_name" value="First Name" important />
                     <x-text-input 
                         id="father_first_name" 
                         name="father_first_name" 
@@ -36,7 +36,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="father_middle_name" value="Middle Name" />
+                    <x-input-label for="father_middle_name" value="Middle Name" important />
                     <x-text-input 
                         id="father_middle_name" 
                         name="father_middle_name" 
@@ -48,7 +48,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="father_contact_number" value="Contact Number" />
+                    <x-input-label for="father_contact_number" value="Contact Number" important />
                     <x-text-input 
                         id="father_contact_number" 
                         name="father_contact_number" 
@@ -68,7 +68,7 @@
             <div class="flex justify-start align-items-center gap-6 mb-6 q">
                 
                 <div>
-                    <x-input-label for="mother_last_name" value="Last Name" />
+                    <x-input-label for="mother_last_name" value="Last Name" important />
                     <x-text-input 
                         id="mother_last_name" 
                         name="mother_last_name" 
@@ -80,7 +80,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="mother_first_name" value="First Name" />
+                    <x-input-label for="mother_first_name" value="First Name" important />
                     <x-text-input 
                         id="mother_first_name" 
                         name="mother_first_name" 
@@ -92,7 +92,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="mother_middle_name" value="Middle Name" />
+                    <x-input-label for="mother_middle_name" value="Middle Name" important />
                     <x-text-input 
                         id="mother_middle_name" 
                         name="mother_middle_name" 
@@ -104,7 +104,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="mother_contact_number" value="Contact Number" />
+                    <x-input-label for="mother_contact_number" value="Contact Number" important />
                     <x-text-input 
                         id="mother_contact_number" 
                         name="mother_contact_number" 
@@ -124,7 +124,7 @@
             <div class="flex justify-start align-items-center gap-6 mb-6 q">
                 
                 <div>
-                    <x-input-label for="legal_guardian_last_name" value="Last Name" />
+                    <x-input-label for="legal_guardian_last_name" value="Last Name" important />
                     <x-text-input 
                         id="legal_guardian_last_name" 
                         name="legal_guardian_last_name" 
@@ -136,7 +136,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="legal_guardian_first_name" value="First Name" />
+                    <x-input-label for="legal_guardian_first_name" value="First Name" important />
                     <x-text-input 
                         id="legal_guardian_first_name" 
                         name="legal_guardian_first_name" 
@@ -148,7 +148,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="legal_guardian_middle_name" value="Middle Name" />
+                    <x-input-label for="legal_guardian_middle_name" value="Middle Name" important />
                     <x-text-input 
                         id="legal_guardian_middle_name" 
                         name="legal_guardian_middle_name" 
@@ -160,7 +160,7 @@
                 </div>
 
                 <div>
-                    <x-input-label for="legal_guardian_contact_number" value="Contact Number" />
+                    <x-input-label for="legal_guardian_contact_number" value="Contact Number" important />
                     <x-text-input 
                         id="legal_guardian_contact_number" 
                         name="legal_guardian_contact_number" 
