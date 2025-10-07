@@ -118,13 +118,19 @@ class EnrollmentController extends Controller
         });
 
         // Teachers for adviser dropdown
-        $teachers = Teacher::all()->map(function ($teacher) {
-            return [
-                'id' => $teacher->teacher_id,
-                'name' => $teacher->user->name ?? trim($teacher->first_name . ' ' . $teacher->last_name),
-            ];
-        });
-
+        $teachersByGrade = Teacher::whereNotNull('assigned_grade_level')
+            ->orWhereNull('assigned_grade_level')
+            ->get()  // <-- Add this to execute the query and get a Collection
+            ->groupBy('assigned_grade_level')
+            ->map(function ($group) {
+                return $group->map(function ($teacher) {
+                    return [
+                        'id' => $teacher->teacher_id,
+                        'name' => $teacher->user->name ?? trim($teacher->first_name . ' ' . $teacher->last_name),
+                    ];
+                })->values();
+            })
+            ->toArray();
         // User's assigned grade level (default to 7 if none)
         $user = Auth::user();
         $assignedGrade = $user?->assigned_grade_level ?? 7;
@@ -132,7 +138,7 @@ class EnrollmentController extends Controller
         // Initial disabilities (from DB)
         $disabilities = \App\Models\Disability::all()->pluck('name')->toArray();
 
-        return view('enrollments.settings', compact('schoolYear', 'sectionsByGrade', 'teachers', 'assignedGrade', 'disabilities'));
+        return view('enrollments.settings', compact('schoolYear', 'sectionsByGrade', 'teachersByGrade', 'assignedGrade', 'disabilities'));
     }
 
 

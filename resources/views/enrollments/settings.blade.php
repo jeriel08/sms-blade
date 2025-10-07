@@ -61,11 +61,8 @@
                             class="flex-1" 
                             placeholder="Enter new section name..."
                         />
-                        <select id="new-adviser-select" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                            <option value="">No Adviser</option>
-                            @foreach($teachers as $teacher)
-                                <option value="{{ $teacher['id'] }}">{{ $teacher['name'] }}</option>
-                            @endforeach
+                        <select id="new-adviser-select" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm min-w-[150px]">
+                            <option value="">Loading advisers...</option>  <!-- Placeholder; JS replaces -->
                         </select>
                         <x-primary-button 
                             type="button" 
@@ -137,7 +134,34 @@
     <script>
         let currentSections = @json($sectionsByGrade ?? []);
         let currentDisabilities = @json($disabilities ?? []);
-        const teachers = @json($teachers ?? []);
+        const teachersByGrade = @json($teachersByGrade ?? []);
+        // Flatten all teachers for existing section selects (shows all advisers)
+        const teachers = Object.values(teachersByGrade).flat();
+
+        function updateAdviserSelect(grade) {
+            const adviserSelect = document.getElementById('new-adviser-select');
+            if (!adviserSelect) return;
+
+            // Get teachers for this grade (fallback to unassigned if none)
+            const gradeTeachers = teachersByGrade[grade] || teachersByGrade[null] || [];
+            adviserSelect.innerHTML = '<option value="">No Adviser</option>';
+            
+            gradeTeachers.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher.id;
+                option.textContent = teacher.name;
+                adviserSelect.appendChild(option);
+            });
+
+            // If no teachers, show a hint
+            if (gradeTeachers.length === 0) {
+                const hintOption = document.createElement('option');
+                hintOption.value = '';
+                hintOption.textContent = 'No advisers assigned to this grade';
+                hintOption.disabled = true;
+                adviserSelect.appendChild(hintOption);
+            }
+        }
 
         // Existing sections functions (unchanged)
         function loadSectionsForGrade(grade) {
@@ -162,6 +186,9 @@
                 const sectionElement = createSectionElement(grade, index, section.name, section.adviser_id);
                 sectionsList.appendChild(sectionElement);
             });
+
+            // New: Filter advisers dropdown for this grade
+            updateAdviserSelect(grade);
 
             document.getElementById('new-section-input').value = '';
             document.getElementById('new-adviser-select').value = '';

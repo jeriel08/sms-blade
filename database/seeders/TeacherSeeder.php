@@ -18,7 +18,7 @@ class TeacherSeeder extends Seeder
             'email' => 'principal@example.com',
             'password_hash' => '', // Not used, handled by User
             'role' => 'Principal',
-            'assigned_grade_level' => 'Grade 12',
+            'assigned_grade_level' => '12',
         ]);
 
         // Grade 7 Advisers
@@ -27,21 +27,21 @@ class TeacherSeeder extends Seeder
             'email' => 'maria.santos7a@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 7',
+            'assigned_grade_level' => '7',
         ]);
         Teacher::create([
             'teacher_id' => 3,
             'email' => 'carlos.delacruz7b@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 7',
+            'assigned_grade_level' => '7',
         ]);
         Teacher::create([
             'teacher_id' => 4,
             'email' => 'angela.reyes7c@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 7',
+            'assigned_grade_level' => '7',
         ]);
 
         // Grade 8 Advisers
@@ -50,21 +50,21 @@ class TeacherSeeder extends Seeder
             'email' => 'patrick.mendoza8a@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 8',
+            'assigned_grade_level' => '8',
         ]);
         Teacher::create([
             'teacher_id' => 6,
             'email' => 'liza.ramos8b@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 8',
+            'assigned_grade_level' => '8',
         ]);
         Teacher::create([
             'teacher_id' => 7,
             'email' => 'erwin.bautista8c@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 8',
+            'assigned_grade_level' => '8',
         ]);
 
         // Grade 9 Advisers
@@ -73,21 +73,21 @@ class TeacherSeeder extends Seeder
             'email' => 'nina.cruz9a@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 9',
+            'assigned_grade_level' => '9',
         ]);
         Teacher::create([
             'teacher_id' => 9,
             'email' => 'ramon.flores9b@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 9',
+            'assigned_grade_level' => '9',
         ]);
         Teacher::create([
             'teacher_id' => 10,
             'email' => 'jenny.lim9c@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 9',
+            'assigned_grade_level' => '9',
         ]);
 
         // Grade 10 Advisers
@@ -96,21 +96,21 @@ class TeacherSeeder extends Seeder
             'email' => 'allan.rivera10a@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 10',
+            'assigned_grade_level' => '10',
         ]);
         Teacher::create([
             'teacher_id' => 12,
             'email' => 'bea.tan10b@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 10',
+            'assigned_grade_level' => '10',
         ]);
         Teacher::create([
             'teacher_id' => 13,
             'email' => 'samuel.ong10c@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 10',
+            'assigned_grade_level' => '10',
         ]);
 
         // Grade 11 Advisers
@@ -119,21 +119,21 @@ class TeacherSeeder extends Seeder
             'email' => 'clara.bautista11a@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 11',
+            'assigned_grade_level' => '11',
         ]);
         Teacher::create([
             'teacher_id' => 15,
             'email' => 'mark.chua11b@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 11',
+            'assigned_grade_level' => '11',
         ]);
         Teacher::create([
             'teacher_id' => 16,
             'email' => 'sophia.dizon11c@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 11',
+            'assigned_grade_level' => '11',
         ]);
 
         // Grade 12 Advisers
@@ -142,21 +142,21 @@ class TeacherSeeder extends Seeder
             'email' => 'joshua.navarro12a@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 12',
+            'assigned_grade_level' => '12',
         ]);
         Teacher::create([
             'teacher_id' => 18,
             'email' => 'ella.ramos12b@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 12',
+            'assigned_grade_level' => '12',
         ]);
         Teacher::create([
             'teacher_id' => 19,
             'email' => 'miguel.santiago12c@example.com',
             'password_hash' => '',
             'role' => 'Adviser',
-            'assigned_grade_level' => 'Grade 12',
+            'assigned_grade_level' => '12',
         ]);
     }
 }
