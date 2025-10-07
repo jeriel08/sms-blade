@@ -48,12 +48,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [EnrollmentController::class, 'index'])->name('enrollments.index');
         Route::get('/create', [EnrollmentController::class, 'create'])->name('enrollments.create');
         Route::post('/', [EnrollmentController::class, 'store'])->name('enrollments.store');
+        Route::get('/settings', [EnrollmentController::class, 'settings'])->name('enrollments.settings');
         Route::get('/{enrollment_id}', [EnrollmentController::class, 'show'])->name('enrollments.show');
         Route::post('/{enrollment_id}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
     });
-
-    // Sections Sync
-    Route::resource('enrollments', EnrollmentController::class);
     Route::post('/sections/sync', [SectionController::class, 'sync'])->name('sections.sync');
 });
 

@@ -100,8 +100,35 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display the enrollment settings page.
      */
+    public function settings()
+    {
+        // Global school year
+        $schoolYear = Settings::where('key', 'school_year')->value('value') ?? '2024-2025';
+
+        // Sections by grade
+        $sectionsByGrade = Section::all()->groupBy('grade_level')->map(function ($group) {
+            return $group->map(function ($section) {
+                return [
+                    'name' => $section->name,
+                    'adviser_id' => $section->adviser_teacher_id,
+                ];
+            })->toArray();
+        });
+
+        // Teachers for adviser dropdown
+        $teachers = Teacher::all()->map(function ($teacher) {
+            return [
+                'id' => $teacher->teacher_id,
+                'name' => $teacher->user->name ?? trim($teacher->first_name . ' ' . $teacher->last_name),
+            ];
+        });
+
+        return view('enrollments.settings', compact('schoolYear', 'sectionsByGrade', 'teachers'));
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */
