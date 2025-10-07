@@ -1,169 +1,121 @@
 {{-- resources/views/enrollments/partials/school-information.blade.php --}}
 <div>
-    <h3 class="text-lg font-medium text-gray-900 mb-6">Recent School Information</h3>
-    
     <div class="space-y-6">
-        <!-- Previous School Details -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="md:col-span-2">
-                <x-input-label for="previous_school_name" value="Name of Previous School" />
-                <x-text-input 
-                    id="previous_school_name" 
-                    name="previous_school_name" 
-                    type="text" 
-                    class="mt-1 block w-full" 
-                    value="{{ old('previous_school_name') }}"
-                    placeholder="Full name of the school"
-                />
+        {{-- For Returning Learner --}}
+        <div class="mb-10">
+            <div class="min-w-auto bg-2 text-center rounded-lg mb-6 opacity-50">
+                <h3 class="text-md font-bold text-white mx-auto">FOR RETURNING LEARNER (BALIK-ARAL) AND THOSE WHO WILL MOVE IN</h3>
             </div>
-            
-            <div>
-                <x-input-label for="previous_school_type" value="Type of School" />
-                <select 
-                    id="previous_school_type" 
-                    name="previous_school_type" 
-                    class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs cursor-pointer"
-                >
-                    <option value="">Select School Type</option>
-                    <option value="public" {{ old('previous_school_type') == 'public' ? 'selected' : '' }}>Public</option>
-                    <option value="private" {{ old('previous_school_type') == 'private' ? 'selected' : '' }}>Private</option>
-                    <option value="state_university" {{ old('previous_school_type') == 'state_university' ? 'selected' : '' }}>State University</option>
-                    <option value="other" {{ old('previous_school_type') == 'other' ? 'selected' : '' }}>Other</option>
-                </select>
-            </div>
-            
-            <div>
-                <x-input-label for="previous_school_year" value="Last School Year Completed" />
-                <x-text-input 
-                    id="previous_school_year" 
-                    name="previous_school_year" 
-                    type="text" 
-                    class="mt-1 block w-full" 
-                    value="{{ old('previous_school_year') }}"
-                    placeholder="e.g., 2023-2024"
-                />
-            </div>
-            
-            <div>
-                <x-input-label for="previous_grade_level" value="Last Grade Level Completed" />
-                <select 
-                    id="previous_grade_level" 
-                    name="previous_grade_level" 
-                    class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs cursor-pointer"
-                >
-                    <option value="">Select Grade Level</option>
-                    @for($i = 1; $i <= 12; $i++)
-                        <option value="{{ $i }}" {{ old('previous_grade_level') == $i ? 'selected' : '' }}>
-                            Grade {{ $i }}
-                        </option>
-                    @endfor
-                </select>
-            </div>
-            
-            <div>
-                <x-input-label for="previous_section" value="Last Section/Strand" />
-                <x-text-input 
-                    id="previous_section" 
-                    name="previous_section" 
-                    type="text" 
-                    class="mt-1 block w-full" 
-                    value="{{ old('previous_section') }}"
-                />
-            </div>
-        </div>
 
-        <!-- School Address -->
-        <div class="border-t border-gray-200 pt-6">
-            <h4 class="text-md font-medium text-gray-900 mb-4">School Address</h4>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="md:col-span-2">
-                    <x-input-label for="previous_school_street" value="Street Address" />
+            <div class="flex justify-start align-items-center gap-6 mb-6">
+                <div>
+                    <x-input-label for="last_grade_level_completed" value="Last Grade Level Completed" />
                     <x-text-input 
-                        id="previous_school_street" 
-                        name="previous_school_street" 
+                        id="last_grade_level_completed" 
+                        name="last_grade_level_completed" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('previous_school_street') }}"
+                        value="{{ old('last_grade_level_completed') }}"
+                        placeholder="Enter Grade Level"
                     />
                 </div>
                 
                 <div>
-                    <x-input-label for="previous_school_city" value="City/Municipality" />
+                    <x-input-label for="last_school_year_completed" value="Last School Year Completed" />
                     <x-text-input 
-                        id="previous_school_city" 
-                        name="previous_school_city" 
+                        id="last_school_year_completed" 
+                        name="last_school_year_completed" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('previous_school_city') }}"
+                        value="{{ old('last_school_year_completed') }}"
+                        placeholder="Enter School Year"
                     />
                 </div>
-                
+
                 <div>
-                    <x-input-label for="previous_school_province" value="Province" />
+                    <x-input-label for="last_school_attended" value="Last School Attended" />
                     <x-text-input 
-                        id="previous_school_province" 
-                        name="previous_school_province" 
+                        id="last_school_attended" 
+                        name="last_school_attended" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('previous_school_province') }}"
+                        value="{{ old('last_school_attended') }}"
+                        placeholder="Enter School Name"
                     />
                 </div>
-                
+
                 <div>
-                    <x-input-label for="previous_school_country" value="Country" />
+                    <x-input-label for="school_id" value="School ID" />
                     <x-text-input 
-                        id="previous_school_country" 
-                        name="previous_school_country" 
+                        id="school_id" 
+                        name="school_id" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('previous_school_country', 'Philippines') }}"
+                        value="{{ old('school_id') }}"
+                        placeholder="Enter School ID"
                     />
                 </div>
             </div>
         </div>
 
-        <!-- Transfer Details -->
-        <div class="border-t border-gray-200 pt-6">
-            <h4 class="text-md font-medium text-gray-900 mb-4">Transfer Details</h4>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <x-input-label for="transfer_reason" value="Reason for Transfer" />
-                    <select 
-                        id="transfer_reason" 
-                        name="transfer_reason" 
-                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs cursor-pointer"
-                    >
-                        <option value="">Select Reason</option>
-                        <option value="family_transfer" {{ old('transfer_reason') == 'family_transfer' ? 'selected' : '' }}>Family Transfer</option>
-                        <option value="academic_reasons" {{ old('transfer_reason') == 'academic_reasons' ? 'selected' : '' }}>Academic Reasons</option>
-                        <option value="financial_reasons" {{ old('transfer_reason') == 'financial_reasons' ? 'selected' : '' }}>Financial Reasons</option>
-                        <option value="personal_reasons" {{ old('transfer_reason') == 'personal_reasons' ? 'selected' : '' }}>Personal Reasons</option>
-                        <option value="other" {{ old('transfer_reason') == 'other' ? 'selected' : '' }}>Other</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <x-input-label for="transfer_date" value="Date of Transfer" />
-                    <x-text-input 
-                        id="transfer_date" 
-                        name="transfer_date" 
-                        type="date" 
-                        class="mt-1 block w-full" 
-                        value="{{ old('transfer_date') }}"
-                    />
-                </div>
-                
-                <div class="md:col-span-2">
-                    <x-input-label for="other_transfer_reason" value="Other Reason (Please specify)" />
-                    <x-textarea 
-                        id="other_transfer_reason" 
-                        name="other_transfer_reason" 
-                        class="mt-1 block w-full" 
-                        rows="3"
-                        placeholder="Please specify if you selected 'Other'"
-                    >{{ old('other_transfer_reason') }}</x-textarea>
+        {{-- For Learners in Senior High School --}}
+        <div>
+            <div class="min-w-auto bg-2 text-center rounded-lg mb-6 opacity-50">
+                <h3 class="text-md font-bold text-white mx-auto">FOR LEARNERS IN SENIOR HIGH SCHOOL</h3>
+            </div>
+    
+            <div class="flex justify-start align-items-center gap-6 mb-6">
+                <div class="flex flex-col justify-start align-items-center gap-6 mb-6">
+                    <div class="flex justify-start align-items-start gap-10">
+                        {{-- Semester Checkboxes --}}
+                        <div class="flex align-items-center justify-content-start gap-4">
+                            <x-input-label for="semester" value="Semester" />
+                            <div class="flex align-items-center justify-start gap-2">
+                                <input 
+                                    id="first_sem" 
+                                    name="semester" 
+                                    type="radio" 
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    {{ old('first_sem') ? 'checked' : '' }}>
+                                <x-input-label for="first_sem" value="1st" />
+                            </div>
+                            <div class="flex align-items-center justify-start gap-2">
+                                <input 
+                                    id="second_sem" 
+                                    name="semester" 
+                                    type="radio" 
+                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    {{ old('second_sem') ? 'checked' : '' }}>
+                                <x-input-label for="second_sem" value="2nd" />
+                            </div>
+                        </div>
+
+                        {{-- Track and Strand --}}
+                        <div class="flex flex-col gap-6">
+                            <div class="flex justify-start gap-6">
+                                <x-input-label for="track" value="Track" class="whitespace-nowrap" />
+                                <x-text-input 
+                                    id="track" 
+                                    name="track" 
+                                    type="text" 
+                                    class="block w-full" 
+                                    value="{{ old('track') }}"
+                                    placeholder="Enter Track"
+                                />
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <x-input-label for="strand" value="Strand" class="whitespace-nowrap" />
+                                <x-text-input 
+                                    id="strand" 
+                                    name="strand" 
+                                    type="text" 
+                                    class="block w-full" 
+                                    value="{{ old('strand') }}"
+                                    placeholder="Enter Strand"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

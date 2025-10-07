@@ -23,7 +23,7 @@
             <div class="flex-1 flex flex-col ml-64"> <!-- Added ml-64 for margin -->
                 <!-- Top Header -->
                 @isset($header)
-                    <header class="bg-white shadow-sm sticky top-0 z-10">
+                    <header class="bg-white shadow-sm sticky top-0 z-50">
                         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                             {{ $header }}
                         </div>

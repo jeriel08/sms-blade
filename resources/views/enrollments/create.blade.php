@@ -7,10 +7,10 @@
     </x-slot>
 
     <div class="bg-white rounded-lg shadow-sm min-h-screen mx-auto sm:p-6 lg:p-8">
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-6xl mx-auto"> {{-- Increased width from 4xl to 6xl for wider form --}}
             <!-- Progress Steps -->
             <div class="mb-8">
-                <div class="flex justify-between items-center">
+                <div class="relative flex justify-between items-center">
                     @php
                         $steps = [
                             'learner' => 'Learner Information',
@@ -29,33 +29,59 @@
                                 array_values($steps)
                             );
                         }
+
+                        // Calculate completed steps
+                        $stepKeys = array_keys($steps);
+                        $currentIndex = array_search($currentStep, $stepKeys);
+                        $completedSteps = $currentIndex; // 0-based index of completed steps
                     @endphp
 
                     @foreach($steps as $key => $label)
-                        <div class="flex flex-col items-center flex-1">
-                            <div class="flex items-center w-full">
-                                @if(!$loop->first)
-                                    <div class="flex-1 h-1 bg-gray-300"></div>
-                                @endif
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center 
-                                    {{ $currentStep === $key ? 'bg-blue-600 text-white' : 
-                                       ($loop->index < array_search($currentStep, array_keys($steps)) ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600') }}">
-                                    {{ $loop->iteration }}
+                        @php
+                            $stepIndex = array_search($key, $stepKeys);
+                            $isCompleted = $stepIndex < $completedSteps;
+                            $isCurrent = $stepIndex === $completedSteps;
+                            $isFuture = $stepIndex > $completedSteps;
+                        @endphp
+
+                        <!-- Step Circle -->
+                        <div class="flex flex-col items-center min-w-0 flex-1 relative">
+                            <!-- Progress Line (before circle, except first step) -->
+                            @if($loop->index > 0)
+                                <div class="absolute top-4 left-8 flex-1 h-1 
+                                    {{ $isCompleted ? 'bg-blue-600' : 'bg-gray-300' }}"
+                                    style="z-index: 9;">
                                 </div>
-                                @if(!$loop->last)
-                                    <div class="flex-1 h-1 bg-gray-300"></div>
-                                @endif
+                            @endif
+
+                            <!-- Step Circle -->
+                            <div class="relative z-10 w-15 h-15 rounded-full flex items-center justify-center text-lg font-bold
+                                {{ $isCurrent ? 'bg-blue-600 text-white ring-2' : 
+                                   ($isCompleted ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600') }}">
+                                {{ $loop->iteration }}
                             </div>
-                            <span class="text-xs mt-2 text-center {{ $currentStep === $key ? 'font-medium text-blue-600' : 'text-gray-500' }}">
+
+                            <!-- Step Label -->
+                            <span class="text-xs mt-2 text-center px-1
+                                {{ $isCurrent ? 'font-medium text-blue-600' : 
+                                   ($isCompleted ? 'text-blue-600' : 'text-gray-500') }}">
                                 {{ $label }}
                             </span>
+
+                            <!-- Progress Line (after circle, except last step) -->
+                            @if(!$loop->last)
+                                <div class="absolute top-4 right-8 flex-1 h-1 
+                                    {{ $isCompleted ? 'bg-green-500' : 'bg-gray-300' }}"
+                                    style="z-index: -1;">
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>
             </div>
 
             <!-- Student Type Badge -->
-            <div class="mb-6">
+            <div class="mb-6 display: hidden">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
                     {{ $studentType === 'new' ? 'bg-green-100 text-green-800' : 
                        ($studentType === 'old' ? 'bg-blue-100 text-blue-800' :
