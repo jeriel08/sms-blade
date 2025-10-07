@@ -44,6 +44,13 @@ class UserSeeder extends Seeder
             'role' => 'Adviser',
             'assigned_grade_level' => '7',
         ]);
+        User::create([
+            'name' => 'John Doe',
+            'email' => 'john.doe7d@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'Adviser',
+            'assigned_grade_level' => '7',
+        ]);
 
         // Grade 8 Advisers
         User::create([
@@ -63,6 +70,13 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Erwin Bautista',
             'email' => 'erwin.bautista8c@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'Adviser',
+            'assigned_grade_level' => '8',
+        ]);
+        User::create([
+            'name' => 'Jane Doe',
+            'email' => 'jane.doe8d@example.com',
             'password' => Hash::make('password123'),
             'role' => 'Adviser',
             'assigned_grade_level' => '8',
@@ -90,6 +104,13 @@ class UserSeeder extends Seeder
             'role' => 'Adviser',
             'assigned_grade_level' => '9',
         ]);
+        User::create([
+            'name' => 'Peter Parker',
+            'email' => 'peter.parker9d@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'Adviser',
+            'assigned_grade_level' => '9',
+        ]);
 
         // Grade 10 Advisers
         User::create([
@@ -109,6 +130,13 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Samuel Ong',
             'email' => 'samuel.ong10c@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'Adviser',
+            'assigned_grade_level' => '10',
+        ]);
+        User::create([
+            'name' => 'Clark Kent',
+            'email' => 'clark.kent10d@example.com',
             'password' => Hash::make('password123'),
             'role' => 'Adviser',
             'assigned_grade_level' => '10',
@@ -136,6 +164,13 @@ class UserSeeder extends Seeder
             'role' => 'Adviser',
             'assigned_grade_level' => '11',
         ]);
+        User::create([
+            'name' => 'Bruce Wayne',
+            'email' => 'bruce.wayne11d@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'Adviser',
+            'assigned_grade_level' => '11',
+        ]);
 
         // Grade 12 Advisers
         User::create([
@@ -155,6 +190,13 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Miguel Santiago',
             'email' => 'miguel.santiago12c@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'Adviser',
+            'assigned_grade_level' => '12',
+        ]);
+        User::create([
+            'name' => 'Diana Prince',
+            'email' => 'diana.prince12d@example.com',
             'password' => Hash::make('password123'),
             'role' => 'Adviser',
             'assigned_grade_level' => '12',

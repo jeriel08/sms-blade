@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             EnrollmentSeeder::class,
             StudentDisabilitySeeder::class,
             SectionSeeder::class,
+            SettingSeeder::class,
         ]);
     }
 }

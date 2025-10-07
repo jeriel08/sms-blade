@@ -50,6 +50,16 @@
                         <span id="current-grade-label" class="text-lg font-semibold text-gray-700"></span>
                     </div>
 
+                    <div class="mb-4">
+                        <x-text-input 
+                            id="section-search" 
+                            type="text" 
+                            class="w-full" 
+                            placeholder="Search sections..."
+                            oninput="filterSections(this.value)"
+                        />
+                    </div>
+
                     <div id="sections-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-md">
                         <!-- Dynamic sections -->
                     </div>
@@ -62,7 +72,7 @@
                             placeholder="Enter new section name..."
                         />
                         <select id="new-adviser-select" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm min-w-[150px]">
-                            <option value="">Loading advisers...</option>  <!-- Placeholder; JS replaces -->
+                            <option value="">Loading advisers...</option>
                         </select>
                         <x-primary-button 
                             type="button" 
@@ -80,10 +90,19 @@
 
                 <hr class="my-6">
 
-                {{-- Disabilities Section --}}
                 <div id="disabilities-container">
                     <div class="mb-4">
                         <x-input-label :value="__('Disabilities')" />
+                    </div>
+
+                    <div class="mb-4">
+                        <x-text-input 
+                            id="disability-search" 
+                            type="text" 
+                            class="w-full" 
+                            placeholder="Search disabilities..."
+                            oninput="filterDisabilities(this.value)"
+                        />
                     </div>
 
                     <div id="disabilities-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-md">
@@ -135,14 +154,14 @@
         let currentSections = @json($sectionsByGrade ?? []);
         let currentDisabilities = @json($disabilities ?? []);
         const teachersByGrade = @json($teachersByGrade ?? []);
-        // Flatten all teachers for existing section selects (shows all advisers)
         const teachers = Object.values(teachersByGrade).flat();
+        let sectionSearchTerm = '';
+        let disabilitySearchTerm = '';
 
         function updateAdviserSelect(grade) {
             const adviserSelect = document.getElementById('new-adviser-select');
             if (!adviserSelect) return;
 
-            // Get teachers for this grade (fallback to unassigned if none)
             const gradeTeachers = teachersByGrade[grade] || teachersByGrade[null] || [];
             adviserSelect.innerHTML = '<option value="">No Adviser</option>';
             
@@ -153,7 +172,6 @@
                 adviserSelect.appendChild(option);
             });
 
-            // If no teachers, show a hint
             if (gradeTeachers.length === 0) {
                 const hintOption = document.createElement('option');
                 hintOption.value = '';
@@ -163,7 +181,29 @@
             }
         }
 
-        // Existing sections functions (unchanged)
+        function filterSections(searchTerm) {
+            sectionSearchTerm = searchTerm.toLowerCase().trim();
+            const grade = document.getElementById('grade_level').value;
+            if (!grade) return;
+
+            const sectionsList = document.getElementById('sections-list');
+            sectionsList.innerHTML = '';
+
+            const filteredSections = (currentSections[grade] || []).filter(section => 
+                section.name.toLowerCase().includes(sectionSearchTerm)
+            );
+
+            if (filteredSections.length === 0) {
+                sectionsList.innerHTML = '<p class="text-sm text-gray-500 p-2">No matching sections found.</p>';
+                return;
+            }
+
+            filteredSections.forEach((section, index) => {
+                const sectionElement = createSectionElement(grade, index, section.name, section.adviser_id);
+                sectionsList.appendChild(sectionElement);
+            });
+        }
+
         function loadSectionsForGrade(grade) {
             const sectionsContainer = document.getElementById('sections-container');
             const sectionsList = document.getElementById('sections-list');
@@ -182,14 +222,8 @@
                 currentSections[grade] = [];
             }
 
-            currentSections[grade].forEach((section, index) => {
-                const sectionElement = createSectionElement(grade, index, section.name, section.adviser_id);
-                sectionsList.appendChild(sectionElement);
-            });
-
-            // New: Filter advisers dropdown for this grade
+            filterSections(sectionSearchTerm);
             updateAdviserSelect(grade);
-
             document.getElementById('new-section-input').value = '';
             document.getElementById('new-adviser-select').value = '';
         }
@@ -239,7 +273,6 @@
             currentSections[grade].push({ name: sectionName, adviser_id: adviserId });
 
             loadSectionsForGrade(grade);
-
             newSectionInput.value = '';
             newAdviserSelect.value = '';
             newSectionInput.focus();
@@ -248,6 +281,7 @@
         function updateSection(grade, index, newValue) {
             if (currentSections[grade] && currentSections[grade][index]) {
                 currentSections[grade][index].name = newValue.trim();
+                filterSections(sectionSearchTerm);
             }
         }
 
@@ -266,16 +300,28 @@
             }
         }
 
-        // Revised disabilities functions
-        function loadDisabilities() {
+        function filterDisabilities(searchTerm) {
+            disabilitySearchTerm = searchTerm.toLowerCase().trim();
             const disabilitiesList = document.getElementById('disabilities-list');
             disabilitiesList.innerHTML = '';
 
-            currentDisabilities.forEach((disabilityName, index) => {
+            const filteredDisabilities = currentDisabilities.filter(name => 
+                name.toLowerCase().includes(disabilitySearchTerm)
+            );
+
+            if (filteredDisabilities.length === 0) {
+                disabilitiesList.innerHTML = '<p class="text-sm text-gray-500 p-2">No matching disabilities found.</p>';
+                return;
+            }
+
+            filteredDisabilities.forEach((disabilityName, index) => {
                 const disabilityElement = createDisabilityElement(index, disabilityName);
                 disabilitiesList.appendChild(disabilityElement);
             });
+        }
 
+        function loadDisabilities() {
+            filterDisabilities(disabilitySearchTerm);
             document.getElementById('new-disability-input').value = '';
         }
 
@@ -310,7 +356,6 @@
 
             currentDisabilities.push(disabilityName);
             loadDisabilities();
-
             newDisabilityInput.value = '';
             newDisabilityInput.focus();
         }
@@ -318,6 +363,7 @@
         function updateDisability(index, newValue) {
             if (currentDisabilities[index]) {
                 currentDisabilities[index] = newValue.trim();
+                loadDisabilities();
             }
         }
 
@@ -330,7 +376,6 @@
             }
         }
 
-        // Updated saveSettings (includes disabilities)
         function saveSettings() {
             const schoolYear = document.getElementById('school_year').value;
             const gradeLevel = document.getElementById('grade_level').value;
@@ -339,7 +384,7 @@
                 school_year: schoolYear,
                 active_grade_level: gradeLevel,
                 sections: currentSections,
-                disabilities: currentDisabilities  // Revised: Use disabilities
+                disabilities: currentDisabilities
             };
 
             fetch('{{ route("sections.sync") }}', {
@@ -365,19 +410,14 @@
             });
         }
 
-        // Page load: Auto-load disabilities and sections (if assigned grade)
         document.addEventListener('DOMContentLoaded', function() {
-            // Load disabilities
             loadDisabilities();
-
-            // Auto-load sections if assigned grade is set (e.g., 7)
             const assignedGrade = {{ $assignedGrade ?? 7 }};
             if (assignedGrade) {
                 document.getElementById('grade_level').value = assignedGrade;
                 loadSectionsForGrade(assignedGrade);
             }
 
-            // Enter key for new disability input
             const newDisabilityInput = document.getElementById('new-disability-input');
             if (newDisabilityInput) {
                 newDisabilityInput.addEventListener('keypress', function(e) {
@@ -388,7 +428,6 @@
                 });
             }
 
-            // Existing: Enter key for new section input
             const newSectionInput = document.getElementById('new-section-input');
             if (newSectionInput) {
                 newSectionInput.addEventListener('keypress', function(e) {
