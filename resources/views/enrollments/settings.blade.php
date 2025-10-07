@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-1 leading-tight">
-            {{ __('Enrollment Settings') }}
+            {{ __('ENROLLMENT SETTINGS') }}
         </h2>
     </x-slot>
 
@@ -27,6 +27,8 @@
                     />
                 </div>
 
+                <hr class="my-6">
+
                 <div class="mb-6">
                     <x-input-label for="grade_level" :value="__('Select Grade Level')" />
                     <select 
@@ -37,7 +39,7 @@
                     >
                         <option value="">Choose a grade level</option>
                         @foreach(range(7, 12) as $grade)
-                            <option value="{{ $grade }}">Grade {{ $grade }}</option>
+                            <option value="{{ $grade }}" {{ old('grade_level', $assignedGrade) == $grade ? 'selected' : '' }}>Grade {{ $grade }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -78,6 +80,39 @@
                         Add, edit, or remove sections and assign advisers for the selected grade level.
                     </p>
                 </div>
+
+                <hr class="my-6">
+
+                {{-- Disabilities Section --}}
+                <div id="disabilities-container">
+                    <div class="mb-4">
+                        <x-input-label :value="__('Disabilities')" />
+                    </div>
+
+                    <div id="disabilities-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-md">
+                        <!-- Dynamic disabilities -->
+                    </div>
+
+                    <div class="flex gap-2 mb-4">
+                        <x-text-input 
+                            id="new-disability-input" 
+                            type="text" 
+                            class="flex-1" 
+                            placeholder="Enter disability name (e.g., Visual Impairment)..."
+                        />
+                        <x-primary-button 
+                            type="button" 
+                            onclick="addDisability()"
+                            class="whitespace-nowrap"
+                        >
+                            Add Disability
+                        </x-primary-button>
+                    </div>
+
+                    <p class="text-xs text-gray-500 mt-2">
+                        Add, edit, or remove disabilities for student records.
+                    </p>
+                </div>
             </form>
 
             <div class="flex justify-end gap-3 mt-6">
@@ -101,8 +136,10 @@
     @push('scripts')
     <script>
         let currentSections = @json($sectionsByGrade ?? []);
+        let currentDisabilities = @json($disabilities ?? []);
         const teachers = @json($teachers ?? []);
 
+        // Existing sections functions (unchanged)
         function loadSectionsForGrade(grade) {
             const sectionsContainer = document.getElementById('sections-container');
             const sectionsList = document.getElementById('sections-list');
@@ -202,6 +239,71 @@
             }
         }
 
+        // Revised disabilities functions
+        function loadDisabilities() {
+            const disabilitiesList = document.getElementById('disabilities-list');
+            disabilitiesList.innerHTML = '';
+
+            currentDisabilities.forEach((disabilityName, index) => {
+                const disabilityElement = createDisabilityElement(index, disabilityName);
+                disabilitiesList.appendChild(disabilityElement);
+            });
+
+            document.getElementById('new-disability-input').value = '';
+        }
+
+        function createDisabilityElement(index, disabilityName) {
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2 p-2 bg-gray-50 rounded-md';
+            div.innerHTML = `
+                <input 
+                    type="text" 
+                    value="${disabilityName}" 
+                    onchange="updateDisability(${index}, this.value)"
+                    class="flex-1 border-none bg-transparent focus:ring-0 focus:outline-none text-sm"
+                >
+                <button 
+                    type="button" 
+                    onclick="removeDisability(${index})"
+                    class="text-red-600 hover:text-red-800 p-1 rounded transition-colors duration-150"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            `;
+            return div;
+        }
+
+        function addDisability() {
+            const newDisabilityInput = document.getElementById('new-disability-input');
+            const disabilityName = newDisabilityInput.value.trim();
+
+            if (!disabilityName) return alert('Please enter a disability name.');
+
+            currentDisabilities.push(disabilityName);
+            loadDisabilities();
+
+            newDisabilityInput.value = '';
+            newDisabilityInput.focus();
+        }
+
+        function updateDisability(index, newValue) {
+            if (currentDisabilities[index]) {
+                currentDisabilities[index] = newValue.trim();
+            }
+        }
+
+        function removeDisability(index) {
+            if (currentDisabilities[index]) {
+                if (confirm('Are you sure you want to remove this disability?')) {
+                    currentDisabilities.splice(index, 1);
+                    loadDisabilities();
+                }
+            }
+        }
+
+        // Updated saveSettings (includes disabilities)
         function saveSettings() {
             const schoolYear = document.getElementById('school_year').value;
             const gradeLevel = document.getElementById('grade_level').value;
@@ -209,7 +311,8 @@
             const settingsData = {
                 school_year: schoolYear,
                 active_grade_level: gradeLevel,
-                sections: currentSections
+                sections: currentSections,
+                disabilities: currentDisabilities  // Revised: Use disabilities
             };
 
             fetch('{{ route("sections.sync") }}', {
@@ -235,7 +338,30 @@
             });
         }
 
+        // Page load: Auto-load disabilities and sections (if assigned grade)
         document.addEventListener('DOMContentLoaded', function() {
+            // Load disabilities
+            loadDisabilities();
+
+            // Auto-load sections if assigned grade is set (e.g., 7)
+            const assignedGrade = {{ $assignedGrade ?? 7 }};
+            if (assignedGrade) {
+                document.getElementById('grade_level').value = assignedGrade;
+                loadSectionsForGrade(assignedGrade);
+            }
+
+            // Enter key for new disability input
+            const newDisabilityInput = document.getElementById('new-disability-input');
+            if (newDisabilityInput) {
+                newDisabilityInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addDisability();
+                    }
+                });
+            }
+
+            // Existing: Enter key for new section input
             const newSectionInput = document.getElementById('new-section-input');
             if (newSectionInput) {
                 newSectionInput.addEventListener('keypress', function(e) {

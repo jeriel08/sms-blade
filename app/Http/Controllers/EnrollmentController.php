@@ -125,7 +125,14 @@ class EnrollmentController extends Controller
             ];
         });
 
-        return view('enrollments.settings', compact('schoolYear', 'sectionsByGrade', 'teachers'));
+        // User's assigned grade level (default to 7 if none)
+        $user = Auth::user();
+        $assignedGrade = $user?->assigned_grade_level ?? 7;
+
+        // Initial disabilities (from DB)
+        $disabilities = \App\Models\Disability::all()->pluck('name')->toArray();
+
+        return view('enrollments.settings', compact('schoolYear', 'sectionsByGrade', 'teachers', 'assignedGrade', 'disabilities'));
     }
 
 

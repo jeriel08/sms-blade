@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Section;
 use App\Models\Settings;
+use App\Models\Disability;
 use Illuminate\Http\Request;
 
 class SectionController extends Controller
@@ -36,6 +37,13 @@ class SectionController extends Controller
                     ['grade_level' => $grade, 'name' => $submitted['name']],
                     ['adviser_teacher_id' => $submitted['adviser_id'] ?: null]
                 );
+            }
+
+            // Sync disabilities (upsert based on names; delete removed)
+            $disabilityNames = $request->disabilities ?? [];
+            Disability::whereNotIn('name', $disabilityNames)->delete();  // Remove extras
+            foreach ($disabilityNames as $name) {
+                Disability::updateOrCreate(['name' => $name], ['name' => $name]);
             }
 
             // Delete removed
