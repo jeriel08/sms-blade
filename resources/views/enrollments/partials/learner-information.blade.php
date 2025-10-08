@@ -25,9 +25,9 @@
                         id="with_lrn" 
                         name="with_lrn" 
                         type="radio" 
-                        value="yes"
+                        value="1"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('with_lrn') == 'yes' ? 'checked' : '' }}>
+                        {{ old('with_lrn') == '1' ? 'checked' : '' }}>
                     <x-input-label for="with_lrn" value="Yes" />
                 </div>
                 <div class="flex align-items-center justify-start gap-2">
@@ -35,9 +35,9 @@
                         id="without_lrn" 
                         name="with_lrn" 
                         type="radio" 
-                        value="no"
+                        value="0"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('with_lrn') == 'no' ? 'checked' : '' }}>
+                        {{ old('with_lrn') == '0' ? 'checked' : '' }}>
                     <x-input-label for="without_lrn" value="No" />
                 </div>
             </div>
@@ -48,9 +48,9 @@
                         id="returning_yes" 
                         name="returning" 
                         type="radio" 
-                        value="yes"
+                        value="1"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('returning') == 'yes' ? 'checked' : '' }}>
+                        {{ old('returning') == '1' ? 'checked' : '' }}>
                     <x-input-label for="returning_yes" value="Yes" />
                 </div>
                 <div class="flex align-items-center justify-start gap-2">
@@ -58,9 +58,9 @@
                         id="returning_no" 
                         name="returning" 
                         type="radio" 
-                        value="no"
+                        value="0"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('returning') == 'no' ? 'checked' : '' }}>
+                        {{ old('returning') == '0' ? 'checked' : '' }}>
                     <x-input-label for="returning_no" value="No" />
                 </div>
             </div>
@@ -215,9 +215,9 @@
                                 id="ip_yes" 
                                 name="ip_community_member" 
                                 type="radio" 
-                                value="yes"
+                                value="1"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('ip_community_member') == 'yes' ? 'checked' : '' }}>
+                                {{ old('ip_community_member') == '1' ? 'checked' : '' }}>
                             <x-input-label for="ip_yes" value="Yes" class="mb-0" />
                         </div>
                         <div class="flex items-center gap-2">
@@ -225,9 +225,9 @@
                                 id="ip_no" 
                                 name="ip_community_member" 
                                 type="radio" 
-                                value="no"
+                                value="0"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('ip_community_member') == 'no' ? 'checked' : '' }}>
+                                {{ old('ip_community_member') == '0' ? 'checked' : '' }}>
                             <x-input-label for="ip_no" value="No" class="mb-0" />
                         </div>
                     </div>
@@ -270,9 +270,9 @@
                                     id="4ps_yes" 
                                     name="4ps_beneficiary" 
                                     type="radio" 
-                                    value="yes"
+                                    value="1"
                                     class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    {{ old('4ps_beneficiary') == 'yes' ? 'checked' : '' }}>
+                                    {{ old('4ps_beneficiary') == '1' ? 'checked' : '' }}>
                                 <x-input-label for="4ps_yes" value="Yes" class="mb-0" />
                             </div>
                             <div class="flex items-center gap-4">
@@ -280,9 +280,9 @@
                                     id="4ps_no" 
                                     name="4ps_beneficiary" 
                                     type="radio" 
-                                    value="no"
+                                    value="0"
                                     class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    {{ old('4ps_beneficiary') == 'no' ? 'checked' : '' }}>
+                                    {{ old('4ps_beneficiary') == '0' ? 'checked' : '' }}>
                                 <x-input-label for="4ps_no" value="No" class="mb-0" />
                             </div>
                         </div>
@@ -314,9 +314,9 @@
                         id="is_disabled_yes" 
                         name="is_disabled" 
                         type="radio" 
-                        value="yes"
+                        value="1"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('is_disabled') == 'yes' ? 'checked' : '' }}>
+                        {{ old('is_disabled') == '1' ? 'checked' : '' }}>
                     <x-input-label for="is_disabled_yes" value="Yes" />
                 </div>
                 <div class="flex align-items-center justify-start gap-2">
@@ -324,141 +324,46 @@
                         id="is_disabled_no" 
                         name="is_disabled" 
                         type="radio" 
-                        value="no"
+                        value="0"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('is_disabled') == 'no' ? 'checked' : '' }}>
+                        {{ old('is_disabled') == '0' ? 'checked' : '' }}>
                     <x-input-label for="is_disabled_no" value="No" />
                 </div>
             </div>
 
             <x-input-label class="mt-4" value="If Yes, specify the type of disability:" />
-            <div class="flex justify-between gap-10 mt-4">
-                {{-- Column 1 --}}
-                <div class="flex justify-content-between align-items-start gap-6 mt-4">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_visual_blind" 
-                                name="disability_visual_blind" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_visual_blind') ? 'checked' : '' }}>
-                            <x-input-label for="disability_visual_blind" value="Visual Impairment (Blind)" />
+            
+            @if(isset($disabilities) && $disabilities->count() > 0)
+                @php
+                    // Calculate how many items per column (divide by 3)
+                    $totalDisabilities = $disabilities->count();
+                    $itemsPerColumn = ceil($totalDisabilities / 3);
+                    $chunkedDisabilities = $disabilities->chunk($itemsPerColumn);
+                @endphp
+
+                <div class="flex justify-between gap-10 mt-4">
+                    @foreach($chunkedDisabilities as $columnDisabilities)
+                        <div class="flex flex-col gap-4">
+                            @foreach($columnDisabilities as $disability)
+                                <div class="flex align-items-center justify-start gap-2">
+                                    <input 
+                                        id="disability_{{ $disability->disability_id }}" 
+                                        name="disabilities[{{ $disability->disability_id }}]" 
+                                        type="checkbox" 
+                                        value="1"
+                                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded disability-checkbox"
+                                        {{ old("disabilities.{$disability->disability_id}") == '1' ? 'checked' : '' }}>
+                                    <x-input-label for="disability_{{ $disability->disability_id }}" value="{{ $disability->name }}" />
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_visual_low_vision" 
-                                name="disability_visual_low_vision" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_visual_low_vision') ? 'checked' : '' }}>
-                            <x-input-label for="disability_visual_low_vision" value="Visual Impairment (Low Vision)" />
-                        </div>
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_multiple_disorder" 
-                                name="disability_multiple_disorder" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_multiple_disorder') ? 'checked' : '' }}>
-                            <x-input-label for="disability_multiple_disorder" value="Multiple Disorder" />
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
-    
-                {{-- Column 2 --}}
-                <div class="flex justify-content-between align-items-start gap-6 mt-4">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_hearing_impairment" 
-                                name="disability_hearing_impairment" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_hearing_impairment') ? 'checked' : '' }}>
-                            <x-input-label for="disability_hearing_impairment" value="Hearing Impairment" />
-                        </div>
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_autism_spectrum" 
-                                name="disability_autism_spectrum" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_autism_spectrum') ? 'checked' : '' }}>
-                            <x-input-label for="disability_autism_spectrum" value="Autism Spectrum Disorder" />
-                        </div>
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_speech_language" 
-                                name="disability_speech_language" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_speech_language') ? 'checked' : '' }}>
-                            <x-input-label for="disability_speech_language" value="Speech/Language Disorder" />
-                        </div>
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_learning" 
-                                name="disability_learning" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_learning') ? 'checked' : '' }}>
-                            <x-input-label for="disability_learning" value="Learning Disability" />
-                        </div>
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_emotional_behavioral" 
-                                name="disability_emotional_behavioral" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_emotional_behavioral') ? 'checked' : '' }}>
-                            <x-input-label for="disability_emotional_behavioral" value="Emotional-Behavioral Disorder" />
-                        </div>
-                    </div>
+            @else
+                <div class="mt-4 text-gray-500">
+                    No disabilities configured in the system. Please contact administrator.
                 </div>
-    
-                {{-- Column 3 --}}
-                <div class="flex justify-content-between align-items-start gap-6 mt-4">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_cerebral_palsy" 
-                                name="disability_cerebral_palsy" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_cerebral_palsy') ? 'checked' : '' }}>
-                            <x-input-label for="disability_cerebral_palsy" value="Cerebral Palsy" />
-                        </div>
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_intellectual" 
-                                name="disability_intellectual" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_intellectual') ? 'checked' : '' }}>
-                            <x-input-label for="disability_intellectual" value="Intellectual Disability" />
-                        </div>
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_orthopedic" 
-                                name="disability_orthopedic" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_orthopedic') ? 'checked' : '' }}>
-                            <x-input-label for="disability_orthopedic" value="Orthopedic/Physical Handicap" />
-                        </div>
-                        <div class="flex align-items-center justify-start gap-2">
-                            <input 
-                                id="disability_special_health" 
-                                name="disability_special_health" 
-                                type="checkbox" 
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('disability_special_health') ? 'checked' : '' }}>
-                            <x-input-label for="disability_special_health" value="Special Health Problem / Chronic Disease" />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endif
         </div>
     </div>
     
@@ -486,9 +391,9 @@
             }
 
             // Function to toggle checkbox states (for disabilities)
-            function toggleCheckboxes(radioGroupName, enableValue, checkboxSelector) {
+            function toggleCheckboxes(radioGroupName, enableValue) {
                 const radios = document.querySelectorAll(`input[name="${radioGroupName}"]`);
-                const checkboxes = document.querySelectorAll(checkboxSelector);
+                const checkboxes = document.querySelectorAll('.disability-checkbox');
 
                 function updateState() {
                     const isEnabled = Array.from(radios).some(radio => radio.checked && radio.value === enableValue);
@@ -507,10 +412,10 @@
             }
 
             // Apply to each radio group
-            toggleTextInput('with_lrn', 'lrn', 'yes');
-            toggleTextInput('ip_community_member', 'ip_community', 'yes');
-            toggleTextInput('4ps_beneficiary', '4ps_household_id', 'yes');
-            toggleCheckboxes('is_disabled', 'yes', 'input[name^="disability_"]');
+            toggleTextInput('with_lrn', 'lrn', '1');
+            toggleTextInput('ip_community_member', 'ip_community', '1');
+            toggleTextInput('4ps_beneficiary', '4ps_household_id', '1');
+            toggleCheckboxes('is_disabled', '1');
         });
     </script>
 </div>

@@ -100,6 +100,40 @@
         }
 
         function populateReviewData() {
+            const form = document.getElementById('enrollment-form');
+            
+            // Learner Information
+            document.getElementById('review-lrn').textContent = form.lrn?.value || '-';
+            document.getElementById('review-name').textContent = 
+                `${form.first_name?.value || ''} ${form.middle_name?.value || ''} ${form.last_name?.value || ''} ${form.extension_name?.value || ''}`.trim();
+            document.getElementById('review-birthdate').textContent = form.birthdate?.value || '-';
+            document.getElementById('review-gender').textContent = form.gender?.value ? form.gender.value.charAt(0).toUpperCase() + form.gender.value.slice(1) : '-';
+            
+            // Address Information
+            const currentAddress = `${form.house_number?.value || ''}, ${form.street_name?.value || ''}, ${form.barangay?.value || ''}, ${form.city?.value || ''}, ${form.province?.value || ''}, ${form.zip_code?.value || ''}`;
+            document.getElementById('review-current-address').textContent = currentAddress.replace(/, ,/g, ',').replace(/^, |, $/g, '') || '-';
+            
+            let permanentAddress;
+            if (form.same_as_current_address?.value === '1') {
+                permanentAddress = 'Same as current address';
+            } else {
+                permanentAddress = `${form.permanent_house_number?.value || ''}, ${form.permanent_street_name?.value || ''}, ${form.permanent_barangay?.value || ''}, ${form.permanent_city?.value || ''}, ${form.permanent_province?.value || ''}, ${form.permanent_zip_code?.value || ''}`;
+            }
+            document.getElementById('review-permanent-address').textContent = permanentAddress.replace(/, ,/g, ',').replace(/^, |, $/g, '') || '-';
+            
+            // Guardian Information
+            const fatherInfo = `${form.father_first_name?.value || ''} ${form.father_last_name?.value || ''} - ${form.father_contact_number?.value || ''}`;
+            document.getElementById('review-guardian1').textContent = fatherInfo.trim() || '-';
+            
+            const motherInfo = `${form.mother_first_name?.value || ''} ${form.mother_last_name?.value || ''} - ${form.mother_contact_number?.value || ''}`;
+            document.getElementById('review-guardian2').textContent = motherInfo.trim() || '-';
+            
+            // School Information (for transferees)
+            @if($studentType === 'transferee')
+            document.getElementById('review-previous-school').textContent = form.last_school_attended?.value || '-';
+            document.getElementById('review-previous-grade').textContent = form.last_grade_level_completed?.value || '-';
+            @endif
+        }
             // Get form data from session storage
             const storedData = sessionStorage.getItem('enrollmentFormData');
             if (storedData) {

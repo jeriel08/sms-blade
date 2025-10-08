@@ -149,90 +149,23 @@
             }
             
             if (nextStep) {
-                storeFormData();
-                
-                // Build URL properly with URLSearchParams to avoid double ? or malformed params
-                const url = new URL('{{ route("enrollments.create") }}'); // Base URL without params
+                // Build URL properly with URLSearchParams
+                const url = new URL('{{ route("enrollments.create") }}');
                 url.searchParams.set('type', studentType);
                 url.searchParams.set('step', nextStep);
                 window.location.href = url.toString();
             }
         }
 
-        function validateStep(step) {
-            // Bypass all validation for testing
-            return true;
-        }
-
-        function storeFormData() {
-            const form = document.getElementById('enrollment-form');
-            const formData = new FormData(form);
-            const data = {};
-            
-            for (let [key, value] of formData.entries()) {
-                // Handle checkboxes
-                if (key === 'same_as_current' || key === 'declaration') {
-                    data[key] = 'on'; // Store as 'on' if it's in formData (meaning it's checked)
-                } else {
-                    data[key] = value;
-                }
-            }
-            
-            // Explicitly handle unchecked checkboxes
-            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                if (!checkbox.checked) {
-                    data[checkbox.name] = '';
-                }
-            });
-            
-            sessionStorage.setItem('enrollmentFormData', JSON.stringify(data));
-        }
-
-        function loadFormData() {
-            const storedData = sessionStorage.getItem('enrollmentFormData');
-            if (storedData) {
-                const data = JSON.parse(storedData);
-                const form = document.getElementById('enrollment-form');
-                
-                for (let [key, value] of Object.entries(data)) {
-                    const input = form.querySelector(`[name="${key}"]`);
-                    if (input) {
-                        if (input.type === 'checkbox') {
-                            input.checked = value === 'on' || value === true;
-                        } else {
-                            input.value = value;
-                        }
-                    }
-                    
-                    // Handle select elements
-                    const select = form.querySelector(`select[name="${key}"]`);
-                    if (select) {
-                        select.value = value;
-                    }
-                }
-                
-                // Trigger any change events for dynamic elements
-                const sameAsCurrent = document.getElementById('same_as_current');
-                if (sameAsCurrent) {
-                    // Use setTimeout to ensure DOM is fully loaded
-                    setTimeout(() => {
-                        togglePermanentAddress();
-                    }, 100);
-                }
-            }
-        }
-
         function submitEnrollment() {
-            // Bypass declaration check for testing
             document.getElementById('enrollment-form').submit();
         }
 
-        // Load stored data when page loads
+        // Display validation errors if any
         document.addEventListener('DOMContentLoaded', function() {
-            loadFormData();
-            
-            // No input event listeners for validation needed since bypassed
+            @if($errors->any())
+                alert('Please fix the validation errors before proceeding.');
+            @endif
         });
     </script>
     @endpush
