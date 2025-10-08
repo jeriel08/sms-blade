@@ -1,4 +1,4 @@
-{{-- In create.blade.php, update the step navigation part --}}
+{{-- resources/views/components/step-navigation.blade.php --}}
 <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
     @if($currentStep !== 'learner')
         <x-secondary-button 
@@ -16,7 +16,7 @@
     @if($currentStep !== 'review')
         <x-primary-button 
             type="button"
-            onclick="navigateStep('next')"
+            onclick="validateAndProceed()"
             class="flex items-center gap-2"
         >
             Next

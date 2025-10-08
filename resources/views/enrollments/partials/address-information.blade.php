@@ -12,7 +12,7 @@
             {{-- First Row --}}
             <div class="flex justify-start align-items-center gap-6 mb-6">
                 <div>
-                    <x-input-label for="house_number" value="House No." important />
+                    <x-input-label for="house_number" value="House No." />
                     <x-text-input 
                         id="house_number" 
                         name="house_number" 
@@ -128,7 +128,7 @@
                 {{-- First Row --}}
                 <div class="flex justify-start align-items-center gap-6 mb-6">
                     <div>
-                        <x-input-label for="permanent_house_number" value="House No." important />
+                        <x-input-label for="permanent_house_number" value="House No." />
                         <x-text-input 
                             id="permanent_house_number" 
                             name="permanent_house_number" 
