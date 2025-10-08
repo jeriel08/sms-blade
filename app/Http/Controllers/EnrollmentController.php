@@ -335,7 +335,6 @@ class EnrollmentController extends Controller
             $enrollmentData = [
                 'student_id' => $studentId,
                 'school_year' => $schoolYear,
-                'grade_level' => '7', // You might want to make this dynamic
                 'enrollment_type' => $validated['student_type'],
                 'is_4ps' => $validated['4ps_beneficiary'],
                 '_4ps_household_id' => $validated['4ps_household_id'] ?? null,

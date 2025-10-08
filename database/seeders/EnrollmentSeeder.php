@@ -16,7 +16,6 @@ class EnrollmentSeeder extends Seeder
         Enrollment::create([
             'student_id' => 1,
             'school_year' => '2025-2026',
-            'grade_level' => 'Grade 10',
             'enrollment_type' => 'New',
             'enrolled_by_teacher_id' => 2, // Adviser
             'enrollment_date' => now(),
@@ -25,7 +24,6 @@ class EnrollmentSeeder extends Seeder
         Enrollment::create([
             'student_id' => 2,
             'school_year' => '2025-2026',
-            'grade_level' => 'Grade 11',
             'enrollment_type' => 'Transferee',
             'enrolled_by_teacher_id' => 2, // Adviser
             'enrollment_date' => now(),

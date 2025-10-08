@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id('enrollment_id');
             $table->unsignedBigInteger('student_id')->notNullable()->index(); // Changed to student_id FK
             $table->string('school_year', 9)->notNullable();
-            $table->string('grade_level', 50)->notNullable();
+            $table->string('grade_level', 50)->nullable();
             $table->enum('enrollment_type', ['New', 'Old', 'Transferee', 'Returning'])->notNullable();
             $table->string('last_grade_completed', 50)->nullable();
             $table->string('last_school_year_completed', 9)->nullable();
