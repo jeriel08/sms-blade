@@ -9,7 +9,7 @@ class Student extends Model
     //
     protected $table = 'students';
     protected $primaryKey = 'student_id';
-    public $incrementing = false;
+    public $incrementing = true;
     protected $keyType = 'string';
     protected $fillable = [
         'student_id',

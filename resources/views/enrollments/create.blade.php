@@ -115,6 +115,8 @@
                             
                         @case('review')
                             @include('enrollments.partials.review-information')
+                            <!-- Add a hidden submit button for the form -->
+                            <button type="submit" id="real-submit-btn" style="display: none;"></button>
                             @break
                     @endswitch
                 </form>
@@ -164,36 +166,39 @@
             const form = document.getElementById('enrollment-form');
             const formData = new FormData(form);
             const data = {};
-            
+
+            // Get valid disability IDs from the current form
+            const validDisabilityIds = Array.from(
+                document.querySelectorAll('.disability-checkbox')
+            ).map(cb => cb.name.match(/disabilities\[(\d+)\]/)?.[1]).filter(Boolean);
+
             // Get all form data including disabled fields
             for (let [key, value] of formData.entries()) {
-                data[key] = value;
+                // Only include valid disability IDs
+                if (key.startsWith('disabilities[')) {
+                    const match = key.match(/disabilities\[(\d+)\]/);
+                    if (match && validDisabilityIds.includes(match[1])) {
+                        data[key] = value;
+                    }
+                } else {
+                    data[key] = value;
+                }
             }
-            
-            // Handle checkboxes separately (including disability checkboxes)
+
+            // Handle checkboxes separately
             const checkboxes = form.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(checkbox => {
-                if (checkbox.name.startsWith('disabilities')) {
-                    // For disability checkboxes, store as 1 if checked
-                    data[checkbox.name] = checkbox.checked ? '1' : '0';
+                if (checkbox.name.startsWith('disabilities[')) {
+                    const match = checkbox.name.match(/disabilities\[(\d+)\]/);
+                    if (match && validDisabilityIds.includes(match[1])) {
+                        data[checkbox.name] = checkbox.checked ? '1' : '0';
+                    }
                 } else {
-                    // For other checkboxes
                     data[checkbox.name] = checkbox.checked ? '1' : '0';
                 }
             });
-            
-            // Handle radio buttons to ensure they're captured
-            const radios = form.querySelectorAll('input[type="radio"]:checked');
-            radios.forEach(radio => {
-                data[radio.name] = radio.value;
-            });
-            
-            // Get current session data and merge
-            const currentData = JSON.parse(sessionStorage.getItem('enrollmentFormData') || '{}');
-            const mergedData = {...currentData, ...data};
-            
-            console.log('Saving to session storage:', mergedData); // Debug log
-            sessionStorage.setItem('enrollmentFormData', JSON.stringify(mergedData));
+
+            sessionStorage.setItem('enrollmentFormData', JSON.stringify(data));
         }
 
         function loadFormData() {
@@ -324,7 +329,7 @@
                 { name: '4ps_beneficiary', label: '4Ps Beneficiary' },
                 { name: 'is_disabled', label: 'Has Disability' }
             ];
-            
+
             radioGroups.forEach(group => {
                 const radios = document.querySelectorAll(`input[name="${group.name}"]`);
                 const isChecked = Array.from(radios).some(radio => radio.checked);
@@ -334,7 +339,9 @@
                     if (radios[0]) {
                         const radioContainer = radios[0].closest('.flex');
                         if (radioContainer) {
-                            radioContainer.classList.add('border', 'border-red-500', 'p-2', 'rounded', 'error-highlight');
+                            radioContainer.classList.add(
+                                'border', 'border-red-500', 'p-2', 'rounded', 'error-highlight'
+                            );
                             errors.push({ 
                                 message: `${group.label} is required`,
                                 element: radioContainer
@@ -374,6 +381,7 @@
 
             return { isValid, errors };
         }
+
 
         function validateAddressStep() {
             let isValid = true;
@@ -489,13 +497,65 @@
         }
 
         function submitEnrollment() {
-            // Save final data before submission
-            saveFormData();
-            document.getElementById('enrollment-form').submit();
+            console.log("Submit button clicked");
+
+            const declaration = document.getElementById('declaration');
+            if (!declaration || !declaration.checked) {
+                alert("Please confirm that the information provided is true by checking the declaration box.");
+                declaration?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            const form = document.getElementById('enrollment-form');
+            if (!form) {
+                alert("Form not found!");
+                return;
+            }
+
+            const storedData = sessionStorage.getItem('enrollmentFormData');
+            if (!storedData) {
+                alert("No form data found. Please go back and fill out previous steps.");
+                return;
+            }
+
+            const data = JSON.parse(storedData);
+            // Clear existing disability inputs to avoid duplicates
+            form.querySelectorAll('input[name^="disabilities["]').forEach(input => input.remove());
+
+            // Add only checked disabilities
+            for (const [key, value] of Object.entries(data)) {
+                if (key.startsWith('disabilities[') && value === '1') {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    form.appendChild(input);
+                } else if (!key.startsWith('disabilities[')) {
+                    let input = form.querySelector(`[name="${key}"]`);
+                    if (!input) {
+                        input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        form.appendChild(input);
+                    }
+                    input.value = value;
+                }
+            }
+
+            console.log("Submitting enrollment form...");
+            form.submit();
         }
+
+
+
 
         // Remove error styling when user interacts with fields
         document.addEventListener('DOMContentLoaded', function() {
+            // Clear sessionStorage on initial load of learner step
+            if ('{{ $currentStep }}' === 'learner') {
+                sessionStorage.removeItem('enrollmentFormData');
+            }
+
             // Load form data from session storage
             loadFormData();
 

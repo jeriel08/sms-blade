@@ -3,6 +3,32 @@
     <h3 class="text-lg font-medium text-gray-900 mb-6">Review Information</h3>
     
     <div class="space-y-8">
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <strong class="font-bold">Errors:</strong>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <strong class="font-bold">Error:</strong>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                <strong class="font-bold">Validation Errors:</strong>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <!-- Learner Information Review -->
         <div class="border border-gray-200 rounded-lg p-6">
             <h4 class="text-md font-medium text-gray-900 mb-4 flex items-center justify-between">
@@ -114,7 +140,7 @@
         <!-- Declaration -->
         <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
             <div class="flex items-start">
-                <input type="checkbox" id="declaration" name="declaration" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                <input type="checkbox" id="declaration" name="declaration" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                 <x-input-label for="declaration" class="ml-2">
                     I hereby certify that the information provided in this enrollment form is true and correct to the best of my knowledge. I understand that any misrepresentation may result in the cancellation of enrollment.
                 </x-input-label>
@@ -149,15 +175,11 @@
 
         function getDisabilities(data) {
             const disabilities = [];
-            // Get all keys that start with 'disabilities'
             for (const key in data) {
                 if (key.startsWith('disabilities') && data[key] === '1') {
-                    // For checkboxes with array syntax like disabilities[1], disabilities[2], etc.
                     const match = key.match(/disabilities\[(\d+)\]/);
                     if (match) {
                         const disabilityId = match[1];
-                        // We need to get the disability name - this is tricky without the actual names
-                        // For now, we'll show the ID, but you might want to store the names in session too
                         disabilities.push(`Disability ${disabilityId}`);
                     }
                 }
@@ -167,7 +189,6 @@
 
         function populateReviewData() {
             const storedData = sessionStorage.getItem('enrollmentFormData');
-            console.log('Stored data:', storedData); // Debug log
             
             if (!storedData) {
                 console.log('No data found in sessionStorage');
@@ -176,8 +197,9 @@
 
             try {
                 const data = JSON.parse(storedData);
-                console.log('Parsed data:', data); // Debug log
+                console.log('Parsed data:', data);
 
+                // Your existing populateReviewData function remains the same
                 // Learner Information
                 document.getElementById('review-lrn').textContent = data.lrn || '-';
                 document.getElementById('review-name').textContent = formatName(data);
@@ -270,21 +292,24 @@
             return { isValid, errors };
         }
 
-        function submitEnrollment() {
-            // Validate final submission
-            const validationResult = validateFinalSubmission();
+        // function submitEnrollment() {
+        //     // Validate final submission
+        //     const validationResult = validateFinalSubmission();
             
-            if (validationResult.isValid) {
-                // Save final data before submission
-                saveFormData();
-                document.getElementById('enrollment-form').submit();
-            } else {
-                showValidationErrors(validationResult.errors);
-            }
-        }
+        //     if (validationResult.isValid) {
+        //         // Save final data before submission
+        //         saveFormData();
+                
+        //         // Submit the form
+        //         document.getElementById('real-submit-btn').click();
+        //     } else {
+        //         showValidationErrors(validationResult.errors);
+        //     }
+        // }
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Review page loaded'); // Debug log
+            console.log('Review page loaded');
+            console.log(typeof submitEnrollment) ;
             populateReviewData();
         });
     </script>
