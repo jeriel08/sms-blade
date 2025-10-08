@@ -25,6 +25,8 @@ class Enrollment extends Model
         'enrollment_date',
         'is_4ps',
         '_4ps_household_id',
+        'status',
+        'section_id'
     ];
 
     public function student()
@@ -39,6 +41,6 @@ class Enrollment extends Model
 
     public function section()
     {
-        return $this->belongsTo(Section::class, 'section_id');
+        return $this->belongsTo(Section::class, 'section_id', 'section_id');
     }
 }

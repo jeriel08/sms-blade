@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Section;
+use Illuminate\Http\Request;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EnrollmentController;
@@ -49,10 +51,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create', [EnrollmentController::class, 'create'])->name('enrollments.create');
         Route::post('/', [EnrollmentController::class, 'store'])->name('enrollments.store');
         Route::get('/settings', [EnrollmentController::class, 'settings'])->name('enrollments.settings');
+        Route::post('/enrollments/{enrollment}/assign', [EnrollmentController::class, 'assignGradeAndSection'])->name('enrollments.assign');
+        Route::get('/enrollments/{enrollment}', [EnrollmentController::class, 'show'])->name('enrollments.show');
         Route::get('/{enrollment_id}', [EnrollmentController::class, 'show'])->name('enrollments.show');
         Route::post('/{enrollment_id}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
     });
     Route::post('/sections/sync', [SectionController::class, 'sync'])->name('sections.sync');
+    Route::get('/sections', function (Request $request) {
+        $gradeLevel = $request->query('grade_level');
+        $sections = Section::where('grade_level', $gradeLevel)->get(['section_id', 'name']);
+        return response()->json($sections);
+    });
 });
 
 require __DIR__ . '/auth.php';

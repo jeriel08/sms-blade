@@ -131,7 +131,22 @@
                                     {{ $enrollment->status }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <a href="{{ route('enrollments.index', $enrollment) }}" class="font-medium text-blue-600 hover:underline">Edit</a>
+                                    @if ($enrollment->status === 'Registered')
+                                        <x-primary-button 
+                                            class="gap-2" 
+                                            x-data="{}" 
+                                            @click="$dispatch('open-modal', 'enroll-student-{{ $enrollment->enrollment_id }}')"
+                                        >
+                                            {{ __('Enroll') }}
+                                        </x-primary-button>
+                                    @elseif ($enrollment->status === 'Enrolled')
+                                        <x-primary-button 
+                                            class="gap-2" 
+                                            onclick="window.location.href='{{ route('enrollments.show', $enrollment->enrollment_id) }}'"
+                                        >
+                                            {{ __('Details') }}
+                                        </x-primary-button>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
@@ -153,5 +168,34 @@
         </div>
     </div>
 
-    @include('enrollments.modals.student-classification') {{-- Keep other modals if needed --}}
+    @include('enrollments.modals.student-classification')
+    @foreach ($enrollments as $enrollment)
+        @if ($enrollment->status === 'Registered')
+            @include('enrollments.modals.enroll-student', ['enrollment_id' => $enrollment->enrollment_id])
+        @endif
+    @endforeach
+
+    <script>
+        function updateSections(enrollmentId) {
+            const gradeLevel = document.getElementById(`grade_level_${enrollmentId}`).value || '7';
+            const sectionSelect = document.getElementById(`section_id_${enrollmentId}`);
+            sectionSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+
+            fetch(`/sections?grade_level=${gradeLevel}`)
+                .then(response => response.json())
+                .then(sections => {
+                    sectionSelect.innerHTML = '<option value="" disabled selected>Select Section</option>';
+                    sections.forEach(section => {
+                        const option = document.createElement('option');
+                        option.value = section.section_id;
+                        option.textContent = section.name;
+                        sectionSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching sections:', error);
+                    sectionSelect.innerHTML = '<option value="" disabled selected>Error loading sections</option>';
+                });
+        }
+    </script>
 </x-app-layout>

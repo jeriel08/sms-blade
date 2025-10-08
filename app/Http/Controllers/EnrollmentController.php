@@ -375,7 +375,7 @@ class EnrollmentController extends Controller
      */
     public function show(Enrollment $enrollment)
     {
-        //
+        return view('enrollments.show', compact('enrollment'));
     }
 
     /**
@@ -400,5 +400,45 @@ class EnrollmentController extends Controller
     public function destroy(Enrollment $enrollment)
     {
         //
+    }
+
+    public function assignGradeAndSection(Request $request, Enrollment $enrollment)
+    {
+        try {
+            $validated = $request->validate([
+                'grade_level' => 'required|string|in:7,8,9,10,11,12',
+                'section_id' => 'required|exists:sections,section_id',
+            ]);
+
+            $section = Section::where('section_id', $validated['section_id'])
+                ->where('grade_level', $validated['grade_level'])
+                ->first();
+
+            if (!$section) {
+                throw new \Exception('Selected section does not match the grade level');
+            }
+
+            $enrollment->update([
+                'grade_level' => $validated['grade_level'],
+                'section_id' => $validated['section_id'],
+                'status' => 'Enrolled',
+                'enrolled_by_teacher_id' => auth()->user()->teacher_id ?? null,
+            ]);
+
+            Log::info('Assigned grade and section for enrollment: ' . $enrollment->enrollment_id, [
+                'grade_level' => $validated['grade_level'],
+                'section_id' => $validated['section_id'],
+                'status' => 'Enrolled',
+            ]);
+
+            return redirect()->route('enrollments.index')
+                ->with('success', 'Grade and section assigned successfully!');
+        } catch (\Exception $e) {
+            Log::error('Failed to assign grade and section: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'data' => $request->all(),
+            ]);
+            return back()->with('error', 'Failed to assign grade and section: ' . $e->getMessage());
+        }
     }
 }
