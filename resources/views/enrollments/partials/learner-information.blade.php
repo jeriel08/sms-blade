@@ -18,6 +18,8 @@
         </div>
         <div class="flex flex-col gap-4 border border-1 p-4 rounded-md">
             <p>Check the appropriate box only</p>
+
+            {{-- For With LRN --}}
             <div class="flex align-items-center justify-content-start gap-4">
                 <x-input-label for="with_lrn" value="1. With LRN?" />
                 <div class="flex align-items-center justify-start gap-2">
@@ -27,7 +29,7 @@
                         type="radio" 
                         value="1"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('with_lrn') == '1' ? 'checked' : '' }}>
+                        {{ isset($formData['with_lrn']) && $formData['with_lrn'] == '1' ? 'checked' : '' }}>
                     <x-input-label for="with_lrn" value="Yes" />
                 </div>
                 <div class="flex align-items-center justify-start gap-2">
@@ -37,10 +39,12 @@
                         type="radio" 
                         value="0"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('with_lrn') == '0' ? 'checked' : '' }}>
+                        {{ isset($formData['with_lrn']) && $formData['with_lrn'] == '0' ? 'checked' : '' }}>
                     <x-input-label for="without_lrn" value="No" />
                 </div>
             </div>
+
+            {{-- For Returning --}}
             <div class="flex align-items-center justify-content-start gap-4">
                 <x-input-label for="balik-aral" value="2. Returning (Balik-Aral)" />
                 <div class="flex align-items-center justify-start gap-2">
@@ -50,7 +54,7 @@
                         type="radio" 
                         value="1"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('returning') == '1' ? 'checked' : '' }}>
+                        {{ isset($formData['returning']) && $formData['returning'] == '1' ? 'checked' : '' }}>
                     <x-input-label for="returning_yes" value="Yes" />
                 </div>
                 <div class="flex align-items-center justify-start gap-2">
@@ -60,7 +64,7 @@
                         type="radio" 
                         value="0"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('returning') == '0' ? 'checked' : '' }}>
+                        {{ isset($formData['returning']) && $formData['returning'] == '0' ? 'checked' : '' }}>
                     <x-input-label for="returning_no" value="No" />
                 </div>
             </div>
@@ -72,6 +76,17 @@
     <div class="min-w-auto bg-2 text-center rounded-lg mb-6 opacity-50">
         <h3 class="text-md font-bold text-white mx-auto">LEARNER INFORMATION</h3>
     </div>
+
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <strong class="font-bold">Errors:</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     
     <div class="space-y-6">
         {{-- First Row --}}
@@ -83,7 +98,7 @@
                     name="psa_birth_certification_no" 
                     type="text" 
                     class="mt-1 block w-sm" 
-                    value="{{ old('psa_birth_certification_no') }}"
+                    value="{{ $formData['psa_birth_certification_no'] ?? '' }}"
                     maxlength="12"
                     placeholder="Enter PSA Birth Certificate No."
                 />
@@ -95,7 +110,7 @@
                     name="lrn" 
                     type="text" 
                     class="mt-1 block w-sm" 
-                    value="{{ old('lrn') }}"
+                    value="{{ $formData['lrn'] ?? '' }}"
                     maxlength="12"
                     placeholder="12-digit LRN"
                 />
@@ -111,7 +126,7 @@
                     name="first_name" 
                     type="text" 
                     class="mt-1 block w-full" 
-                    value="{{ old('first_name') }}"
+                    value="{{ $formData['first_name'] ?? '' }}"
                     placeholder="Enter first name"
                 />
             </div>
@@ -123,7 +138,7 @@
                     name="birthdate" 
                     type="date" 
                     class="mt-1 block w-full" 
-                    value="{{ old('birthdate') }}"
+                    value="{{ $formData['birthdate'] ?? '' }}"
                 />
             </div>
             
@@ -134,7 +149,7 @@
                     name="place_of_birth" 
                     type="text" 
                     class="mt-1 block w-full" 
-                    value="{{ old('place_of_birth') }}"
+                    value="{{ $formData['place_of_birth'] ?? '' }}"
                     placeholder="Enter place of birth"
                 />
             </div>
@@ -142,6 +157,7 @@
 
         {{-- Third Row --}}
         <div class="flex justify-start align-items-center gap-6 mb-6">
+            {{-- Last Name --}}
            <div>
                 <x-input-label for="last_name" value="Last Name" important />
                 <x-text-input 
@@ -149,12 +165,13 @@
                     name="last_name" 
                     type="text" 
                     class="mt-1 block w-full" 
-                    value="{{ old('last_name') }}"
+                    value="{{ $formData['last_name'] ?? '' }}"
                     placeholder="Enter last name"
                 />
             </div>
 
-             <div>
+            {{-- Gender --}}
+            <div>
                 <x-input-label for="gender" value="Gender" important />
                 <select 
                     id="gender" 
@@ -162,11 +179,12 @@
                     class="mt-1 block w-4xs border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs cursor-pointer"
                 >
                     <option value="">Select Gender</option>
-                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                    <option value="male" {{ isset($formData['gender']) && $formData['gender'] == 'male' ? 'selected' : '' }}>Male</option>
+                    <option value="female" {{ isset($formData['gender']) && $formData['gender'] == 'female' ? 'selected' : '' }}>Female</option>
                 </select>
             </div>
 
+            {{-- Age --}}
             <div>
                 <x-input-label for="age" value="Age" important />
                 <x-text-input 
@@ -174,26 +192,28 @@
                     name="age" 
                     type="number"
                     class="mt-1 block w-full" 
-                    value="{{ old('age') }}"
+                    value="{{ $formData['age'] ?? '' }}"
                     placeholder="Enter age"
                 />
             </div>
 
+            {{-- Mother Tongue --}}
             <div>
-                <x-input-label for="mother_tounge" value="Mother Tounge" />
+                <x-input-label for="mother_tongue" value="Mother Tounge" />
                 <x-text-input 
-                    id="mother_tounge" 
-                    name="mother_tounge" 
+                    id="mother_tongue" 
+                    name="mother_tongue" 
                     type="text" 
                     class="mt-1 block w-full" 
-                    value="{{ old('mother_tounge') }}"
-                    placeholder="Enter mother tounge"
+                    value="{{ $formData['mother_tongue'] ?? '' }}"
+                    placeholder="Enter mother tongue"
                 />
             </div>
         </div>
 
         {{-- Fourth Row --}}
         <div class="flex items-start gap-6 mb-6">
+            {{-- Middle Name --}}
             <div>
                 <x-input-label for="middle_name" value="Middle Name" />
                 <x-text-input 
@@ -201,11 +221,12 @@
                     name="middle_name" 
                     type="text" 
                     class="mt-1 block w-full" 
-                    value="{{ old('middle_name') }}"
+                    value="{{ $formData['middle_name'] ?? '' }}"
                     placeholder="Enter middle name"
                 />
             </div>
             
+            {{-- IP Community --}}
             <div class="flex-1">
                 <x-input-label for="ip_community_member" value="Belonging to any Indigenous Peoples (IP) Community/Indigenous Cultural Community" />
                 <div class="flex items-center gap-4 mt-1">
@@ -217,7 +238,7 @@
                                 type="radio" 
                                 value="1"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('ip_community_member') == '1' ? 'checked' : '' }}>
+                                {{ isset($formData['ip_community_member']) && $formData['ip_community_member'] == '1' ? 'checked' : '' }}>
                             <x-input-label for="ip_yes" value="Yes" class="mb-0" />
                         </div>
                         <div class="flex items-center gap-2">
@@ -227,7 +248,7 @@
                                 type="radio" 
                                 value="0"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('ip_community_member') == '0' ? 'checked' : '' }}>
+                                {{ isset($formData['ip_community_member']) && $formData['ip_community_member'] == '0' ? 'checked' : '' }}>
                             <x-input-label for="ip_no" value="No" class="mb-0" />
                         </div>
                     </div>
@@ -238,7 +259,7 @@
                             name="ip_community" 
                             type="text" 
                             class="block w-xs" 
-                            value="{{ old('ip_community') }}"
+                            value="{{ $formData['ip_community'] ?? '' }}"
                             placeholder="Specify IP Community"
                         />
                     </div>
@@ -255,7 +276,7 @@
                     name="extension_name" 
                     type="text" 
                     class="mt-1 block w-full" 
-                    value="{{ old('extension_name') }}"
+                    value="{{ $formData['extension_name'] ?? '' }}"
                     placeholder="Enter extension name"
                 />
             </div>
@@ -272,7 +293,7 @@
                                     type="radio" 
                                     value="1"
                                     class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    {{ old('4ps_beneficiary') == '1' ? 'checked' : '' }}>
+                                    {{ isset($formData['4ps_beneficiary']) && $formData['4ps_beneficiary'] == '1' ? 'checked' : '' }}>
                                 <x-input-label for="4ps_yes" value="Yes" class="mb-0" />
                             </div>
                             <div class="flex items-center gap-4">
@@ -282,7 +303,7 @@
                                     type="radio" 
                                     value="0"
                                     class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    {{ old('4ps_beneficiary') == '0' ? 'checked' : '' }}>
+                                    {{ isset($formData['4ps_beneficiary']) && $formData['4ps_beneficiary'] == '0' ? 'checked' : '' }}>
                                 <x-input-label for="4ps_no" value="No" class="mb-0" />
                             </div>
                         </div>
@@ -296,7 +317,7 @@
                         name="4ps_household_id" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('4ps_household_id') }}"
+                        value="{{ $formData['4ps_household_id'] ?? '' }}"
                         placeholder="Enter 4Ps Household ID Number"
                     />
                 </div>
@@ -316,7 +337,7 @@
                         type="radio" 
                         value="1"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('is_disabled') == '1' ? 'checked' : '' }}>
+                        {{ isset($formData['is_disabled']) && $formData['is_disabled'] == '1' ? 'checked' : '' }}>
                     <x-input-label for="is_disabled_yes" value="Yes" />
                 </div>
                 <div class="flex align-items-center justify-start gap-2">
@@ -326,7 +347,7 @@
                         type="radio" 
                         value="0"
                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                        {{ old('is_disabled') == '0' ? 'checked' : '' }}>
+                        {{ isset($formData['is_disabled']) && $formData['is_disabled'] == '0' ? 'checked' : '' }}>
                     <x-input-label for="is_disabled_no" value="No" />
                 </div>
             </div>
@@ -352,7 +373,7 @@
                                         type="checkbox" 
                                         value="1"
                                         class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded disability-checkbox"
-                                        {{ old("disabilities.{$disability->disability_id}") == '1' ? 'checked' : '' }}>
+                                        {{ in_array($disability->disability_id, $formData['disabilities'] ?? []) ? 'checked' : '' }}>
                                     <x-input-label for="disability_{{ $disability->disability_id }}" value="{{ $disability->name }}" />
                                 </div>
                             @endforeach

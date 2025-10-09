@@ -16,7 +16,7 @@
     @if($currentStep !== 'review')
         <x-primary-button 
             type="button"
-            onclick="validateAndProceed()"
+            onclick="navigateStep('next')"
             class="flex items-center gap-2"
         >
             Next

@@ -7,6 +7,17 @@
                 <h3 class="text-md font-bold text-white mx-auto">FOR RETURNING LEARNER (BALIK-ARAL) AND THOSE WHO WILL MOVE IN</h3>
             </div>
 
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                    <strong class="font-bold">Errors:</strong>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="flex justify-start align-items-center gap-6 mb-6">
                 <div>
                     <x-input-label for="last_grade_level_completed" value="Last Grade Level Completed" />
@@ -15,7 +26,7 @@
                         name="last_grade_level_completed" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('last_grade_level_completed') }}"
+                        value="{{ $formData['last_grade_level_completed'] ?? '' }}"
                         placeholder="Enter Grade Level"
                     />
                 </div>
@@ -27,7 +38,7 @@
                         name="last_school_year_completed" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('last_school_year_completed') }}"
+                        value="{{ $formData['last_school_year_completed'] ?? '' }}"
                         placeholder="Enter School Year"
                     />
                 </div>
@@ -39,7 +50,7 @@
                         name="last_school_attended" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('last_school_attended') }}"
+                        value="{{ $formData['last_school_attended'] ?? '' }}"
                         placeholder="Enter School Name"
                     />
                 </div>
@@ -51,7 +62,7 @@
                         name="school_id" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('school_id') }}"
+                        value="{{ $formData['school_id'] ?? '' }}"
                         placeholder="Enter School ID"
                     />
                 </div>
@@ -76,7 +87,7 @@
                                     name="semester" 
                                     type="radio" 
                                     class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    {{ old('first_sem') ? 'checked' : '' }}>
+                                    {{ isset($formData['semester']) && $formData['semester'] == 'first_sem' ? 'checked' : '' }}>
                                 <x-input-label for="first_sem" value="1st" />
                             </div>
                             <div class="flex align-items-center justify-start gap-2">
@@ -85,7 +96,7 @@
                                     name="semester" 
                                     type="radio" 
                                     class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    {{ old('second_sem') ? 'checked' : '' }}>
+                                    {{ isset($formData['semester']) && $formData['semester'] == 'second_sem' ? 'checked' : '' }}>
                                 <x-input-label for="second_sem" value="2nd" />
                             </div>
                         </div>
@@ -99,7 +110,7 @@
                                     name="track" 
                                     type="text" 
                                     class="block w-full" 
-                                    value="{{ old('track') }}"
+                                    value="{{ $formData['track'] ?? '' }}"
                                     placeholder="Enter Track"
                                 />
                             </div>
@@ -110,7 +121,7 @@
                                     name="strand" 
                                     type="text" 
                                     class="block w-full" 
-                                    value="{{ old('strand') }}"
+                                    value="{{ $formData['strand'] ?? '' }}"
                                     placeholder="Enter Strand"
                                 />
                             </div>
