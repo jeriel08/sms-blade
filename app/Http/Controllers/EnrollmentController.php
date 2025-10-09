@@ -11,7 +11,7 @@ use App\Models\Address;
 use App\Models\FamilyContact;
 use App\Models\Disability;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -153,27 +153,49 @@ class EnrollmentController extends Controller
      */
     public function create(Request $request)
     {
-        $studentType = $request->query('type', 'new');
+        $studentType = $request->query('type', session('enrollment_form_data.student_type', 'new'));
         $currentStep = $request->query('step', 'learner');
 
-        // Define valid steps based on student type
+        // Validate student_type
+        if (!in_array($studentType, ['new', 'transferee', 'balik_aral'])) {
+            \Log::warning('Invalid student_type: ' . $studentType);
+            $studentType = 'new'; // Fallback
+        }
+
         $validSteps = ['learner', 'address', 'guardian', 'review'];
         if ($studentType === 'transferee') {
             $validSteps = ['learner', 'address', 'guardian', 'school', 'review'];
         }
 
-        // Validate current step
         if (!in_array($currentStep, $validSteps)) {
             $currentStep = 'learner';
         }
 
-        // Get disabilities from database for dynamic rendering
+        if ($request->isMethod('post')) {
+            if ($request->input('action') === 'submit' && $currentStep === 'review') {
+                return $this->store($request);
+            }
+
+            $this->saveStepData($request, $currentStep);
+
+            $action = $request->input('action');
+            $nextStep = ($action === 'next') ? $this->getNextStep($currentStep, $validSteps) : $this->getPreviousStep($currentStep, $validSteps);
+
+            if ($nextStep) {
+                return redirect()->route('enrollments.create', ['type' => $studentType, 'step' => $nextStep]);
+            }
+        }
+
         $disabilities = Disability::orderBy('name')->get();
+        $formData = session('enrollment_form_data', []);
+        $schoolYear = Settings::where('key', 'school_year')->value('value') ?? '2024-2025';
 
         return view('enrollments.create', [
             'studentType' => $studentType,
             'currentStep' => $currentStep,
             'disabilities' => $disabilities,
+            'formData' => $formData,
+            'schoolYear'=> $schoolYear,
         ]);
     }
 
@@ -185,62 +207,31 @@ class EnrollmentController extends Controller
         try {
             DB::beginTransaction();
 
-            // Validate the request
-            $validated = $request->validate([
-                'student_type' => 'required|in:new,transferee,balik_aral',
-                'school_year' => 'required|string',
-                'with_lrn' => 'required|boolean',
-                'returning' => 'required|boolean',
-                'psa_birth_certification_no' => 'nullable|string|max:20',
-                'lrn' => 'required_if:with_lrn,1|string|size:12|unique:students,lrn',
-                'first_name' => 'required|string|max:50',
-                'birthdate' => 'required|date|before:today',
-                'place_of_birth' => 'nullable|string|max:100',
-                'last_name' => 'required|string|max:50',
-                'gender' => 'required|in:male,female,other',
-                'age' => 'required|integer|min:1',
-                'mother_tongue' => 'nullable|string|max:100',
-                'middle_name' => 'nullable|string|max:50',
-                'ip_community_member' => 'required|boolean',
-                'ip_community' => 'required_if:ip_community_member,1|string|max:100',
-                'extension_name' => 'nullable|string|max:10',
-                '4ps_beneficiary' => 'required|boolean',
-                '4ps_household_id' => 'required_if:4ps_beneficiary,1|string|max:20',
-                'is_disabled' => 'required|boolean',
-                'disabilities.*' => 'required_if:is_disabled,1|exists:disabilities,disability_id',
-                'house_number' => 'required|string|max:10',
-                'street_name' => 'required|string|max:100',
-                'barangay' => 'required|string|max:100',
-                'city' => 'required|string|max:100',
-                'province' => 'required|string|max:100',
-                'country' => 'required|string|max:100',
-                'zip_code' => 'required|string|max:10',
-                'same_as_current_address' => 'required|boolean',
-                'permanent_house_number' => 'required_if:same_as_current_address,0|string|max:10',
-                'permanent_street_name' => 'required_if:same_as_current_address,0|string|max:100',
-                'permanent_barangay' => 'required_if:same_as_current_address,0|string|max:100',
-                'permanent_city' => 'required_if:same_as_current_address,0|string|max:100',
-                'permanent_province' => 'required_if:same_as_current_address,0|string|max:100',
-                'permanent_country' => 'required_if:same_as_current_address,0|string|max:100',
-                'permanent_zip_code' => 'required_if:same_as_current_address,0|string|max:10',
-                'father_last_name' => 'required|string|max:50',
-                'father_first_name' => 'required|string|max:50',
-                'father_middle_name' => 'nullable|string|max:50',
-                'father_contact_number' => 'required|string|max:15',
-                'mother_last_name' => 'required|string|max:50',
-                'mother_first_name' => 'required|string|max:50',
-                'mother_middle_name' => 'nullable|string|max:50',
-                'mother_contact_number' => 'required|string|max:15',
-                'legal_guardian_last_name' => 'nullable|string|max:50',
-                'legal_guardian_first_name' => 'nullable|string|max:50',
-                'legal_guardian_middle_name' => 'nullable|string|max:50',
-                'legal_guardian_contact_number' => 'nullable|string|max:15',
-                'declaration' => 'required|accepted',
-            ]);
+            // Get session data and merge with current request data
+            $formData = session('enrollment_form_data', []);
+            $formData = array_merge($formData, $request->only(['declaration']));
 
-            Log::info('Validated data:', $validated);
+            // Log form data for debugging
+            \Log::info('Form data before validation:', $formData);
 
-            // 1. Create Current Address
+            // Validate all data together
+            $rules = array_merge(
+                $this->getValidationRules('learner'),
+                $this->getValidationRules('address'),
+                $this->getValidationRules('guardian'),
+                $request->student_type === 'transferee' ? $this->getValidationRules('school') : [],
+                $this->getValidationRules('review')
+            );
+            $validator = Validator::make($formData, $rules);
+            
+            if ($validator->fails()) {
+                \Log::info('Validation errors in store:', $validator->errors()->all());
+                return back()->with('error', 'Failed to enroll student: ' . implode(' ', $validator->errors()->all()))->withInput();
+            }
+
+            $validated = $validator->validated();
+
+            // Create current address
             $currentAddress = Address::create([
                 'house_no' => $validated['house_number'],
                 'street_name' => $validated['street_name'],
@@ -250,12 +241,10 @@ class EnrollmentController extends Controller
                 'country' => $validated['country'],
                 'zip_code' => $validated['zip_code'],
             ]);
-            Log::info('Created current address: ' . $currentAddress->address_id);
 
-            // 2. Create Permanent Address
-            if ($validated['same_as_current_address'] == 1) {
-                $permanentAddress = $currentAddress;
-            } else {
+            // Create permanent address
+            $permanentAddress = $currentAddress;
+            if ($validated['same_as_current_address'] == 0) {
                 $permanentAddress = Address::create([
                     'house_no' => $validated['permanent_house_number'],
                     'street_name' => $validated['permanent_street_name'],
@@ -265,10 +254,9 @@ class EnrollmentController extends Controller
                     'country' => $validated['permanent_country'],
                     'zip_code' => $validated['permanent_zip_code'],
                 ]);
-                Log::info('Created permanent address: ' . $permanentAddress->address_id);
             }
 
-            // 3. Create Student (let database auto-increment student_id)
+            // Create student
             $studentData = [
                 'lrn' => $validated['lrn'],
                 'last_name' => $validated['last_name'],
@@ -286,16 +274,10 @@ class EnrollmentController extends Controller
                 'permanent_address_id' => $permanentAddress->address_id,
                 'is_disabled' => $validated['is_disabled'],
             ];
-            Log::info('Attempting to create student with data:', $studentData);
-
             $student = Student::create($studentData);
-            $studentId = $student->student_id; // Get the auto-incremented ID
-            if (!$studentId) {
-                throw new \Exception('Failed to retrieve student_id after creating student');
-            }
-            Log::info('Created student: ' . $studentId);
+            $studentId = $student->student_id;
 
-            // 4. Create Family Contacts
+            // Create family contacts
             $familyContacts = [
                 [
                     'student_id' => $studentId,
@@ -314,7 +296,6 @@ class EnrollmentController extends Controller
                     'contact_number' => $validated['mother_contact_number'],
                 ],
             ];
-
             if (!empty($validated['legal_guardian_first_name'])) {
                 $familyContacts[] = [
                     'student_id' => $studentId,
@@ -325,12 +306,9 @@ class EnrollmentController extends Controller
                     'contact_number' => $validated['legal_guardian_contact_number'],
                 ];
             }
-
-            Log::info('Attempting to insert family contacts:', $familyContacts);
             FamilyContact::insert($familyContacts);
-            Log::info('Created family contacts for student: ' . $studentId);
 
-            // 5. Create Enrollment
+            // Create enrollment
             $schoolYear = Settings::where('key', 'school_year')->value('value') ?? '2024-2025';
             $enrollmentData = [
                 'student_id' => $studentId,
@@ -340,31 +318,34 @@ class EnrollmentController extends Controller
                 '_4ps_household_id' => $validated['4ps_household_id'] ?? null,
                 'enrollment_date' => now(),
             ];
-
-            Log::info('Attempting to create enrollment:', $enrollmentData);
+            if ($validated['student_type'] === 'transferee') {
+                $enrollmentData['last_grade_level'] = $validated['last_grade_level_completed'] ?? null;
+                $enrollmentData['last_school_year'] = $validated['last_school_year_completed'] ?? null;
+                $enrollmentData['last_school_attended'] = $validated['last_school_attended'] ?? null;
+                $enrollmentData['school_id'] = $validated['school_id'] ?? null;
+                $enrollmentData['semester'] = $validated['semester'] ?? null;
+                $enrollmentData['track'] = $validated['track'] ?? null;
+                $enrollmentData['strand'] = $validated['strand'] ?? null;
+            }
             $enrollment = Enrollment::create($enrollmentData);
-            Log::info('Created enrollment: ' . $enrollment->id);
 
-            // 6. Handle Disabilities
-            if ($validated['is_disabled'] == 1 && !empty($request->disabilities)) {
-                Log::info('Attaching disabilities for student: ' . $studentId, ['disabilities' => $request->disabilities]);
-                $student->disabilities()->attach($request->disabilities);
-                Log::info('Attached disabilities for student: ' . $studentId);
+            // Handle disabilities
+            if ($validated['is_disabled'] == 1 && !empty($formData['disabilities'])) {
+                $student->disabilities()->attach($formData['disabilities']);
             }
 
             DB::commit();
-            Log::info('Transaction committed for student: ' . $studentId);
 
-            // Clear session storage
+            // Clear session data
             session()->forget('enrollment_form_data');
 
             return redirect()->route('enrollments.index')
                 ->with('success', 'Student enrolled successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Enrollment failed: ' . $e->getMessage(), [
+            \Log::error('Enrollment failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
-                'data' => $request->all(),
+                'data' => $formData,
             ]);
             return back()->with('error', 'Failed to enroll student: ' . $e->getMessage())->withInput();
         }
@@ -440,5 +421,146 @@ class EnrollmentController extends Controller
             ]);
             return back()->with('error', 'Failed to assign grade and section: ' . $e->getMessage());
         }
+    }
+
+    // Helper to save step data to session
+    /**
+     * Save form data for the current step to session
+     */
+    protected function saveStepData(Request $request, $currentStep)
+    {
+        // Get existing session data or initialize empty array
+        $formData = session('enrollment_form_data', []);
+
+        // Define validation rules for each step
+        $rules = $this->getValidationRules($currentStep);
+
+        // Validate the incoming data
+        $validated = $request->validate($rules);
+
+        // Merge validated data with existing session data
+        $formData = array_merge($formData, $validated);
+
+        // Handle disabilities separately (store only checked ones)
+        if ($currentStep === 'learner' && isset($request->disabilities)) {
+            $formData['disabilities'] = array_keys(array_filter($request->disabilities, fn($value) => $value == '1'));
+        }
+
+        // Ensure ip_community is cleared if ip_community_member is 0
+        if ($currentStep === 'learner' && isset($validated['ip_community_member']) && $validated['ip_community_member'] == 0) {
+            $formData['ip_community'] = null;
+        }
+
+        // Ensure school_year is always saved
+        if ($currentStep === 'learner') {
+            $formData['school_year'] = Settings::where('key', 'school_year')->value('value') ?? '2024-2025';
+        }
+
+        // Save merged data to session
+        session()->put('enrollment_form_data', $formData);
+
+        // Flash input for validation errors (if any)
+        session()->flashInput($request->input());
+    }
+
+    /**
+     * Get validation rules for the current step
+     */
+    protected function getValidationRules($currentStep)
+    {
+        $rules = [
+            'learner' => [
+                'student_type' => 'required|in:new,transferee,balik_aral',
+                'school_year' => 'required|string|max:20',
+                'with_lrn' => 'required|boolean',
+                'returning' => 'required|boolean',
+                'psa_birth_certification_no' => 'nullable|string|max:20',
+                'lrn' => 'required_if:with_lrn,1|string|size:12|unique:students,lrn',
+                'first_name' => 'required|string|max:50',
+                'birthdate' => 'required|date|before:today',
+                'place_of_birth' => 'nullable|string|max:100',
+                'last_name' => 'required|string|max:50',
+                'gender' => 'required|in:male,female,other',
+                'age' => 'required|integer|min:1',
+                'mother_tongue' => 'nullable|string|max:100',
+                'middle_name' => 'nullable|string|max:50',
+                'ip_community_member' => 'required|boolean',
+                'ip_community' => 'required_if:ip_community_member,1|string|max:100',
+                'extension_name' => 'nullable|string|max:10',
+                '4ps_beneficiary' => 'required|boolean',
+                '4ps_household_id' => 'required_if:4ps_beneficiary,1|string|max:20',
+                'is_disabled' => 'required|boolean',
+                'disabilities.*' => 'nullable|exists:disabilities,disability_id',
+            ],
+            'address' => [
+                'house_number' => 'nullable|string|max:50',
+                'street_name' => 'required|string|max:100',
+                'barangay' => 'required|string|max:100',
+                'city' => 'required|string|max:100',
+                'province' => 'required|string|max:100',
+                'country' => 'required|string|max:100',
+                'zip_code' => 'required|string|max:10',
+                'same_as_current_address' => 'required|boolean',
+                'permanent_house_number' => 'required_if:same_as_current_address,0|string|max:50',
+                'permanent_street_name' => 'required_if:same_as_current_address,0|string|max:100',
+                'permanent_barangay' => 'required_if:same_as_current_address,0|string|max:100',
+                'permanent_city' => 'required_if:same_as_current_address,0|string|max:100',
+                'permanent_province' => 'required_if:same_as_current_address,0|string|max:100',
+                'permanent_country' => 'required_if:same_as_current_address,0|string|max:100',
+                'permanent_zip_code' => 'required_if:same_as_current_address,0|string|max:10',
+            ],
+            'guardian' => [
+                'father_last_name' => 'required|string|max:50',
+                'father_first_name' => 'required|string|max:50',
+                'father_middle_name' => 'nullable|string|max:50',
+                'father_contact_number' => 'required|string|max:20',
+                'mother_last_name' => 'required|string|max:50',
+                'mother_first_name' => 'required|string|max:50',
+                'mother_middle_name' => 'nullable|string|max:50',
+                'mother_contact_number' => 'required|string|max:20',
+                'legal_guardian_last_name' => 'nullable|string|max:50',
+                'legal_guardian_first_name' => 'nullable|string|max:50',
+                'legal_guardian_middle_name' => 'nullable|string|max:50',
+                'legal_guardian_contact_number' => 'nullable|string|max:20',
+            ],
+            'school' => [
+                'last_grade_level_completed' => 'nullable|string|max:50',
+                'last_school_year_completed' => 'nullable|string|max:20',
+                'last_school_attended' => 'nullable|string|max:100',
+                'school_id' => 'nullable|string|max:20',
+                'semester' => 'nullable|in:first_sem,second_sem',
+                'track' => 'nullable|string|max:100',
+                'strand' => 'nullable|string|max:100',
+            ],
+            'review' => [
+                'declaration' => 'required|accepted',
+            ],
+        ];
+
+        return $rules[$currentStep] ?? [];
+    }
+
+    /**
+     * Get the next step in the form
+     */
+    protected function getNextStep($currentStep, $validSteps)
+    {
+        $currentIndex = array_search($currentStep, $validSteps);
+        if ($currentIndex === false || $currentIndex >= count($validSteps) - 1) {
+            return null;
+        }
+        return $validSteps[$currentIndex + 1];
+    }
+
+    /**
+     * Get the previous step in the form
+     */
+    protected function getPreviousStep($currentStep, $validSteps)
+    {
+        $currentIndex = array_search($currentStep, $validSteps);
+        if ($currentIndex === false || $currentIndex <= 0) {
+            return null;
+        }
+        return $validSteps[$currentIndex - 1];
     }
 }

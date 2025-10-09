@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Enrollments | MBNHS-SMS')
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-1 leading-tight">
             {{ __('ENROLLMENT') }}

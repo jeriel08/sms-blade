@@ -1,5 +1,6 @@
 {{-- resources/views/enrollments/create.blade.php --}}
 <x-app-layout>
+    @section('title', 'Register Student | MBNHS-SMS')
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-1 leading-tight">
             {{ __('ENROLL STUDENT') }}
@@ -92,31 +93,27 @@
 
             <!-- Form Content -->
             <div class="bg-white rounded-lg border border-gray-200 p-6">
-                <form id="enrollment-form" method="POST" action="{{ route('enrollments.store') }}">
+                <form id="enrollment-form" method="POST" action="{{ route('enrollments.create', ['type' => $studentType, 'step' => $currentStep]) }}">
                     @csrf
-                    <input type="hidden" name="student_type" value="{{ $studentType }}">
+                    <input type="hidden" name="student_type" value="{{ $formData['student_type'] ?? $studentType }}">
+                    <input type="hidden" name="_step" value="{{ $currentStep }}">
 
                     @switch($currentStep)
                         @case('learner')
                             @include('enrollments.partials.learner-information')
                             @break
-                            
                         @case('address')
                             @include('enrollments.partials.address-information')
                             @break
-                            
                         @case('guardian')
                             @include('enrollments.partials.guardian-information')
                             @break
-                            
                         @case('school')
                             @include('enrollments.partials.school-information')
                             @break
-                            
                         @case('review')
                             @include('enrollments.partials.review-information')
-                            <!-- Add a hidden submit button for the form -->
-                            <button type="submit" id="real-submit-btn" style="display: none;"></button>
+                            <button type="submit" id="real-submit-btn" name="action" value="submit" style="display: none;"></button>
                             @break
                     @endswitch
                 </form>
@@ -127,454 +124,30 @@
     @push('scripts')
     <script>
         function navigateStep(direction) {
-            const steps = ['learner', 'address', 'guardian', 'school', 'review'];
-            const studentType = '{{ $studentType }}';
-            
-            // Adjust steps based on student type
-            let availableSteps = [...steps];
-            if (studentType !== 'transferee') {
-                availableSteps = availableSteps.filter(step => step !== 'school');
-            }
-            
-            const currentStep = '{{ $currentStep }}';
-            const currentIndex = availableSteps.indexOf(currentStep);
-            
-            let nextStep = null;
-            if (direction === 'next') {
-                if (currentIndex < availableSteps.length - 1) {
-                    nextStep = availableSteps[currentIndex + 1];
-                }
-            } else if (direction === 'prev') {
-                if (currentIndex > 0) {
-                    nextStep = availableSteps[currentIndex - 1];
-                }
-            }
-            
-            if (nextStep) {
-                // Save current form data to session storage before navigating
-                saveFormData();
-                
-                // Build URL properly with URLSearchParams
-                const url = new URL('{{ route("enrollments.create") }}');
-                url.searchParams.set('type', studentType);
-                url.searchParams.set('step', nextStep);
-                window.location.href = url.toString();
-            }
-        }
-
-        function saveFormData() {
             const form = document.getElementById('enrollment-form');
-            const formData = new FormData(form);
-            const data = {};
-
-            // Get valid disability IDs from the current form
-            const validDisabilityIds = Array.from(
-                document.querySelectorAll('.disability-checkbox')
-            ).map(cb => cb.name.match(/disabilities\[(\d+)\]/)?.[1]).filter(Boolean);
-
-            // Get all form data including disabled fields
-            for (let [key, value] of formData.entries()) {
-                // Only include valid disability IDs
-                if (key.startsWith('disabilities[')) {
-                    const match = key.match(/disabilities\[(\d+)\]/);
-                    if (match && validDisabilityIds.includes(match[1])) {
-                        data[key] = value;
-                    }
-                } else {
-                    data[key] = value;
-                }
-            }
-
-            // Handle checkboxes separately
-            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                if (checkbox.name.startsWith('disabilities[')) {
-                    const match = checkbox.name.match(/disabilities\[(\d+)\]/);
-                    if (match && validDisabilityIds.includes(match[1])) {
-                        data[checkbox.name] = checkbox.checked ? '1' : '0';
-                    }
-                } else {
-                    data[checkbox.name] = checkbox.checked ? '1' : '0';
-                }
-            });
-
-            sessionStorage.setItem('enrollmentFormData', JSON.stringify(data));
-        }
-
-        function loadFormData() {
-            const storedData = sessionStorage.getItem('enrollmentFormData');
-            if (storedData) {
-                const data = JSON.parse(storedData);
-                const form = document.getElementById('enrollment-form');
-                
-                for (let [key, value] of Object.entries(data)) {
-                    const input = form.querySelector(`[name="${key}"]`);
-                    if (input) {
-                        if (input.type === 'checkbox') {
-                            input.checked = value === '1';
-                        } else if (input.type === 'radio') {
-                            const radio = form.querySelector(`[name="${key}"][value="${value}"]`);
-                            if (radio) radio.checked = true;
-                        } else {
-                            input.value = value;
-                        }
-                    }
-                    
-                    // Handle select elements
-                    const select = form.querySelector(`select[name="${key}"]`);
-                    if (select) {
-                        select.value = value;
-                    }
-                }
-                
-                // Trigger any change events for dynamic elements
-                triggerChangeEvents();
-            }
-        }
-
-        function triggerChangeEvents() {
-            // Trigger change events for radio buttons that might show/hide fields
-            const radios = document.querySelectorAll('input[type="radio"]:checked');
-            radios.forEach(radio => {
-                radio.dispatchEvent(new Event('change', { bubbles: true }));
-            });
-        }
-
-        function validateAndProceed() {
-            const currentStep = '{{ $currentStep }}';
-            
-            // Remove any existing error highlights
-            document.querySelectorAll('.border-red-500').forEach(el => {
-                el.classList.remove('border-red-500');
-            });
-            document.querySelectorAll('.error-highlight').forEach(el => {
-                el.classList.remove('border', 'border-red-500', 'p-2', 'rounded', 'error-highlight');
-            });
-
-            let validationResult = { isValid: true, errors: [] };
-
-            // Step-specific validation
-            switch(currentStep) {
-                case 'learner':
-                    validationResult = validateLearnerStep();
-                    break;
-                case 'address':
-                    validationResult = validateAddressStep();
-                    break;
-                case 'guardian':
-                    validationResult = validateGuardianStep();
-                    break;
-                case 'school':
-                    validationResult = validateSchoolStep();
-                    break;
-                default:
-                    validationResult = { isValid: true, errors: [] };
-            }
-
-            if (validationResult.isValid) {
-                // Save data before navigating
-                saveFormData();
-                navigateStep('next');
-            } else {
-                showValidationErrors(validationResult.errors);
-            }
-        }
-
-        function showValidationErrors(errors) {
-            let errorMessage = 'Please fix the following errors before proceeding:\n\n';
-            errors.forEach((error, index) => {
-                errorMessage += `${index + 1}. ${error.message}\n`;
-            });
-            
-            alert(errorMessage);
-            
-            // Scroll to first error
-            if (errors.length > 0 && errors[0].element) {
-                errors[0].element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                errors[0].element.focus();
-            }
-        }
-
-        function validateLearnerStep() {
-            let isValid = true;
-            const errors = [];
-
-            // Required fields for learner information
-            const requiredFields = [
-                { name: 'lrn', label: 'Learner Reference Number (LRN)' },
-                { name: 'first_name', label: 'First Name' },
-                { name: 'last_name', label: 'Last Name' },
-                { name: 'birthdate', label: 'Birthdate' },
-                { name: 'gender', label: 'Gender' },
-                { name: 'age', label: 'Age' }
-            ];
-
-            requiredFields.forEach(field => {
-                const element = document.querySelector(`[name="${field.name}"]`);
-                if (element && !element.value.trim()) {
-                    isValid = false;
-                    element.classList.add('border-red-500');
-                    errors.push({ 
-                        message: `${field.label} is required`,
-                        element: element
-                    });
-                }
-            });
-
-            // Radio button groups
-            const radioGroups = [
-                { name: 'with_lrn', label: 'With LRN?' },
-                { name: 'returning', label: 'Returning Student (Balik-Aral)' },
-                { name: 'ip_community_member', label: 'IP Community Member' },
-                { name: '4ps_beneficiary', label: '4Ps Beneficiary' },
-                { name: 'is_disabled', label: 'Has Disability' }
-            ];
-
-            radioGroups.forEach(group => {
-                const radios = document.querySelectorAll(`input[name="${group.name}"]`);
-                const isChecked = Array.from(radios).some(radio => radio.checked);
-                if (!isChecked) {
-                    isValid = false;
-                    // Highlight the radio group
-                    if (radios[0]) {
-                        const radioContainer = radios[0].closest('.flex');
-                        if (radioContainer) {
-                            radioContainer.classList.add(
-                                'border', 'border-red-500', 'p-2', 'rounded', 'error-highlight'
-                            );
-                            errors.push({ 
-                                message: `${group.label} is required`,
-                                element: radioContainer
-                            });
-                        }
-                    }
-                }
-            });
-
-            // Conditional validation for IP community
-            const ipCommunityRadio = document.querySelector('input[name="ip_community_member"]:checked');
-            if (ipCommunityRadio && ipCommunityRadio.value === '1') {
-                const ipCommunity = document.getElementById('ip_community');
-                if (!ipCommunity.value.trim()) {
-                    isValid = false;
-                    ipCommunity.classList.add('border-red-500');
-                    errors.push({ 
-                        message: 'IP Community specification is required when "Yes" is selected for IP Community Member',
-                        element: ipCommunity
-                    });
-                }
-            }
-
-            // Conditional validation for 4Ps
-            const fourPsRadio = document.querySelector('input[name="4ps_beneficiary"]:checked');
-            if (fourPsRadio && fourPsRadio.value === '1') {
-                const householdId = document.getElementById('4ps_household_id');
-                if (!householdId.value.trim()) {
-                    isValid = false;
-                    householdId.classList.add('border-red-500');
-                    errors.push({ 
-                        message: '4Ps Household ID is required when "Yes" is selected for 4Ps Beneficiary',
-                        element: householdId
-                    });
-                }
-            }
-
-            return { isValid, errors };
-        }
-
-
-        function validateAddressStep() {
-            let isValid = true;
-            const errors = [];
-            
-            // Current address fields
-            const currentAddressFields = [
-                { name: 'house_number', label: 'House Number' },
-                { name: 'street_name', label: 'Street Name' },
-                { name: 'barangay', label: 'Barangay' },
-                { name: 'city', label: 'Municipality/City' },
-                { name: 'province', label: 'Province' },
-                { name: 'country', label: 'Country' },
-                { name: 'zip_code', label: 'Zip Code' }
-            ];
-            
-            currentAddressFields.forEach(field => {
-                const element = document.querySelector(`[name="${field.name}"]`);
-                if (element && !element.value.trim()) {
-                    isValid = false;
-                    element.classList.add('border-red-500');
-                    errors.push({ 
-                        message: `Current Address - ${field.label} is required`,
-                        element: element
-                    });
-                }
-            });
-
-            // Permanent address (only validate if not same as current)
-            const sameAsCurrent = document.querySelector('input[name="same_as_current_address"]:checked');
-            if (!sameAsCurrent) {
-                isValid = false;
-                errors.push({ 
-                    message: 'Please specify if permanent address is same as current address',
-                    element: document.querySelector('input[name="same_as_current_address"]')
-                });
-            } else if (sameAsCurrent.value === '0') {
-                const permanentFields = [
-                    { name: 'permanent_house_number', label: 'Permanent House Number' },
-                    { name: 'permanent_street_name', label: 'Permanent Street Name' },
-                    { name: 'permanent_barangay', label: 'Permanent Barangay' },
-                    { name: 'permanent_city', label: 'Permanent Municipality/City' },
-                    { name: 'permanent_province', label: 'Permanent Province' },
-                    { name: 'permanent_country', label: 'Permanent Country' },
-                    { name: 'permanent_zip_code', label: 'Permanent Zip Code' }
-                ];
-                
-                permanentFields.forEach(field => {
-                    const element = document.querySelector(`[name="${field.name}"]`);
-                    if (element && !element.value.trim()) {
-                        isValid = false;
-                        element.classList.add('border-red-500');
-                        errors.push({ 
-                            message: `Permanent Address - ${field.label} is required`,
-                            element: element
-                        });
-                    }
-                });
-            }
-
-            return { isValid, errors };
-        }
-
-
-        function validateGuardianStep() {
-            let isValid = true;
-            const errors = [];
-            
-            // Father's information
-            const fatherFields = [
-                { name: 'father_last_name', label: "Father's Last Name" },
-                { name: 'father_first_name', label: "Father's First Name" },
-                { name: 'father_contact_number', label: "Father's Contact Number" }
-            ];
-            
-            fatherFields.forEach(field => {
-                const element = document.querySelector(`[name="${field.name}"]`);
-                if (element && !element.value.trim()) {
-                    isValid = false;
-                    element.classList.add('border-red-500');
-                    errors.push({ 
-                        message: `${field.label} is required`,
-                        element: element
-                    });
-                }
-            });
-
-            // Mother's information  
-            const motherFields = [
-                { name: 'mother_last_name', label: "Mother's Last Name" },
-                { name: 'mother_first_name', label: "Mother's First Name" },
-                { name: 'mother_contact_number', label: "Mother's Contact Number" }
-            ];
-            
-            motherFields.forEach(field => {
-                const element = document.querySelector(`[name="${field.name}"]`);
-                if (element && !element.value.trim()) {
-                    isValid = false;
-                    element.classList.add('border-red-500');
-                    errors.push({ 
-                        message: `${field.label} is required`,
-                        element: element
-                    });
-                }
-            });
-
-            return { isValid, errors };
-        }
-
-        function validateSchoolStep() {
-            // School step is optional for transferees, so no validation needed
-            return { isValid: true, errors: [] };
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'action';
+            input.value = direction;
+            form.appendChild(input);
+            form.submit();
         }
 
         function submitEnrollment() {
-            console.log("Submit button clicked");
-
             const declaration = document.getElementById('declaration');
             if (!declaration || !declaration.checked) {
                 alert("Please confirm that the information provided is true by checking the declaration box.");
                 declaration?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
-
             const form = document.getElementById('enrollment-form');
-            if (!form) {
-                alert("Form not found!");
-                return;
-            }
-
-            const storedData = sessionStorage.getItem('enrollmentFormData');
-            if (!storedData) {
-                alert("No form data found. Please go back and fill out previous steps.");
-                return;
-            }
-
-            const data = JSON.parse(storedData);
-            // Clear existing disability inputs to avoid duplicates
-            form.querySelectorAll('input[name^="disabilities["]').forEach(input => input.remove());
-
-            // Add only checked disabilities
-            for (const [key, value] of Object.entries(data)) {
-                if (key.startsWith('disabilities[') && value === '1') {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = value;
-                    form.appendChild(input);
-                } else if (!key.startsWith('disabilities[')) {
-                    let input = form.querySelector(`[name="${key}"]`);
-                    if (!input) {
-                        input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        form.appendChild(input);
-                    }
-                    input.value = value;
-                }
-            }
-
-            console.log("Submitting enrollment form...");
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'action';
+            input.value = 'submit';
+            form.appendChild(input);
             form.submit();
         }
-
-
-
-
-        // Remove error styling when user interacts with fields
-        document.addEventListener('DOMContentLoaded', function() {
-            // Clear sessionStorage on initial load of learner step
-            if ('{{ $currentStep }}' === 'learner') {
-                sessionStorage.removeItem('enrollmentFormData');
-            }
-
-            // Load form data from session storage
-            loadFormData();
-
-            document.querySelectorAll('input, select').forEach(element => {
-                element.addEventListener('input', function() {
-                    this.classList.remove('border-red-500');
-                });
-            });
-
-            // For radio groups, remove highlighting when any radio is clicked
-            document.querySelectorAll('input[type="radio"]').forEach(radio => {
-                radio.addEventListener('change', function() {
-                    const radioGroup = document.querySelectorAll(`[name="${this.name}"]`);
-                    radioGroup.forEach(r => {
-                        r.closest('.flex')?.classList.remove('border', 'border-red-500', 'p-2', 'rounded');
-                    });
-                });
-            });
-        });
     </script>
     @endpush
 </x-app-layout>

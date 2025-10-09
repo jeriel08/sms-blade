@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
     // Student Enrollment System
     Route::prefix('enrollments')->group(function () {
         Route::get('/', [EnrollmentController::class, 'index'])->name('enrollments.index');
-        Route::get('/create', [EnrollmentController::class, 'create'])->name('enrollments.create');
+        Route::match(['get', 'post'], '/create', [EnrollmentController::class, 'create'])->name('enrollments.create');
         Route::post('/', [EnrollmentController::class, 'store'])->name('enrollments.store');
         Route::get('/settings', [EnrollmentController::class, 'settings'])->name('enrollments.settings');
         Route::post('/enrollments/{enrollment}/assign', [EnrollmentController::class, 'assignGradeAndSection'])->name('enrollments.assign');

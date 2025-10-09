@@ -3,6 +3,17 @@
     <div class="min-w-auto bg-2 text-center rounded-lg mb-6 opacity-50">
         <h3 class="text-md font-bold text-white mx-auto">LEARNER ADDRESS</h3>
     </div>
+
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <strong class="font-bold">Errors:</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     
     <div class="space-y-6">
         <!-- Current Address -->
@@ -18,7 +29,7 @@
                         name="house_number" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('house_number') }}"
+                        value="{{ $formData['house_number'] ?? '' }}"
                         placeholder="Enter house number"
                     />
                 </div>
@@ -29,7 +40,7 @@
                         name="street_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('street_name') }}"
+                        value="{{ $formData['street_name'] ?? '' }}"
                         placeholder="Enter street name"
                     />
                 </div>
@@ -40,7 +51,7 @@
                         name="barangay" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('barangay') }}"
+                        value="{{ $formData['barangay'] ?? '' }}"
                         placeholder="Enter barangay"
                     />
                 </div>
@@ -55,7 +66,7 @@
                         name="city" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('city') }}"
+                        value="{{ $formData['city'] ?? '' }}"
                         placeholder="Enter municipalit/city"
                     />
                 </div>
@@ -66,7 +77,7 @@
                         name="province" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('province') }}"
+                        value="{{ $formData['province'] ?? '' }}"
                         placeholder="Enter province"
                     />
                 </div>
@@ -77,7 +88,7 @@
                         name="country" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('country') }}"
+                        value="{{ $formData['country'] ?? '' }}"
                         placeholder="Enter country"
                     />
                 </div>
@@ -88,7 +99,7 @@
                         name="zip_code" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('zip_code') }}"
+                        value="{{ $formData['zip_code'] ?? '' }}"
                         placeholder="Enter zip code"
                     />
                 </div>
@@ -109,7 +120,7 @@
                                 type="radio" 
                                 value="1"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('same_as_current_address', 0) == 1 ? 'checked' : '' }}>
+                                {{ isset($formData['same_as_current_address']) && $formData['same_as_current_address'] == '1' ? 'checked' : '' }}>
                             <x-input-label for="same_yes" value="Yes" class="mb-0" />
                         </div>
                         <div class="flex items-center gap-2">
@@ -119,7 +130,7 @@
                                 type="radio" 
                                 value="0"
                                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                {{ old('same_as_current_address', 0) == 0 ? 'checked' : '' }}>
+                                {{ isset($formData['same_as_current_address']) && $formData['same_as_current_address'] == '0' ? 'checked' : '' }}>
                             <x-input-label for="same_no" value="No" class="mb-0" />
                         </div>
                     </div>
@@ -134,7 +145,7 @@
                             name="permanent_house_number" 
                             type="text" 
                             class="mt-1 block w-full" 
-                            value="{{ old('permanent_house_number') }}"
+                            value="{{ $formData['permanent_house_number'] ?? '' }}"
                             placeholder="Enter house number"
                         />
                     </div>
@@ -145,7 +156,7 @@
                             name="permanent_street_name" 
                             type="text" 
                             class="mt-1 block w-full" 
-                            value="{{ old('permanent_street_name') }}"
+                            value="{{ $formData['permanent_street_name'] ?? '' }}"
                             placeholder="Enter street name"
                         />
                     </div>
@@ -156,7 +167,7 @@
                             name="permanent_barangay" 
                             type="text" 
                             class="mt-1 block w-full" 
-                            value="{{ old('permanent_barangay') }}"
+                            value="{{ $formData['permanent_barangay'] ?? '' }}"
                             placeholder="Enter barangay"
                         />
                     </div>
@@ -171,7 +182,7 @@
                             name="permanent_city" 
                             type="text" 
                             class="mt-1 block w-full" 
-                            value="{{ old('permanent_city') }}"
+                            value="{{ $formData['permanent_city'] ?? '' }}"
                             placeholder="Enter municipalit/city"
                         />
                     </div>
@@ -182,7 +193,7 @@
                             name="permanent_province" 
                             type="text" 
                             class="mt-1 block w-full" 
-                            value="{{ old('permanent_province') }}"
+                            value="{{ $formData['permanent_province'] ?? '' }}"
                             placeholder="Enter province"
                         />
                     </div>
@@ -193,7 +204,7 @@
                             name="permanent_country" 
                             type="text" 
                             class="mt-1 block w-full" 
-                            value="{{ old('permanent_country') }}"
+                            value="{{ $formData['permanent_country'] ?? '' }}"
                             placeholder="Enter country"
                         />
                     </div>
@@ -204,7 +215,7 @@
                             name="permanent_zip_code" 
                             type="text" 
                             class="mt-1 block w-full" 
-                            value="{{ old('permanent_zip_code') }}"
+                            value="{{ $formData['permanent_zip_code'] ?? '' }}"
                             placeholder="Enter zip code"
                         />
                     </div>
@@ -213,6 +224,9 @@
         </div>
     </div>
 
+    
+    @include('components.step-navigation')
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const radios = document.querySelectorAll('input[name="same_as_current_address"]');
@@ -221,48 +235,21 @@
 
             function updatePermanentAddress() {
                 const isSame = Array.from(radios).some(radio => radio.checked && radio.value === '1');
-
-                if (isSame) {
-                    // Dim the section and disable inputs
-                    permanentSection.style.opacity = '0.5';
-                    permanentInputs.forEach(input => {
-                        input.disabled = true;
-                    });
-
-                    // Copy values from current address to permanent
-                    const fieldMappings = [
-                        { current: 'house_number', permanent: 'permanent_house_number' },
-                        { current: 'street_name', permanent: 'permanent_street_name' },
-                        { current: 'barangay', permanent: 'permanent_barangay' },
-                        { current: 'city', permanent: 'permanent_city' },
-                        { current: 'province', permanent: 'permanent_province' },
-                        { current: 'country', permanent: 'permanent_country' },
-                        { current: 'zip_code', permanent: 'permanent_zip_code' }
-                    ];
-
-                    fieldMappings.forEach(mapping => {
-                        const currentInput = document.getElementById(mapping.current);
-                        const permanentInput = document.getElementById(mapping.permanent);
-                        if (currentInput && permanentInput) {
-                            permanentInput.value = currentInput.value;
+                permanentSection.style.opacity = isSame ? '0.5' : '1';
+                permanentInputs.forEach(input => {
+                    input.disabled = isSame;
+                    if (isSame) {
+                        const fieldName = input.name.replace('permanent_', '');
+                        const currentInput = document.getElementById(fieldName);
+                        if (currentInput) {
+                            input.value = currentInput.value;
                         }
-                    });
-                } else {
-                    // Restore opacity and enable inputs
-                    permanentSection.style.opacity = '1';
-                    permanentInputs.forEach(input => {
-                        input.disabled = false;
-                    });
-                }
+                    }
+                });
             }
 
-            // Listen for changes on radios
             radios.forEach(radio => radio.addEventListener('change', updatePermanentAddress));
-
-            // Initial state check
             updatePermanentAddress();
         });
     </script>
-    
-    @include('components.step-navigation')
 </div>

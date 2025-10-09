@@ -3,6 +3,17 @@
     <div class="min-w-auto bg-2 text-center rounded-lg mb-6 opacity-50">
         <h3 class="text-md font-bold text-white mx-auto">PARENT’S/GUARDIAN’S INFORMATION</h3>
     </div>
+
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <strong class="font-bold">Errors:</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     
     <div class="space-y-6">
         {{-- Father --}}
@@ -18,7 +29,7 @@
                         name="father_last_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('father_last_name') }}"
+                        value="{{ $formData['father_last_name'] ?? '' }}"
                         placeholder="Enter last name"
                     />
                 </div>
@@ -30,7 +41,7 @@
                         name="father_first_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('father_first_name') }}"
+                        value="{{ $formData['father_first_name'] ?? '' }}"
                         placeholder="Enter first name"
                     />
                 </div>
@@ -42,7 +53,7 @@
                         name="father_middle_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('father_middle_name') }}"
+                        value="{{ $formData['father_middle_name'] ?? '' }}"
                         placeholder="Enter middle name"
                     />
                 </div>
@@ -54,7 +65,7 @@
                         name="father_contact_number" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('father_contact_number') }}"
+                        value="{{ $formData['father_contact_number'] ?? '' }}"
                         placeholder="Enter contact number"
                     />
                 </div>
@@ -74,7 +85,7 @@
                         name="mother_last_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('mother_last_name') }}"
+                        value="{{ $formData['mother_last_name'] ?? '' }}"
                         placeholder="Enter last name"
                     />
                 </div>
@@ -86,7 +97,7 @@
                         name="mother_first_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('mother_first_name') }}"
+                        value="{{ $formData['mother_first_name'] ?? '' }}"
                         placeholder="Enter first name"
                     />
                 </div>
@@ -98,7 +109,7 @@
                         name="mother_middle_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('mother_middle_name') }}"
+                        value="{{ $formData['mother_middle_name'] ?? '' }}"
                         placeholder="Enter middle name"
                     />
                 </div>
@@ -110,7 +121,7 @@
                         name="mother_contact_number" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('mother_contact_number') }}"
+                        value="{{ $formData['mother_contact_number'] ?? '' }}"
                         placeholder="Enter contact number"
                     />
                 </div>
@@ -130,7 +141,7 @@
                         name="legal_guardian_last_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('legal_guardian_last_name') }}"
+                        value="{{ $formData['legal_guardian_last_name'] ?? '' }}"
                         placeholder="Enter last name"
                     />
                 </div>
@@ -142,7 +153,7 @@
                         name="legal_guardian_first_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('legal_guardian_first_name') }}"
+                        value="{{ $formData['legal_guardian_first_name'] ?? '' }}"
                         placeholder="Enter first name"
                     />
                 </div>
@@ -154,7 +165,7 @@
                         name="legal_guardian_middle_name" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('legal_guardian_middle_name') }}"
+                        value="{{ $formData['legal_guardian_middle_name'] ?? '' }}"
                         placeholder="Enter middle name"
                     />
                 </div>
@@ -166,7 +177,7 @@
                         name="legal_guardian_contact_number" 
                         type="text" 
                         class="mt-1 block w-full" 
-                        value="{{ old('legal_guardian_contact_number') }}"
+                        value="{{ $formData['legal_guardian_contact_number'] ?? '' }}"
                         placeholder="Enter contact number"
                     />
                 </div>

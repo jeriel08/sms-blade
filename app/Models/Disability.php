@@ -15,6 +15,6 @@ class Disability extends Model
 
     public function students()
     {
-        return $this->belongsToMany(Student::class, 'student_disabilities', 'disability_id', 'student_lrn');
+        return $this->belongsToMany(Student::class, 'student_disabilities', 'disability_id', 'student_id');
     }
 }
