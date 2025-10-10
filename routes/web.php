@@ -16,6 +16,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/pending-approval', function () {
+    return view('auth.pending-approval');
+})->middleware(['auth', 'verified'])->name('pending-approval');
+
 // Temporary Routes
 
 Route::get('/courses', function () {
@@ -36,7 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     // Student Information System
     Route::prefix('students')->group(function () {
         Route::get('/', [StudentController::class, 'index'])->name('students.index');
@@ -56,6 +60,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{enrollment_id}', [EnrollmentController::class, 'show'])->name('enrollments.show');
         Route::post('/{enrollment_id}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
     });
+
+    Route::prefix('admin')->group(function () {
+        Route::get('/users', [\App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('admin.users.index');
+        Route::post('/users/{user}/approve', [\App\Http\Controllers\Admin\UserManagementController::class, 'approve'])->name('admin.users.approve');
+    });
+
     Route::post('/sections/sync', [SectionController::class, 'sync'])->name('sections.sync');
     Route::get('/sections', function (Request $request) {
         $gradeLevel = $request->query('grade_level');
@@ -63,5 +73,7 @@ Route::middleware(['auth'])->group(function () {
         return response()->json($sections);
     });
 });
+
+
 
 require __DIR__ . '/auth.php';

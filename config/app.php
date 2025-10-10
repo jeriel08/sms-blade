@@ -123,4 +123,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'allow_any_email' => env('ALLOW_ANY_EMAIL', false),
 ];

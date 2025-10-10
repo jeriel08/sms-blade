@@ -16,6 +16,30 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Role -->
+        <div class="mt-4">
+            <x-input-label for="role" :value="__('Role')" />
+            <select id="role" name="role" class="block mt-1 w-full border-gray-300 rounded-md" required>
+                <option value="Adviser">Adviser</option>
+                <option value="Head Teacher">Head Teacher</option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
+
+        <!-- Grade Level (for Advisers only) -->
+        <div class="mt-4" id="grade_level_div" style="display: none;">
+            <x-input-label for="assigned_grade_level" :value="__('Assigned Grade Level')" />
+            <select id="assigned_grade_level" name="assigned_grade_level" class="block mt-1 w-full border-gray-300 rounded-md">
+                <option value="7">Grade 7</option>
+                <option value="8">Grade 8</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+            </select>
+            <x-input-error :messages="$errors->get('assigned_grade_level')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
