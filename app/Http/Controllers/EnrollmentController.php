@@ -470,7 +470,7 @@ class EnrollmentController extends Controller
     {
         $rules = [
             'learner' => [
-                'student_type' => 'required|in:new,transferee,balik_aral',
+                'student_type' => 'required|in:new,old,transferee,balik_aral',
                 'school_year' => 'required|string|max:20',
                 'with_lrn' => 'required|boolean',
                 'returning' => 'required|boolean',
@@ -485,7 +485,7 @@ class EnrollmentController extends Controller
                 'mother_tongue' => 'nullable|string|max:100',
                 'middle_name' => 'nullable|string|max:50',
                 'ip_community_member' => 'required|boolean',
-                'ip_community' => 'required_if:ip_community_member,1|string|max:100',
+                'ip_community' => 'nullable|required_if:ip_community_member,1|string|max:100',
                 'extension_name' => 'nullable|string|max:10',
                 '4ps_beneficiary' => 'required|boolean',
                 '4ps_household_id' => 'required_if:4ps_beneficiary,1|string|max:20',
