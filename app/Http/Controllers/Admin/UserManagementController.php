@@ -6,14 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Illuminate\Foundation\Configuration\Middleware; // Correct import
 
+#[Middleware(['auth', 'role:principal'])]
 class UserManagementController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(['auth', 'role:principal']);
-    }
-
     public function index()
     {
         $pendingUsers = User::where('approved', false)->get();
@@ -24,11 +21,13 @@ class UserManagementController extends Controller
     {
         $user->update(['approved' => true]);
 
-        // Optionally create a Teacher record
         \App\Models\Teacher::firstOrCreate(
             ['teacher_id' => $user->id],
             [
-                // Add teacher-specific fields if needed
+                'email' => $user->email,
+                'role' => $user->role,
+                'password_hash' => $user->password,
+                'assigned_grade_level' => $user->assigned_grade_level,
             ]
         );
 
