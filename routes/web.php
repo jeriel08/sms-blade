@@ -62,6 +62,28 @@ Route::middleware(['auth'])->group(function () {
         $sections = Section::where('grade_level', $gradeLevel)->get(['section_id', 'name']);
         return response()->json($sections);
     });
+    Route::middleware(['auth'])->group(function () {
+    // Student Information System
+    Route::prefix('students')->group(function () {
+        Route::get('/', [StudentController::class, 'index'])->name('students.index');
+        Route::get('/{lrn}', [StudentController::class, 'show'])->name('students.show');
+        Route::get('/{lrn}/edit', [StudentController::class, 'edit'])->name('students.edit');
+        Route::put('/{lrn}', [StudentController::class, 'update'])->name('students.update');
+        // Fix this route - use parameter name
+        Route::post('/{lrn}/enroll', [StudentController::class, 'enroll'])->name('students.enroll');
+    });
+
+    // ... rest of your routes
+});
+Route::prefix('students')->group(function () {
+    Route::get('/', [StudentController::class, 'index'])->name('students.index');
+    Route::get('/{lrn}', [StudentController::class, 'show'])->name('students.show');
+    Route::get('/{lrn}/edit', [StudentController::class, 'edit'])->name('students.edit');
+    Route::put('/{lrn}', [StudentController::class, 'update'])->name('students.update');
+    Route::post('/{lrn}/enroll', [StudentController::class, 'enroll'])->name('students.enroll');
+    // Add this new route for academic record
+    Route::get('/{lrn}/academic-record', [StudentController::class, 'academicRecord'])->name('students.academic-record');
+});
 });
 
 require __DIR__ . '/auth.php';
