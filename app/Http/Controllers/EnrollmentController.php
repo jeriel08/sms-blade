@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+//THIS IS THE ORIGINAL FILE
 use App\Models\Enrollment;
 use App\Models\Student;
 use App\Models\Teacher;
@@ -158,7 +158,7 @@ class EnrollmentController extends Controller
 
         // Validate student_type
         if (!in_array($studentType, ['new', 'transferee', 'balik_aral'])) {
-            \Log::warning('Invalid student_type: ' . $studentType);
+            Log::warning('Invalid student_type: ' . $studentType);
             $studentType = 'new'; // Fallback
         }
 
@@ -189,13 +189,14 @@ class EnrollmentController extends Controller
         $disabilities = Disability::orderBy('name')->get();
         $formData = session('enrollment_form_data', []);
         $schoolYear = Settings::where('key', 'school_year')->value('value') ?? '2024-2025';
+        $formData = session('enrollment_form_data', []);
 
         return view('enrollments.create', [
             'studentType' => $studentType,
             'currentStep' => $currentStep,
             'disabilities' => $disabilities,
             'formData' => $formData,
-            'schoolYear'=> $schoolYear,
+            'schoolYear' => $schoolYear,
         ]);
     }
 
@@ -212,7 +213,7 @@ class EnrollmentController extends Controller
             $formData = array_merge($formData, $request->only(['declaration']));
 
             // Log form data for debugging
-            \Log::info('Form data before validation:', $formData);
+            Log::info('Form data before validation:', $formData);
 
             // Validate all data together
             $rules = array_merge(
@@ -223,9 +224,9 @@ class EnrollmentController extends Controller
                 $this->getValidationRules('review')
             );
             $validator = Validator::make($formData, $rules);
-            
+
             if ($validator->fails()) {
-                \Log::info('Validation errors in store:', $validator->errors()->all());
+                Log::info('Validation errors in store:', $validator->errors()->all());
                 return back()->with('error', 'Failed to enroll student: ' . implode(' ', $validator->errors()->all()))->withInput();
             }
 
@@ -343,7 +344,7 @@ class EnrollmentController extends Controller
                 ->with('success', 'Student enrolled successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Enrollment failed: ' . $e->getMessage(), [
+            Log::error('Enrollment failed: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'data' => $formData,
             ]);
