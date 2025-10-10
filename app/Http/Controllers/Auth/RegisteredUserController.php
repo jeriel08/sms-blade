@@ -35,7 +35,6 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:Adviser,Head Teacher'], // Restrict roles
         ];
 
         // Apply email domain restriction unless in testing mode
@@ -53,7 +52,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => 'Subject Teacher',
             'assigned_grade_level' => $request->role === 'Adviser' ? $request->assigned_grade_level : null,
         ]);
 

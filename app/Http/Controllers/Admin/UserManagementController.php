@@ -19,7 +19,7 @@ class UserManagementController extends Controller
 
     public function approve(Request $request, User $user)
     {
-        $user->update(['approved' => true]);
+        $user->update(['approved' => 1]);
 
         \App\Models\Teacher::firstOrCreate(
             ['teacher_id' => $user->id],

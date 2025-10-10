@@ -49,7 +49,10 @@
                                 Email
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Role
+                                Current Role
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Assign Role
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Action
@@ -70,12 +73,25 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <form action="{{ route('admin.users.approve', $user) }}" method="POST">
-                                        @csrf
-                                        <x-primary-button type="submit" class="gap-2">
-                                            <x-hugeicons-checkmark-circle-01 /> 
-                                            {{ __('Approve') }}
-                                         </x-primary-button>
-                                    </form>
+                                            @csrf
+                                            <select name="role" class="border-gray-300 rounded-md">
+                                                <option value="Subject Teacher">Subject Teacher</option>
+                                                <option value="Adviser">Adviser</option>
+                                                <option value="Head Teacher">Head Teacher</option>
+                                            </select>
+                                            @if ($user->role === 'Adviser')
+                                                <select name="assigned_grade_level" class="border-gray-300 rounded-md mt-2">
+                                                    <option value="7">Grade 7</option>
+                                                    <option value="8">Grade 8</option>
+                                                    <option value="9">Grade 9</option>
+                                                    <option value="10">Grade 10</option>
+                                                    <option value="11">Grade 11</option>
+                                                    <option value="12">Grade 12</option>
+                                                </select>
+                                            @endif
+                                </td>
+                                <td class="px-4 py-2">
+                                    <button type="submit" class="text-blue-600 hover:underline">Approve</button>
                                 </td>
                             </tr>
                         @endforeach

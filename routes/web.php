@@ -61,11 +61,6 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
         Route::post('/{enrollment_id}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
     });
 
-    Route::prefix('admin')->group(function () {
-        Route::get('/users', [\App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('admin.users.index');
-        Route::post('/users/{user}/approve', [\App\Http\Controllers\Admin\UserManagementController::class, 'approve'])->name('admin.users.approve');
-    });
-
     Route::post('/sections/sync', [SectionController::class, 'sync'])->name('sections.sync');
     Route::get('/sections', function (Request $request) {
         $gradeLevel = $request->query('grade_level');
@@ -74,6 +69,10 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     });
 });
 
+Route::prefix('admin')->middleware(['auth', 'verified', 'approved', 'admin'])->group(function () {
+    Route::get('/users', [\App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('admin.users.index');
+    Route::post('/users/{user}/approve', [\App\Http\Controllers\Admin\UserManagementController::class, 'approve'])->name('admin.users.approve');
+});
 
 
 require __DIR__ . '/auth.php';

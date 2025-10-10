@@ -18,13 +18,9 @@
 
         <!-- Password -->
         <div class="mt-4">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-start">
                 <x-input-label for="password" :value="__('Password')" />
-                @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-hidden focus:ring-indigo-500 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
+                
             </div>
 
             <x-text-input id="password" class="block mt-1 w-full"
@@ -36,20 +32,30 @@
         </div>
 
         <!-- Remember Me -->
-        <div class="block mt-4">
+        <div class="flex justify-between align-content-center mt-4">
             <label for="remember_me" class="inline-flex items-center">
                 <input id="remember_me" type="checkbox" class="rounded-sm border-gray-300 text-indigo-600 shadow-xs focus:ring-indigo-500" name="remember">
                 <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
             </label>
+            @if (Route::has('password.request'))
+                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-hidden focus:ring-indigo-500 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                        {{ __('Forgot your password?') }}
+                    </a>
+                @endif
         </div>
 
-        <div class="flex items-center justify-center mt-4">
-            
-
+        <div class="flex items-center justify-center mt-6">
             <x-primary-button class="ms-3 px-7 gap-2">
-                {{ __('Log in') }}
                 <x-hugeicons-login-02 />
+                {{ __('Log in') }}
             </x-primary-button>
+        </div>
+
+        <!-- Registration Link -->
+        <div class="flex items-center justify-center mt-4">
+            <a href="{{ route('register') }}" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-hidden focus:ring-indigo-500 focus:ring-offset-2 focus:ring-indigo-500">
+                {{ __('Don\'t have an account? Register here') }}
+            </a>
         </div>
     </form>
 </x-guest-layout>
