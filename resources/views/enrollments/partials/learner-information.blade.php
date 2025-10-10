@@ -199,7 +199,7 @@
 
             {{-- Mother Tongue --}}
             <div>
-                <x-input-label for="mother_tongue" value="Mother Tounge" />
+                <x-input-label for="mother_tongue" value="Mother Tongue" />
                 <x-text-input 
                     id="mother_tongue" 
                     name="mother_tongue" 

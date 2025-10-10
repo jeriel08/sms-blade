@@ -26,10 +26,6 @@ Route::get('/courses', function () {
     return view('courses.index');
 })->middleware(['auth', 'verified'])->name('courses');
 
-Route::get('/assessments', function () {
-    return view('assessments.index');
-})->middleware(['auth', 'verified'])->name('assessments');
-
 Route::get('/reports', function () {
     return view('reports.index');
 })->middleware(['auth', 'verified'])->name('reports');
@@ -68,27 +64,27 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
         return response()->json($sections);
     });
     Route::middleware(['auth'])->group(function () {
-    // Student Information System
+        // Student Information System
+        Route::prefix('students')->group(function () {
+            Route::get('/', [StudentController::class, 'index'])->name('students.index');
+            Route::get('/{lrn}', [StudentController::class, 'show'])->name('students.show');
+            Route::get('/{lrn}/edit', [StudentController::class, 'edit'])->name('students.edit');
+            Route::put('/{lrn}', [StudentController::class, 'update'])->name('students.update');
+            // Fix this route - use parameter name
+            Route::post('/{lrn}/enroll', [StudentController::class, 'enroll'])->name('students.enroll');
+        });
+
+        // ... rest of your routes
+    });
     Route::prefix('students')->group(function () {
         Route::get('/', [StudentController::class, 'index'])->name('students.index');
         Route::get('/{lrn}', [StudentController::class, 'show'])->name('students.show');
         Route::get('/{lrn}/edit', [StudentController::class, 'edit'])->name('students.edit');
         Route::put('/{lrn}', [StudentController::class, 'update'])->name('students.update');
-        // Fix this route - use parameter name
         Route::post('/{lrn}/enroll', [StudentController::class, 'enroll'])->name('students.enroll');
+        // Add this new route for academic record
+        Route::get('/{lrn}/academic-record', [StudentController::class, 'academicRecord'])->name('students.academic-record');
     });
-
-    // ... rest of your routes
-});
-Route::prefix('students')->group(function () {
-    Route::get('/', [StudentController::class, 'index'])->name('students.index');
-    Route::get('/{lrn}', [StudentController::class, 'show'])->name('students.show');
-    Route::get('/{lrn}/edit', [StudentController::class, 'edit'])->name('students.edit');
-    Route::put('/{lrn}', [StudentController::class, 'update'])->name('students.update');
-    Route::post('/{lrn}/enroll', [StudentController::class, 'enroll'])->name('students.enroll');
-    // Add this new route for academic record
-    Route::get('/{lrn}/academic-record', [StudentController::class, 'academicRecord'])->name('students.academic-record');
-});
 });
 
 Route::prefix('admin')->middleware(['auth', 'verified', 'approved', 'admin'])->group(function () {

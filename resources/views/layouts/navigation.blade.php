@@ -18,7 +18,7 @@
             {{ __('Dashboard') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.index')" 
+        <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')" 
                     class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-student />
             {{ __('Students') }}
@@ -30,17 +30,19 @@
             {{ __('Courses') }}
         </x-nav-link>
         
-        <x-nav-link :href="route('enrollments.index')" :active="request()->routeIs('enrollments.index')" 
+        <x-nav-link :href="route('enrollments.index')" :active="request()->routeIs('enrollments.*')" 
                     class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-user-add-01 />
             {{ __('Enrollment') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('assessments')" :active="request()->routeIs('assessments')" 
-                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
-            <x-hugeicons-presentation-bar-chart-01 />
-            {{ __('Assessments') }}
-        </x-nav-link>
+        @if (auth()->user()->hasRole(['principal', 'head-teacher']))    
+            <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.*')" 
+                        class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+                <x-hugeicons-presentation-bar-chart-01 />
+                {{ __('Admin Panel') }}
+            </x-nav-link>
+        @endif
 
         <x-nav-link :href="route('reports')" :active="request()->routeIs('reports')" 
                     class="flex gap-2 !justify-start !px-4 !py-auto w-full">
