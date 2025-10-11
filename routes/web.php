@@ -7,6 +7,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\AdvisoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,12 +32,11 @@ Route::get('/reports', function () {
     return view('reports.index');
 })->middleware(['auth', 'verified'])->name('reports');
 
-Route::get('/advisory', function () {
-    return view('advisory.index');
-})->middleware(['auth', 'verified'])->name('advisory');
-
-
-
+// Advisory Routes - Now using controller instead of direct view
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/advisory', [AdvisoryController::class, 'index'])->name('advisory.index');
+    Route::delete('/advisory/remove/{lrn}', [AdvisoryController::class, 'removeStudent'])->name('advisory.remove-student');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

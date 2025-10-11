@@ -19,7 +19,7 @@
             {{ __('Dashboard') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('advisory')" :active="request()->routeIs('advisory')"
+        <x-nav-link :href="route('advisory.index')" :active="request()->routeIs('advisory.index')"
             class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-teacher />
             {{ __('Advisory') }}
@@ -94,7 +94,7 @@
                         class="flex items-center gap-2 text-red-600 hover:text-red-700">
                         <x-hugeicons-logout-02 />
                         {{ __('Log Out') }}
-                        </x->
+                    </x-dropdown-link>
                 </form>
             </x-slot>
         </x-dropdown>
