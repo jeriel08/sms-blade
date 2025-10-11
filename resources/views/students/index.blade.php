@@ -185,16 +185,11 @@
                                         <div class="flex items-center gap-3">
                                             <div>
                                                 <p class="font-medium text-gray-900">{{ $student->first_name }} {{ $student->last_name }}</p>
-                                                <p class="text-xs text-gray-500">
-                                                    {{ $studentType === 'new' ? 'New Student' : 
-                                                       ($studentType === 'transferee' ? 'Transferee' : 
-                                                       ($studentType === 'returning' ? 'Returnee' : 'Old Student')) }}
-                                                </p>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
+                                        <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium min-w-[85px] 
                                             {{ $studentType === 'new' ? 'bg-purple-100 text-purple-800' : 
                                                ($studentType === 'transferee' ? 'bg-orange-100 text-orange-800' : 
                                                ($studentType === 'returning' ? 'bg-pink-100 text-pink-800' : 'bg-green-100 text-green-800')) }}">
@@ -208,17 +203,17 @@
                                         {{ $section ?? '-' }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                            {{ $status === 'enrolled' ? 'bg-green-100 text-green-800' : 
-                                               ($status === 'registered' ? 'bg-yellow-100 text-yellow-800' : 
-                                               ($status === 'inactive' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
-                                            <span class="w-1.5 h-1.5 mr-1.5 rounded-full 
-                                                {{ $status === 'enrolled' ? 'bg-green-600' : 
-                                                   ($status === 'registered' ? 'bg-yellow-600' : 
-                                                   ($status === 'inactive' ? 'bg-red-600' : 'bg-gray-600')) }}"></span>
-                                            {{ ucfirst($status) }}
-                                        </span>
-                                    </td>
+    <span class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium w-24 
+        {{ $status === 'enrolled' ? 'bg-green-100 text-green-800' : 
+           ($status === 'registered' ? 'bg-yellow-100 text-yellow-800' : 
+           ($status === 'inactive' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
+        <span class="w-2 h-2 mr-1.5 rounded-full 
+            {{ $status === 'enrolled' ? 'bg-green-600' : 
+               ($status === 'registered' ? 'bg-yellow-600' : 
+               ($status === 'inactive' ? 'bg-red-600' : 'bg-gray-600')) }}"></span>
+        {{ ucfirst($status) }}
+    </span>
+</td>
                                     <td class="px-6 py-4 text-sm">{{ $student->created_at->format('M d, Y') }}</td>
                                     <td class="px-6 py-4 text-sm {{ $dateEnrolled ? '' : 'text-gray-500' }}">
                                         {{ $dateEnrolled ? \Carbon\Carbon::parse($dateEnrolled)->format('M d, Y') : '-' }}
