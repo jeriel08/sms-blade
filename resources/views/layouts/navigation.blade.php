@@ -1,60 +1,71 @@
-<nav x-data="{ open: false, mobileOpen: false }" class="bg-white border-r border-gray-200 w-64 shrink-0 fixed left-0 top-0 h-screen flex flex-col">
+<nav x-data="{ open: false, mobileOpen: false }"
+    class="bg-white border-r border-gray-200 w-64 shrink-0 fixed left-0 top-0 h-screen flex flex-col">
     <!-- Logo Section -->
-<div class="p-4 border-b border-gray-200 bg-white shrink-0">
-    <div class="flex flex-col items-center text-center">
-        <a href="{{ route('dashboard') }}" class="flex flex-col items-center space-y-2">
-            <x-application-logo class="block h-24 w-auto fill-current text-gray-800" />
-            <div class="flex flex-col">
-                <span class="text-sm font-bold text-1">Student Management System</span>
-            </div>
-        </a>
+    <div class="p-4 border-b border-gray-200 bg-white shrink-0">
+        <div class="flex flex-col items-center text-center">
+            <a href="{{ route('dashboard') }}" class="flex flex-col items-center space-y-2">
+                <x-application-logo class="block h-24 w-auto fill-current text-gray-800" />
+                <div class="flex flex-col">
+                    <span class="text-sm font-bold text-1">Student Management System</span>
+                </div>
+            </a>
+        </div>
     </div>
-</div>
     <!-- Navigation Links - This will grow to take available space -->
     <div class="flex-1 px-4 py-4 space-y-3">
-        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" 
-                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
+            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-dashboard-square-02 />
             {{ __('Dashboard') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.index')" 
-                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+        <x-nav-link :href="route('advisory')" :active="request()->routeIs('advisory')"
+            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+            <x-hugeicons-teacher />
+            {{ __('Advisory') }}
+        </x-nav-link>
+
+        <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.index')"
+            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-student />
             {{ __('Students') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('courses')" :active="request()->routeIs('courses')" 
-                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+        <x-nav-link :href="route('courses')" :active="request()->routeIs('courses')"
+            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-course />
             {{ __('Courses') }}
         </x-nav-link>
-        
-        <x-nav-link :href="route('enrollments.index')" :active="request()->routeIs('enrollments.index')" 
-                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+
+        <x-nav-link :href="route('enrollments.index')" :active="request()->routeIs('enrollments.index')"
+            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-user-add-01 />
             {{ __('Enrollment') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('assessments')" :active="request()->routeIs('assessments')" 
-                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+        <x-nav-link :href="route('assessments')" :active="request()->routeIs('assessments')"
+            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-presentation-bar-chart-01 />
             {{ __('Assessments') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('reports')" :active="request()->routeIs('reports')" 
-                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+        <x-nav-link :href="route('reports')" :active="request()->routeIs('reports')"
+            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-chart-line-data-01 />
             {{ __('Reports') }}
         </x-nav-link>
+
+
+
         <!-- Add more navigation links here as needed -->
     </div>
 
     <!-- User Section - This stays at the bottom but not forced -->
     <div class="p-4 border-t border-gray-200 bg-white shrink-0">
         <x-dropdown align="left" width="48">
-           <x-slot name="trigger">
-                <button class="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md text-gray-700 hover:bg-gray-100 focus:outline-hidden transition ease-in-out duration-150">
+            <x-slot name="trigger">
+                <button
+                    class="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md text-gray-700 hover:bg-gray-100 focus:outline-hidden transition ease-in-out duration-150">
                     <div class="flex items-center min-w-0 flex-1">
                         <div class="min-w-0 flex-1 text-left">
                             <div class="text-sm font-medium text-gray-900 truncate">
@@ -78,13 +89,12 @@
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <x-dropdown-link :href="route('logout')"
-                            onclick="event.preventDefault();
+                    <x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
                                         this.closest('form').submit();"
-                            class="flex items-center gap-2 text-red-600 hover:text-red-700">
+                        class="flex items-center gap-2 text-red-600 hover:text-red-700">
                         <x-hugeicons-logout-02 />
                         {{ __('Log Out') }}
-                    </x->
+                        </x->
                 </form>
             </x-slot>
         </x-dropdown>
@@ -92,9 +102,11 @@
 
     <!-- Mobile Navigation Button -->
     <div class="sm:hidden p-4 border-b border-gray-200">
-        <button @click="mobileOpen = ! mobileOpen" class="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md text-gray-700 hover:bg-gray-100 focus:outline-hidden transition ease-in-out duration-150">
+        <button @click="mobileOpen = ! mobileOpen"
+            class="flex items-center justify-between w-full px-3 py-2 text-sm rounded-md text-gray-700 hover:bg-gray-100 focus:outline-hidden transition ease-in-out duration-150">
             <span>Menu</span>
-            <svg class="h-4 w-4" :class="{'rotate-180': mobileOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="h-4 w-4" :class="{'rotate-180': mobileOpen}" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
         </button>
@@ -103,7 +115,8 @@
     <!-- Mobile Navigation Menu -->
     <div :class="{'block': mobileOpen, 'hidden': ! mobileOpen}" class="sm:hidden border-t border-gray-200">
         <div class="px-2 py-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="!justify-start !px-3">
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
+                class="!justify-start !px-3">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>
@@ -132,10 +145,8 @@
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();"
-                            class="!justify-start !px-3 text-red-600">
+                    <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault();
+                                        this.closest('form').submit();" class="!justify-start !px-3 text-red-600">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>
