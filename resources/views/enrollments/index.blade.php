@@ -109,55 +109,50 @@
                                 Grade Level
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Section
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Status
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Action
+                                Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($enrollments as $enrollment)
-                            <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                    {{ $enrollment->student->lrn }}
-                                </th>
+                            <tr class="bg-white border-b hover:bg-gray-50">
                                 <td class="px-6 py-4">
-                                    {{ $enrollment->student->first_name }} {{ $enrollment->student->last_name }}
+                                    {{ $enrollment->student->lrn ?? 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    {{ $enrollment->grade_level }}
+                                    {{ $enrollment->student->last_name . ', ' . $enrollment->student->first_name . ' ' . ($enrollment->student->middle_name ? $enrollment->student->middle_name[0] . '.' : '') }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    {{ $enrollment->status }}
+                                    {{ $enrollment->grade_level ?? 'Unassigned' }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if ($enrollment->status === 'Registered')
-                                        <x-primary-button 
-                                            class="gap-2" 
-                                            x-data="{}" 
-                                            @click="$dispatch('open-modal', 'enroll-student-{{ $enrollment->enrollment_id }}')"
-                                        >
-                                            {{ __('Enroll') }}
-                                        </x-primary-button>
-                                    @elseif ($enrollment->status === 'Enrolled')
-                                        <x-primary-button 
-                                            class="gap-2" 
-                                            onclick="window.location.href='{{ route('enrollments.show', $enrollment->enrollment_id) }}'"
-                                        >
-                                            {{ __('Details') }}
+                                    {{ $enrollment->section->name ?? 'Unassigned' }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium 
+                                        {{ $enrollment->status === 'Enrolled' ? 'bg-green-100 text-green-800' : 
+                                           ($enrollment->status === 'Registered' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                        {{ $enrollment->status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    @if($enrollment->status === 'Registered')
+                                        <x-primary-button x-on:click="$dispatch('open-modal', 'enroll-student-{{ $enrollment->enrollment_id }}')">
+                                            Assign
                                         </x-primary-button>
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-center">
-                                    @if(request('search'))
-                                        No enrollments found for your search criteria.
-                                    @else
-                                        No enrollments found.
-                                    @endif
+                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                    No enrollments found.
                                 </td>
                             </tr>
                         @endforelse
@@ -214,13 +209,15 @@
         // Rest of the script remains the same (search-lrn-btn, confirm-student-btn, updateSections)
         document.getElementById('search-lrn-btn')?.addEventListener('click', function() {
             const lrn = document.getElementById('lrn-input')?.value.trim();
-            if (!lrn || lrn.length !== 12 || isNaN(lrn)) {
+            if (!lrn || lrn.length !== 12 || !/^\d{12}$/.test(lrn)) {
                 const errorMsg = document.getElementById('error-message');
                 if (errorMsg) {
                     errorMsg.textContent = 'Please enter a valid 12-digit LRN.';
                     errorMsg.classList.remove('hidden');
                 }
-                showToast('Invalid LRN. Please enter a 12-digit number.', 'error');
+                if (typeof showToast === 'function') {
+                    showToast('Invalid LRN. Please enter a 12-digit number.', 'error');
+                }
                 return;
             }
 
@@ -228,7 +225,9 @@
                 headers: { 'Accept': 'application/json' }
             })
                 .then(response => {
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
                     return response.json();
                 })
                 .then(data => {
@@ -243,7 +242,9 @@
                         if (confirmBtn) confirmBtn.classList.remove('hidden');
                         if (errorMsg) errorMsg.classList.add('hidden');
                         studentLrn = lrn;
-                        showToast(`Found student: ${data.name}`, 'success');
+                        if (typeof showToast === 'function') {
+                            showToast(`Found student: ${data.name}`, 'success');
+                        }
                     } else {
                         if (errorMsg) {
                             errorMsg.textContent = data.message || 'Student not found.';
@@ -251,7 +252,9 @@
                         }
                         if (studentInfo) studentInfo.classList.add('hidden');
                         if (confirmBtn) confirmBtn.classList.add('hidden');
-                        showToast(data.message || 'Student not found.', 'error');
+                        if (typeof showToast === 'function') {
+                            showToast(data.message || 'Student not found.', 'error');
+                        }
                     }
                 })
                 .catch(error => {
@@ -261,7 +264,9 @@
                         errorMsg.textContent = 'Error searching student.';
                         errorMsg.classList.remove('hidden');
                     }
-                    showToast('Failed to search student.', 'error');
+                    if (typeof showToast === 'function') {
+                        showToast('Failed to search student.', 'error');
+                    }
                 });
         });
 
