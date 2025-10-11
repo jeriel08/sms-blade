@@ -1,0 +1,3 @@
+-   [ ] Update routes/web.php to use TeacherController@advisory
+-   [ ] Add advisory method to TeacherController
+-   [ ] Update advisory/index.blade.php for dynamic data
