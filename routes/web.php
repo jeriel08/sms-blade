@@ -6,6 +6,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\Admin\AdminControlController;
+use App\Http\Controllers\Admin\UserManagementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,6 +45,8 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
         Route::get('/{lrn}', [StudentController::class, 'show'])->name('students.show');
         Route::get('/{lrn}/edit', [StudentController::class, 'edit'])->name('students.edit');
         Route::put('/{lrn}', [StudentController::class, 'update'])->name('students.update');
+        Route::post('/{lrn}/enroll', [StudentController::class, 'enroll'])->name('students.enroll');
+        Route::get('/{lrn}/academic-record', [StudentController::class, 'academicRecord'])->name('students.academic-record');
     });
 
     // Student Enrollment System
@@ -51,10 +55,9 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
         Route::match(['get', 'post'], '/create', [EnrollmentController::class, 'create'])->name('enrollments.create');
         Route::post('/', [EnrollmentController::class, 'store'])->name('enrollments.store');
         Route::get('/settings', [EnrollmentController::class, 'settings'])->name('enrollments.settings');
-        Route::post('/enrollments/{enrollment}/assign', [EnrollmentController::class, 'assignGradeAndSection'])->name('enrollments.assign');
-        Route::get('/enrollments/{enrollment}', [EnrollmentController::class, 'show'])->name('enrollments.show');
-        Route::get('/{enrollment_id}', [EnrollmentController::class, 'show'])->name('enrollments.show');
-        Route::post('/{enrollment_id}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
+        Route::post('/{enrollment}/assign', [EnrollmentController::class, 'assignGradeAndSection'])->name('enrollments.assign');
+        Route::get('/{enrollment}', [EnrollmentController::class, 'show'])->name('enrollments.show');
+        Route::post('/{enrollment}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
     });
 
     Route::post('/sections/sync', [SectionController::class, 'sync'])->name('sections.sync');
@@ -63,33 +66,14 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
         $sections = Section::where('grade_level', $gradeLevel)->get(['section_id', 'name']);
         return response()->json($sections);
     });
-    Route::middleware(['auth'])->group(function () {
-        // Student Information System
-        Route::prefix('students')->group(function () {
-            Route::get('/', [StudentController::class, 'index'])->name('students.index');
-            Route::get('/{lrn}', [StudentController::class, 'show'])->name('students.show');
-            Route::get('/{lrn}/edit', [StudentController::class, 'edit'])->name('students.edit');
-            Route::put('/{lrn}', [StudentController::class, 'update'])->name('students.update');
-            // Fix this route - use parameter name
-            Route::post('/{lrn}/enroll', [StudentController::class, 'enroll'])->name('students.enroll');
-        });
-
-        // ... rest of your routes
-    });
-    Route::prefix('students')->group(function () {
-        Route::get('/', [StudentController::class, 'index'])->name('students.index');
-        Route::get('/{lrn}', [StudentController::class, 'show'])->name('students.show');
-        Route::get('/{lrn}/edit', [StudentController::class, 'edit'])->name('students.edit');
-        Route::put('/{lrn}', [StudentController::class, 'update'])->name('students.update');
-        Route::post('/{lrn}/enroll', [StudentController::class, 'enroll'])->name('students.enroll');
-        // Add this new route for academic record
-        Route::get('/{lrn}/academic-record', [StudentController::class, 'academicRecord'])->name('students.academic-record');
-    });
 });
 
-Route::prefix('admin')->middleware(['auth', 'verified', 'approved', 'admin'])->group(function () {
-    Route::get('/users', [\App\Http\Controllers\Admin\UserManagementController::class, 'index'])->name('admin.users.index');
-    Route::post('/users/{user}/approve', [\App\Http\Controllers\Admin\UserManagementController::class, 'approve'])->name('admin.users.approve');
+// Admin Control (new section)
+Route::prefix('admin')->middleware(['admin', 'auth', 'approved', 'verified'])->group(function () {
+    Route::get('/control', [AdminControlController::class, 'index'])->name('admin.control.index');
+    Route::post('/control/settings', [AdminControlController::class, 'settings'])->name('admin.control.settings');
+    Route::get('/users', [UserManagementController::class, 'index'])->name('admin.users.index');
+    Route::post('/users/{user}/approve', [UserManagementController::class, 'approve'])->name('admin.users.approve');
 });
 
 

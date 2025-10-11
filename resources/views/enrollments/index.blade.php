@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout x-transition>
     @section('title', 'Enrollments | MBNHS-SMS')
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-1 leading-tight">

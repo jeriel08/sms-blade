@@ -37,9 +37,9 @@
         </x-nav-link>
 
         @if (auth()->user()->hasRole(['principal', 'head-teacher']))    
-            <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.*')" 
+            <x-nav-link :href="route('admin.control.index')" :active="request()->routeIs('admin.*')" 
                         class="flex gap-2 !justify-start !px-4 !py-auto w-full">
-                <x-hugeicons-presentation-bar-chart-01 />
+                <x-hugeicons-shield-user />
                 {{ __('Admin Panel') }}
             </x-nav-link>
         @endif
