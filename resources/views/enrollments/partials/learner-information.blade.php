@@ -11,7 +11,7 @@
                     name="school_year" 
                     type="text" 
                     class="mt-1 block bg-gray-100 cursor-not-allowed" 
-                    value="{{ $schoolYear }}" 
+                    value="{{ $formData['school_year'] ?? '' }}" 
                     readonly 
                 />
             </div>

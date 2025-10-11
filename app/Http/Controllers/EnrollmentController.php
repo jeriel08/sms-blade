@@ -156,48 +156,46 @@ class EnrollmentController extends Controller
         $studentType = $request->query('type', session('enrollment_form_data.student_type', 'new'));
         $currentStep = $request->query('step', 'learner');
 
-        // Validate student_type
-        if (!in_array($studentType, ['new', 'transferee', 'balik_aral'])) {
-            Log::warning('Invalid student_type: ' . $studentType);
-            $studentType = 'new'; // Fallback
+        if (!in_array($studentType, ['new', 'transferee', 'balik_aral', 'old'])) {
+            $studentType = 'new';
         }
 
-        $validSteps = ['learner', 'address', 'guardian', 'review'];
-        if ($studentType === 'transferee') {
-            $validSteps = ['learner', 'address', 'guardian', 'school', 'review'];
-        }
+        if (in_array($studentType, ['old', 'balik_aral']) && $request->has('lrn')) {
+            $student = Student::where('lrn', $request->query('lrn'))->with(['currentAddress', 'permanentAddress', 'familyContacts', 'disabilities'])->first();
+            if ($student) {
+                $formData = session('enrollment_form_data', []);
+                $formData['student_type'] = $studentType;
+                $formData['school_year'] = Settings::where('key', 'school_year')->value('value') ?? '2024-2025';
+                $formData['with_lrn'] = 1;
+                $formData['returning'] = ($studentType === 'balik_aral') ? 1 : 0;
+                $formData['lrn'] = $student->lrn;
+                $formData['first_name'] = $student->first_name;
+                $formData['last_name'] = $student->last_name;
+                $formData['middle_name'] = $student->middle_name;
+                $formData['extension_name'] = $student->extension_name;
+                $formData['gender'] = $student->gender;
+                $formData['birthdate'] = $student->birthdate;
+                $formData['place_of_birth'] = $student->place_of_birth;
+                $formData['age'] = now()->diffInYears($student->birthdate);
+                $formData['mother_tongue'] = $student->mother_tongue;
 
-        if (!in_array($currentStep, $validSteps)) {
-            $currentStep = 'learner';
-        }
+                if ($student->address) {
+                    $formData['house_number'] = $student->address->house_number;
+                    $formData['street_name'] = $student->address->street_name;
+                    $formData['barangay'] = $student->address->barangay;
+                    $formData['city'] = $student->address->city;
+                    $formData['province'] = $student->address->province;
+                    $formData['country'] = $student->address->country;
+                    $formData['zip_code'] = $student->address->zip_code;
+                }
 
-        if ($request->isMethod('post')) {
-            if ($request->input('action') === 'submit' && $currentStep === 'review') {
-                return $this->store($request);
+                session()->put('enrollment_form_data', $formData);
+            } else {
+                return redirect()->route('enrollments.index')->with('error', 'Student not found for the provided LRN.');
             }
-
-            $this->saveStepData($request, $currentStep);
-
-            $action = $request->input('action');
-            $nextStep = ($action === 'next') ? $this->getNextStep($currentStep, $validSteps) : $this->getPreviousStep($currentStep, $validSteps);
-
-            if ($nextStep) {
-                return redirect()->route('enrollments.create', ['type' => $studentType, 'step' => $nextStep]);
-            }
         }
 
-        $disabilities = Disability::orderBy('name')->get();
-        $formData = session('enrollment_form_data', []);
-        $schoolYear = Settings::where('key', 'school_year')->value('value') ?? '2024-2025';
-        $formData = session('enrollment_form_data', []);
-
-        return view('enrollments.create', [
-            'studentType' => $studentType,
-            'currentStep' => $currentStep,
-            'disabilities' => $disabilities,
-            'formData' => $formData,
-            'schoolYear' => $schoolYear,
-        ]);
+        return view('enrollments.create', compact('studentType', 'currentStep'));
     }
 
     /**
@@ -563,5 +561,24 @@ class EnrollmentController extends Controller
             return null;
         }
         return $validSteps[$currentIndex - 1];
+    }
+
+    public function searchStudentByLrn(Request $request)
+    {
+        $request->validate(['lrn' => 'required|digits:12']);
+        $lrn = $request->query('lrn');
+        $student = Student::where('lrn', $lrn)->first();
+        if ($student) {
+            return response()->json([
+                'success' => true,
+                'name' => trim(implode(' ', array_filter([
+                    $student->first_name,
+                    $student->middle_name,
+                    $student->last_name
+                ]))),
+                'student_id' => $student->student_id,
+            ]);
+        }
+        return response()->json(['success' => false, 'message' => 'Student not found with this LRN.'], 404);
     }
 }

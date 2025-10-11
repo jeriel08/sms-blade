@@ -49,6 +49,8 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
         Route::get('/{lrn}/academic-record', [StudentController::class, 'academicRecord'])->name('students.academic-record');
     });
 
+    Route::get('/students/search-by-lrn', [EnrollmentController::class, 'searchStudentByLrn'])->name('students.search-by-lrn');
+
     // Student Enrollment System
     Route::prefix('enrollments')->group(function () {
         Route::get('/', [EnrollmentController::class, 'index'])->name('enrollments.index');

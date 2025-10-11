@@ -170,6 +170,7 @@
     </div>
 
     @include('enrollments.modals.student-classification')
+    @include('enrollments.modals.lrn-search')
     @foreach ($enrollments as $enrollment)
         @if ($enrollment->status === 'Registered')
             @include('enrollments.modals.enroll-student', ['enrollment_id' => $enrollment->enrollment_id])
@@ -177,6 +178,100 @@
     @endforeach
 
     <script>
+        let currentStudentType = '';
+        let studentLrn = '';
+
+        function openLrnModal(type) {
+            console.log('Opening LRN modal for type:', type);
+            currentStudentType = type;
+            
+            // Reset LRN modal form
+            setTimeout(() => {
+                const lrnInput = document.getElementById('lrn-input');
+                if (lrnInput) lrnInput.value = '';
+                const studentInfo = document.getElementById('student-info');
+                const confirmBtn = document.getElementById('confirm-student-btn');
+                const errorMsg = document.getElementById('error-message');
+                if (studentInfo) studentInfo.classList.add('hidden');
+                if (confirmBtn) confirmBtn.classList.add('hidden');
+                if (errorMsg) {
+                    errorMsg.classList.add('hidden');
+                    errorMsg.textContent = '';
+                }
+            }, 100);
+
+            // Dispatch proper Alpine.js events
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'lrn-search' }));
+            window.dispatchEvent(new CustomEvent('close-modal', { detail: 'select-student-type' }));
+            console.log('Dispatched events to open LRN modal');
+        }
+
+        function closeModal(name) {
+            window.dispatchEvent(new CustomEvent('close-modal', { detail: name }));
+            console.log(`Dispatched close event for: ${name}`);
+        }
+
+        // Rest of the script remains the same (search-lrn-btn, confirm-student-btn, updateSections)
+        document.getElementById('search-lrn-btn')?.addEventListener('click', function() {
+            const lrn = document.getElementById('lrn-input')?.value.trim();
+            if (!lrn || lrn.length !== 12 || isNaN(lrn)) {
+                const errorMsg = document.getElementById('error-message');
+                if (errorMsg) {
+                    errorMsg.textContent = 'Please enter a valid 12-digit LRN.';
+                    errorMsg.classList.remove('hidden');
+                }
+                showToast('Invalid LRN. Please enter a 12-digit number.', 'error');
+                return;
+            }
+
+            fetch(`{{ route('students.search-by-lrn') }}?lrn=${lrn}`, {
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    const studentInfo = document.getElementById('student-info');
+                    const confirmBtn = document.getElementById('confirm-student-btn');
+                    const errorMsg = document.getElementById('error-message');
+                    const studentNameText = document.getElementById('student-name-text');
+                    
+                    if (data.success) {
+                        if (studentNameText) studentNameText.textContent = data.name;
+                        if (studentInfo) studentInfo.classList.remove('hidden');
+                        if (confirmBtn) confirmBtn.classList.remove('hidden');
+                        if (errorMsg) errorMsg.classList.add('hidden');
+                        studentLrn = lrn;
+                        showToast(`Found student: ${data.name}`, 'success');
+                    } else {
+                        if (errorMsg) {
+                            errorMsg.textContent = data.message || 'Student not found.';
+                            errorMsg.classList.remove('hidden');
+                        }
+                        if (studentInfo) studentInfo.classList.add('hidden');
+                        if (confirmBtn) confirmBtn.classList.add('hidden');
+                        showToast(data.message || 'Student not found.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching LRN:', error);
+                    const errorMsg = document.getElementById('error-message');
+                    if (errorMsg) {
+                        errorMsg.textContent = 'Error searching student.';
+                        errorMsg.classList.remove('hidden');
+                    }
+                    showToast('Failed to search student.', 'error');
+                });
+        });
+
+        document.getElementById('confirm-student-btn')?.addEventListener('click', function() {
+            closeModal('lrn-search');
+            setTimeout(() => {
+                window.location.href = '{{ route("enrollments.create") }}?type=' + currentStudentType + '&lrn=' + studentLrn;
+            }, 300); // Wait for modal to close
+        });
+
         function updateSections(enrollmentId) {
             const gradeLevel = document.getElementById(`grade_level_${enrollmentId}`).value || '7';
             const sectionSelect = document.getElementById(`section_id_${enrollmentId}`);
