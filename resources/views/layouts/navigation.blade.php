@@ -19,11 +19,13 @@
             {{ __('Dashboard') }}
         </x-nav-link>
 
+        @if (auth()->user()->hasRole(['adviser']))
         <x-nav-link :href="route('advisory.index')" :active="request()->routeIs('advisory.index')"
             class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-teacher />
             {{ __('Advisory') }}
         </x-nav-link>
+        @endif
 
         <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')" 
                     class="flex gap-2 !justify-start !px-4 !py-auto w-full">

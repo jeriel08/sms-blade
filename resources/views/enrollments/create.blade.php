@@ -1,5 +1,6 @@
 {{-- resources/views/enrollments/create.blade.php --}}
 <x-app-layout>
+    <pre>{{ json_encode($formData, JSON_PRETTY_PRINT) }}</pre>
     @section('title', 'Register Student | MBNHS-SMS')
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-1 leading-tight">
