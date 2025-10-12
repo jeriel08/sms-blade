@@ -143,9 +143,11 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     @if($enrollment->status === 'Registered')
-                                        <x-primary-button x-on:click="$dispatch('open-modal', 'enroll-student-{{ $enrollment->enrollment_id }}')">
+                                    <x-tooltip text="Enroll Student" position="bottom">
+                                        <x-primary-button x-on:click="console.log('Dispatching open-modal for enroll-student-{{ $enrollment->enrollment_id }}'); $dispatch('open-modal', 'enroll-student-{{ $enrollment->enrollment_id }}')">
                                             Assign
                                         </x-primary-button>
+                                    </x-tooltip>
                                     @endif
                                 </td>
                             </tr>
