@@ -184,11 +184,9 @@
             setTimeout(() => {
                 const lrnInput = document.getElementById('lrn-input');
                 if (lrnInput) lrnInput.value = '';
-                const studentInfo = document.getElementById('student-info');
-                const confirmBtn = document.getElementById('confirm-student-btn');
+                const studentTypeInput = document.getElementById('student_type_input');
+                if (studentTypeInput) studentTypeInput.value = type;
                 const errorMsg = document.getElementById('error-message');
-                if (studentInfo) studentInfo.classList.add('hidden');
-                if (confirmBtn) confirmBtn.classList.add('hidden');
                 if (errorMsg) {
                     errorMsg.classList.add('hidden');
                     errorMsg.textContent = '';
@@ -206,77 +204,7 @@
             console.log(`Dispatched close event for: ${name}`);
         }
 
-        // Rest of the script remains the same (search-lrn-btn, confirm-student-btn, updateSections)
-        document.getElementById('search-lrn-btn')?.addEventListener('click', function() {
-            const lrn = document.getElementById('lrn-input')?.value.trim();
-            if (!lrn || lrn.length !== 12 || !/^\d{12}$/.test(lrn)) {
-                const errorMsg = document.getElementById('error-message');
-                if (errorMsg) {
-                    errorMsg.textContent = 'Please enter a valid 12-digit LRN.';
-                    errorMsg.classList.remove('hidden');
-                }
-                if (typeof showToast === 'function') {
-                    showToast('Invalid LRN. Please enter a 12-digit number.', 'error');
-                }
-                return;
-            }
-
-            fetch(`{{ route('students.search-by-lrn') }}?lrn=${lrn}`, {
-                headers: { 'Accept': 'application/json' }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const studentInfo = document.getElementById('student-info');
-                    const confirmBtn = document.getElementById('confirm-student-btn');
-                    const errorMsg = document.getElementById('error-message');
-                    const studentNameText = document.getElementById('student-name-text');
-                    
-                    if (data.success) {
-                        if (studentNameText) studentNameText.textContent = data.name;
-                        if (studentInfo) studentInfo.classList.remove('hidden');
-                        if (confirmBtn) confirmBtn.classList.remove('hidden');
-                        if (errorMsg) errorMsg.classList.add('hidden');
-                        studentLrn = lrn;
-                        if (typeof showToast === 'function') {
-                            showToast(`Found student: ${data.name}`, 'success');
-                        }
-                    } else {
-                        if (errorMsg) {
-                            errorMsg.textContent = data.message || 'Student not found.';
-                            errorMsg.classList.remove('hidden');
-                        }
-                        if (studentInfo) studentInfo.classList.add('hidden');
-                        if (confirmBtn) confirmBtn.classList.add('hidden');
-                        if (typeof showToast === 'function') {
-                            showToast(data.message || 'Student not found.', 'error');
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error searching LRN:', error);
-                    const errorMsg = document.getElementById('error-message');
-                    if (errorMsg) {
-                        errorMsg.textContent = 'Error searching student.';
-                        errorMsg.classList.remove('hidden');
-                    }
-                    if (typeof showToast === 'function') {
-                        showToast('Failed to search student.', 'error');
-                    }
-                });
-        });
-
-        document.getElementById('confirm-student-btn')?.addEventListener('click', function() {
-            closeModal('lrn-search');
-            setTimeout(() => {
-                window.location.href = '{{ route("enrollments.create") }}?type=' + currentStudentType + '&lrn=' + studentLrn;
-            }, 300); // Wait for modal to close
-        });
-
+        // Update sections function remains the same
         function updateSections(enrollmentId) {
             const gradeLevel = document.getElementById(`grade_level_${enrollmentId}`).value || '7';
             const sectionSelect = document.getElementById(`section_id_${enrollmentId}`);
@@ -299,4 +227,23 @@
                 });
         }
     </script>
+
+    @if (session('error'))
+        <script>
+            window.addEventListener('load', () => {
+                window.dispatchEvent(new CustomEvent('open-modal', { detail: 'lrn-search' }));
+                setTimeout(() => {
+                    const errorMsg = document.getElementById('error-message');
+                    if (errorMsg) {
+                        errorMsg.textContent = '{{ session('error') }}';
+                        errorMsg.classList.remove('hidden');
+                    }
+                    // Optional: If you have a toast function
+                    if (typeof showToast === 'function') {
+                        showToast('{{ session('error') }}', 'error');
+                    }
+                }, 100);
+            });
+        </script>
+    @endif
 </x-app-layout>

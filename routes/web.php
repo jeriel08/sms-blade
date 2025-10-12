@@ -57,13 +57,12 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
         Route::get('/{lrn}/academic-record', [StudentController::class, 'academicRecord'])->name('students.academic-record');
     });
 
-    Route::get('/students/search-by-lrn', [EnrollmentController::class, 'searchStudentByLrn'])->name('students.search-by-lrn');
-
     // Student Enrollment System
     Route::prefix('enrollments')->group(function () {
         Route::get('/', [EnrollmentController::class, 'index'])->name('enrollments.index');
         Route::match(['get', 'post'], '/create', [EnrollmentController::class, 'create'])->name('enrollments.create');
         Route::post('/', [EnrollmentController::class, 'store'])->name('enrollments.store');
+        Route::post('/search-lrn', [EnrollmentController::class, 'searchLrn'])->name('enrollments.search-lrn');
         Route::get('/settings', [EnrollmentController::class, 'settings'])->name('enrollments.settings');
         Route::post('/{enrollment}/assign', [EnrollmentController::class, 'assignGradeAndSection'])->name('enrollments.assign');
         Route::get('/{enrollment}', [EnrollmentController::class, 'show'])->name('enrollments.show');

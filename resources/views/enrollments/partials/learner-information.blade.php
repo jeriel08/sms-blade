@@ -179,8 +179,8 @@
                     class="mt-1 block w-4xs border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs cursor-pointer"
                 >
                     <option value="">Select Gender</option>
-                    <option value="male" {{ isset($formData['gender']) && $formData['gender'] == 'male' ? 'selected' : '' }}>Male</option>
-                    <option value="female" {{ isset($formData['gender']) && $formData['gender'] == 'female' ? 'selected' : '' }}>Female</option>
+                    <option value="male" {{ isset($formData['gender']) && $formData['gender'] == 'Male' ? 'selected' : '' }}>Male</option>
+                    <option value="female" {{ isset($formData['gender']) && $formData['gender'] == 'Female' ? 'selected' : '' }}>Female</option>
                 </select>
             </div>
 

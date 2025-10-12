@@ -184,6 +184,13 @@ class EnrollmentController extends Controller
         if ($lrn && in_array($studentType, ['old', 'balik_aral'])) {
             $student = Student::where('lrn', $lrn)->first();
             if ($student) {
+                if ($studentType === 'balik_aral') {
+                    $formData['returning'] = 1;
+                } else {
+                    $formData['returning'] = 0;
+                }
+
+                $formData['with_lrn'] = 1;
                 $formData['lrn'] = $student->lrn;
                 $formData['first_name'] = $student->first_name;
                 $formData['middle_name'] = $student->middle_name;
@@ -197,6 +204,18 @@ class EnrollmentController extends Controller
                 $formData['ip_community_member'] = $student->is_ip ? '1' : '0';
                 $formData['ip_community'] = $student->ip_community;
                 $formData['is_disabled'] = $student->is_disabled ? '1' : '0';
+
+                $formData['disabilities'] = $student->disabilities->pluck('disability_id')->toArray();
+
+                // Calculate age based on birthdate
+                if ($student->birthdate) {
+                    $birthDate = new \DateTime($student->birthdate);
+                    $currentDate = new \DateTime(); // Uses today's date
+                    $age = $birthDate->diff($currentDate)->y; // Get years difference
+                    $formData['age'] = $age;
+                } else {
+                    $formData['age'] = null; // Handle cases where birthdate is missing
+                }
 
                 // Fetch related address and family contact data
                 $currentAddress = $student->currentAddress;
@@ -226,17 +245,17 @@ class EnrollmentController extends Controller
 
                 $familyContacts = $student->familyContacts;
                 foreach ($familyContacts as $contact) {
-                    if ($contact->contact_type === 'father') {
+                    if ($contact->contact_type === 'Father') {
                         $formData['father_first_name'] = $contact->first_name;
                         $formData['father_middle_name'] = $contact->middle_name;
                         $formData['father_last_name'] = $contact->last_name;
                         $formData['father_contact_number'] = $contact->contact_number;
-                    } elseif ($contact->contact_type === 'mother') {
+                    } elseif ($contact->contact_type === 'Mother') {
                         $formData['mother_first_name'] = $contact->first_name;
                         $formData['mother_middle_name'] = $contact->middle_name;
                         $formData['mother_last_name'] = $contact->last_name;
                         $formData['mother_contact_number'] = $contact->contact_number;
-                    } elseif ($contact->contact_type === 'guardian') {
+                    } elseif ($contact->contact_type === 'Guardian') {
                         $formData['legal_guardian_first_name'] = $contact->first_name;
                         $formData['legal_guardian_middle_name'] = $contact->middle_name;
                         $formData['legal_guardian_last_name'] = $contact->last_name;
@@ -252,7 +271,7 @@ class EnrollmentController extends Controller
         // Handle POST request (form submission)
         if ($request->isMethod('post')) {
             // Get validation rules for the current step
-            $rules = $this->getValidationRules($currentStep);
+            $rules = $this->getValidationRules($currentStep, $studentType);
 
             // Validate input
             $validator = Validator::make($request->all(), $rules);
@@ -441,151 +460,219 @@ class EnrollmentController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            DB::beginTransaction();
+        $studentType = $request->input('student_type');
+        $currentStep = $request->input('_step');
+        $formData = session('enrollment_form_data', []);
+        $formData = array_merge($formData, $request->all());
 
-            // Get session data and merge with current request data
-            $formData = session('enrollment_form_data', []);
-            $formData = array_merge($formData, $request->only(['declaration']));
+        // Validate the current step
+        $rules = $this->getValidationRules($currentStep, $studentType);
+        $validator = Validator::make($formData, $rules);
 
-            // Log form data for debugging
-            Log::info('Form data before validation:', $formData);
-
-            // Validate all data together
-            $rules = array_merge(
-                $this->getValidationRules('learner'),
-                $this->getValidationRules('address'),
-                $this->getValidationRules('guardian'),
-                $request->student_type === 'transferee' ? $this->getValidationRules('school') : [],
-                $this->getValidationRules('review')
-            );
-            $validator = Validator::make($formData, $rules);
-
-            if ($validator->fails()) {
-                Log::info('Validation errors in store:', $validator->errors()->all());
-                return back()->with('error', 'Failed to enroll student: ' . implode(' ', $validator->errors()->all()))->withInput();
-            }
-
-            $validated = $validator->validated();
-
-            // Create current address
-            $currentAddress = Address::create([
-                'house_no' => $validated['house_number'],
-                'street_name' => $validated['street_name'],
-                'barangay' => $validated['barangay'],
-                'municipality_city' => $validated['city'],
-                'province' => $validated['province'],
-                'country' => $validated['country'],
-                'zip_code' => $validated['zip_code'],
-            ]);
-
-            // Create permanent address
-            $permanentAddress = $currentAddress;
-            if ($validated['same_as_current_address'] == 0) {
-                $permanentAddress = Address::create([
-                    'house_no' => $validated['permanent_house_number'],
-                    'street_name' => $validated['permanent_street_name'],
-                    'barangay' => $validated['permanent_barangay'],
-                    'municipality_city' => $validated['permanent_city'],
-                    'province' => $validated['permanent_province'],
-                    'country' => $validated['permanent_country'],
-                    'zip_code' => $validated['permanent_zip_code'],
-                ]);
-            }
-
-            // Create student
-            $studentData = [
-                'lrn' => $validated['lrn'],
-                'last_name' => $validated['last_name'],
-                'first_name' => $validated['first_name'],
-                'middle_name' => $validated['middle_name'] ?? null,
-                'extension_name' => $validated['extension_name'] ?? null,
-                'birthdate' => $validated['birthdate'],
-                'place_of_birth' => $validated['place_of_birth'] ?? null,
-                'sex' => $validated['gender'],
-                'mother_tongue' => $validated['mother_tongue'] ?? null,
-                'psa_birth_cert_no' => $validated['psa_birth_certification_no'] ?? null,
-                'is_ip' => $validated['ip_community_member'],
-                'ip_community' => $validated['ip_community'] ?? null,
-                'current_address_id' => $currentAddress->address_id,
-                'permanent_address_id' => $permanentAddress->address_id,
-                'is_disabled' => $validated['is_disabled'],
-            ];
-            $student = Student::create($studentData);
-            $studentId = $student->student_id;
-
-            // Create family contacts
-            $familyContacts = [
-                [
-                    'student_id' => $studentId,
-                    'contact_type' => 'father',
-                    'last_name' => $validated['father_last_name'],
-                    'first_name' => $validated['father_first_name'],
-                    'middle_name' => $validated['father_middle_name'] ?? null,
-                    'contact_number' => $validated['father_contact_number'],
-                ],
-                [
-                    'student_id' => $studentId,
-                    'contact_type' => 'mother',
-                    'last_name' => $validated['mother_last_name'],
-                    'first_name' => $validated['mother_first_name'],
-                    'middle_name' => $validated['mother_middle_name'] ?? null,
-                    'contact_number' => $validated['mother_contact_number'],
-                ],
-            ];
-            if (!empty($validated['legal_guardian_first_name'])) {
-                $familyContacts[] = [
-                    'student_id' => $studentId,
-                    'contact_type' => 'guardian',
-                    'last_name' => $validated['legal_guardian_last_name'],
-                    'first_name' => $validated['legal_guardian_first_name'],
-                    'middle_name' => $validated['legal_guardian_middle_name'] ?? null,
-                    'contact_number' => $validated['legal_guardian_contact_number'],
-                ];
-            }
-            FamilyContact::insert($familyContacts);
-
-            // Create enrollment
-            $schoolYear = Settings::where('key', 'school_year')->value('value') ?? '2024-2025';
-            $enrollmentData = [
-                'student_id' => $studentId,
-                'school_year' => $schoolYear,
-                'enrollment_type' => $validated['student_type'],
-                'is_4ps' => $validated['4ps_beneficiary'],
-                '_4ps_household_id' => $validated['4ps_household_id'] ?? null,
-                'enrollment_date' => now(),
-            ];
-            if ($validated['student_type'] === 'transferee') {
-                $enrollmentData['last_grade_level'] = $validated['last_grade_level_completed'] ?? null;
-                $enrollmentData['last_school_year'] = $validated['last_school_year_completed'] ?? null;
-                $enrollmentData['last_school_attended'] = $validated['last_school_attended'] ?? null;
-                $enrollmentData['school_id'] = $validated['school_id'] ?? null;
-                $enrollmentData['semester'] = $validated['semester'] ?? null;
-                $enrollmentData['track'] = $validated['track'] ?? null;
-                $enrollmentData['strand'] = $validated['strand'] ?? null;
-            }
-            $enrollment = Enrollment::create($enrollmentData);
-
-            // Handle disabilities
-            if ($validated['is_disabled'] == 1 && !empty($formData['disabilities'])) {
-                $student->disabilities()->attach($formData['disabilities']);
-            }
-
-            DB::commit();
-
-            // Clear session data
-            session()->forget('enrollment_form_data');
-
-            return redirect()->route('enrollments.index')
-                ->with('success', 'Student enrolled successfully!');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Enrollment failed: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'data' => $formData,
-            ]);
-            return back()->with('error', 'Failed to enroll student: ' . $e->getMessage())->withInput();
+        if ($validator->fails()) {
+            return redirect()->route('enrollments.create', ['type' => $studentType, 'step' => $currentStep])
+                ->withErrors($validator)
+                ->withInput()
+                ->with('enrollment_form_data', $formData);
         }
+
+        // Store form data in session
+        session(['enrollment_form_data' => $formData]);
+
+        // Determine next step or submit
+        $validSteps = in_array($studentType, ['transferee']) ? ['learner', 'address', 'guardian', 'school', 'review'] : ['learner', 'address', 'guardian', 'review'];
+        $action = $request->input('action');
+
+        if ($action === 'next') {
+            $nextStep = $this->getNextStep($currentStep, $validSteps);
+            if ($nextStep) {
+                return redirect()->route('enrollments.create', ['type' => $studentType, 'step' => $nextStep]);
+            }
+        } elseif ($action === 'back') {
+            $previousStep = $this->getPreviousStep($currentStep, $validSteps);
+            if ($previousStep) {
+                return redirect()->route('enrollments.create', ['type' => $studentType, 'step' => $previousStep]);
+            }
+        } elseif ($action === 'submit' && $currentStep === 'review') {
+            DB::beginTransaction();
+            try {
+                // Check if student exists (for old or balik_aral)
+                $student = null;
+                if (in_array($studentType, ['old', 'balik_aral']) && $formData['lrn']) {
+                    $student = Student::where('lrn', $formData['lrn'])->first();
+                }
+
+                if ($student) {
+                    // Update existing student
+                    $student->update([
+                        'first_name' => $formData['first_name'],
+                        'middle_name' => $formData['middle_name'],
+                        'last_name' => $formData['last_name'],
+                        'extension_name' => $formData['extension_name'],
+                        'birthdate' => $formData['birthdate'],
+                        'sex' => $formData['gender'],
+                        'place_of_birth' => $formData['place_of_birth'],
+                        'mother_tongue' => $formData['mother_tongue'],
+                        'psa_birth_cert_no' => $formData['psa_birth_certification_no'],
+                        'is_ip' => $formData['ip_community_member'] === '1',
+                        'ip_community' => $formData['ip_community'],
+                        'is_disabled' => $formData['is_disabled'] === '1',
+                        'is_4ps_beneficiary' => $formData['4ps_beneficiary'] === '1',
+                        'household_4ps_id' => $formData['4ps_household_id'],
+                    ]);
+
+                    // Update disabilities
+                    $disabilityIds = array_keys(array_filter($formData['disabilities'] ?? [], fn($value) => $value === '1'));
+                    $student->disabilities()->sync($disabilityIds);
+                } else {
+                    // Create new student (for new or transferee)
+                    $student = Student::create([
+                        'lrn' => $formData['lrn'] ?? null,
+                        'first_name' => $formData['first_name'],
+                        'middle_name' => $formData['middle_name'],
+                        'last_name' => $formData['last_name'],
+                        'extension_name' => $formData['extension_name'],
+                        'birthdate' => $formData['birthdate'],
+                        'sex' => $formData['gender'],
+                        'place_of_birth' => $formData['place_of_birth'],
+                        'mother_tongue' => $formData['mother_tongue'],
+                        'psa_birth_cert_no' => $formData['psa_birth_certification_no'],
+                        'is_ip' => $formData['ip_community_member'] === '1',
+                        'ip_community' => $formData['ip_community'],
+                        'is_disabled' => $formData['is_disabled'] === '1',
+                        'is_4ps_beneficiary' => $formData['4ps_beneficiary'] === '1',
+                        'household_4ps_id' => $formData['4ps_household_id'],
+                    ]);
+
+                    // Attach disabilities
+                    $disabilityIds = array_keys(array_filter($formData['disabilities'] ?? [], fn($value) => $value === '1'));
+                    $student->disabilities()->attach($disabilityIds);
+                }
+
+                // Update or create current address
+                $currentAddress = $student->currentAddress;
+                if ($currentAddress) {
+                    $currentAddress->update([
+                        'house_no' => $formData['house_number'],
+                        'street_name' => $formData['street_name'],
+                        'barangay' => $formData['barangay'],
+                        'municipality_city' => $formData['city'],
+                        'province' => $formData['province'],
+                        'country' => $formData['country'],
+                        'zip_code' => $formData['zip_code'],
+                    ]);
+                } else {
+                    $currentAddress = Address::create([
+                        'student_id' => $student->student_id,
+                        'address_type' => 'current',
+                        'house_no' => $formData['house_number'],
+                        'street_name' => $formData['street_name'],
+                        'barangay' => $formData['barangay'],
+                        'municipality_city' => $formData['city'],
+                        'province' => $formData['province'],
+                        'country' => $formData['country'],
+                        'zip_code' => $formData['zip_code'],
+                    ]);
+                }
+
+                // Update or create permanent address (if not same as current)
+                if ($formData['same_as_current_address'] === '0') {
+                    $permanentAddress = $student->permanentAddress;
+                    if ($permanentAddress && $permanentAddress->address_id !== $currentAddress->address_id) {
+                        $permanentAddress->update([
+                            'house_no' => $formData['permanent_house_number'],
+                            'street_name' => $formData['permanent_street_name'],
+                            'barangay' => $formData['permanent_barangay'],
+                            'municipality_city' => $formData['permanent_city'],
+                            'province' => $formData['permanent_province'],
+                            'country' => $formData['permanent_country'],
+                            'zip_code' => $formData['permanent_zip_code'],
+                        ]);
+                    } else {
+                        Address::create([
+                            'student_id' => $student->student_id,
+                            'address_type' => 'permanent',
+                            'house_no' => $formData['permanent_house_number'],
+                            'street_name' => $formData['permanent_street_name'],
+                            'barangay' => $formData['permanent_barangay'],
+                            'municipality_city' => $formData['permanent_city'],
+                            'province' => $formData['permanent_province'],
+                            'country' => $formData['permanent_country'],
+                            'zip_code' => $formData['permanent_zip_code'],
+                        ]);
+                    }
+                }
+
+                // Update or create family contacts
+                $contacts = [
+                    'father' => [
+                        'first_name' => $formData['father_first_name'],
+                        'middle_name' => $formData['father_middle_name'],
+                        'last_name' => $formData['father_last_name'],
+                        'contact_number' => $formData['father_contact_number'],
+                    ],
+                    'mother' => [
+                        'first_name' => $formData['mother_first_name'],
+                        'middle_name' => $formData['mother_middle_name'],
+                        'last_name' => $formData['mother_last_name'],
+                        'contact_number' => $formData['mother_contact_number'],
+                    ],
+                    'guardian' => [
+                        'first_name' => $formData['legal_guardian_first_name'],
+                        'middle_name' => $formData['legal_guardian_middle_name'],
+                        'last_name' => $formData['legal_guardian_last_name'],
+                        'contact_number' => $formData['legal_guardian_contact_number'],
+                    ],
+                ];
+
+                foreach ($contacts as $type => $data) {
+                    if ($data['first_name'] || $data['last_name'] || $data['contact_number']) {
+                        $contact = $student->familyContacts()->where('contact_type', $type)->first();
+                        if ($contact) {
+                            $contact->update($data);
+                        } else {
+                            $student->familyContacts()->create(array_merge(['contact_type' => $type], $data));
+                        }
+                    }
+                }
+
+                // Create new enrollment record
+                $enrollment = Enrollment::create([
+                    'student_id' => $student->student_id,
+                    'school_year' => $formData['school_year'],
+                    'grade_level' => null, // Will be assigned later
+                    'status' => 'Registered',
+                    'student_type' => $studentType,
+                ]);
+
+                // For transferee, store previous school info
+                if ($studentType === 'transferee') {
+                    // Assuming a PreviousSchool model or similar
+                    $student->previousSchools()->create([
+                        'last_grade_level_completed' => $formData['last_grade_level_completed'],
+                        'last_school_year_completed' => $formData['last_school_year_completed'],
+                        'last_school_attended' => $formData['last_school_attended'],
+                        'school_id' => $formData['school_id'],
+                        'semester' => $formData['semester'],
+                        'track' => $formData['track'],
+                        'strand' => $formData['strand'],
+                    ]);
+                }
+
+                DB::commit();
+                // Clear session data
+                session()->forget('enrollment_form_data');
+                return redirect()->route('enrollments.index')->with('success', 'Enrollment registered successfully.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Enrollment store failed: ' . $e->getMessage());
+                return redirect()->route('enrollments.create', ['type' => $studentType, 'step' => $currentStep])
+                    ->with('error', 'Failed to register enrollment. Please try again.')
+                    ->with('enrollment_form_data', $formData);
+            }
+        }
+
+        return redirect()->route('enrollments.index');
     }
 
     /**
@@ -666,11 +753,12 @@ class EnrollmentController extends Controller
      */
     protected function saveStepData(Request $request, $currentStep)
     {
+        $studentType = $request->query('type', 'old');
         // Get existing session data or initialize empty array
         $formData = session('enrollment_form_data', []);
 
         // Define validation rules for each step
-        $rules = $this->getValidationRules($currentStep);
+        $rules = $this->getValidationRules($currentStep, $studentType);
 
         // Validate the incoming data
         $validated = $request->validate($rules);
@@ -703,7 +791,7 @@ class EnrollmentController extends Controller
     /**
      * Get validation rules for the current step
      */
-    protected function getValidationRules($currentStep)
+    protected function getValidationRules($currentStep, $studentType)
     {
         $rules = [
             'learner' => [
@@ -712,7 +800,11 @@ class EnrollmentController extends Controller
                 'with_lrn' => 'required|boolean',
                 'returning' => 'required|boolean',
                 'psa_birth_certification_no' => 'nullable|string|max:20',
-                'lrn' => 'required_if:with_lrn,1|string|size:12|unique:students,lrn',
+                'lrn' => [
+                    'required_if:with_lrn,1',
+                    'digits:12',
+                    in_array($studentType, ['old', 'balik_aral']) ? 'exists:students,lrn' : 'unique:students,lrn',
+                ],
                 'first_name' => 'required|string|max:50',
                 'birthdate' => 'required|date|before:today',
                 'place_of_birth' => 'nullable|string|max:100',
@@ -818,5 +910,117 @@ class EnrollmentController extends Controller
             ]);
         }
         return response()->json(['success' => false, 'message' => 'Student not found with this LRN.'], 404);
+    }
+
+    /**
+     * Server-side LRN search for old/returning students.
+     */
+    public function searchLrn(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'lrn' => 'required|digits:12|exists:students,lrn', // Use exists instead of unique
+            'student_type' => 'required|in:old,balik_aral',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('enrollments.index')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $lrn = trim($request->input('lrn'));
+        $studentType = $request->input('student_type');
+        $student = Student::where('lrn', $lrn)->first();
+
+        if ($student) {
+            $formData = [
+                'lrn' => $student->lrn,
+                'first_name' => $student->first_name,
+                'middle_name' => $student->middle_name,
+                'last_name' => $student->last_name,
+                'extension_name' => $student->extension_name,
+                'birthdate' => $student->birthdate,
+                'gender' => $student->sex,
+                'place_of_birth' => $student->place_of_birth,
+                'mother_tongue' => $student->mother_tongue,
+                'psa_birth_cert_no' => $student->psa_birth_certification_no,
+                'ip_community_member' => $student->is_ip ? '1' : '0',
+                'ip_community' => $student->ip_community,
+                'is_disabled' => $student->is_disabled ? '1' : '0',
+                'disabilities' => $student->disabilities->pluck('disability_id')->toArray(),
+                'student_type' => $studentType,
+                'school_year' => Settings::where('key', 'school_year')->value('value') ?? '2024-2025',
+                'with_lrn' => '1',
+                'returning' => $studentType === 'balik_aral' ? '1' : '0',
+            ];
+
+            // Calculate age
+            if ($student->birthdate) {
+                try {
+                    $birthDate = new \DateTime($student->birthdate);
+                    $currentDate = new \DateTime('2025-10-12');
+                    $interval = $birthDate->diff($currentDate);
+                    $formData['age'] = ($interval->y >= 0) ? $interval->y : null;
+                } catch (\Exception $e) {
+                    $formData['age'] = null;
+                    Log::warning("Invalid birthdate for student LRN {$student->lrn}: {$student->birthdate}");
+                }
+            } else {
+                $formData['age'] = null;
+            }
+
+            // Fetch address and family contacts (already in your code)
+            $currentAddress = $student->currentAddress;
+            if ($currentAddress) {
+                $formData['house_number'] = $currentAddress->house_no;
+                $formData['street_name'] = $currentAddress->street_name;
+                $formData['barangay'] = $currentAddress->barangay;
+                $formData['city'] = $currentAddress->municipality_city;
+                $formData['province'] = $currentAddress->province;
+                $formData['country'] = $currentAddress->country;
+                $formData['zip_code'] = $currentAddress->zip_code;
+            }
+
+            $permanentAddress = $student->permanentAddress;
+            if ($permanentAddress && $permanentAddress->address_id !== $currentAddress?->address_id) {
+                $formData['same_as_current_address'] = '0';
+                $formData['permanent_house_number'] = $permanentAddress->house_no;
+                $formData['permanent_street_name'] = $permanentAddress->street_name;
+                $formData['permanent_barangay'] = $permanentAddress->barangay;
+                $formData['permanent_city'] = $permanentAddress->municipality_city;
+                $formData['permanent_province'] = $permanentAddress->province;
+                $formData['permanent_country'] = $permanentAddress->country;
+                $formData['permanent_zip_code'] = $permanentAddress->zip_code;
+            } else {
+                $formData['same_as_current_address'] = '1';
+            }
+
+            $familyContacts = $student->familyContacts;
+            foreach ($familyContacts as $contact) {
+                if ($contact->contact_type === 'father') {
+                    $formData['father_first_name'] = $contact->first_name;
+                    $formData['father_middle_name'] = $contact->middle_name;
+                    $formData['father_last_name'] = $contact->last_name;
+                    $formData['father_contact_number'] = $contact->contact_number;
+                } elseif ($contact->contact_type === 'mother') {
+                    $formData['mother_first_name'] = $contact->first_name;
+                    $formData['mother_middle_name'] = $contact->middle_name;
+                    $formData['mother_last_name'] = $contact->last_name;
+                    $formData['mother_contact_number'] = $contact->contact_number;
+                } elseif ($contact->contact_type === 'guardian') {
+                    $formData['legal_guardian_first_name'] = $contact->first_name;
+                    $formData['legal_guardian_middle_name'] = $contact->middle_name;
+                    $formData['legal_guardian_last_name'] = $contact->last_name;
+                    $formData['legal_guardian_contact_number'] = $contact->contact_number;
+                }
+            }
+
+            session(['enrollment_form_data' => $formData]);
+            return redirect()->route('enrollments.create', ['type' => $studentType, 'lrn' => $lrn])
+                ->with('success', 'Student found: ' . $student->first_name . ' ' . $student->last_name);
+        }
+
+        return redirect()->route('enrollments.index')
+            ->with('error', 'Student not found with the provided LRN.');
     }
 }
