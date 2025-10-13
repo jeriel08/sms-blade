@@ -43,12 +43,6 @@
             {{ __('Enrollment') }}
         </x-nav-link>
 
-        <x-nav-link :href="route('assessments')" :active="request()->routeIs('assessments')"
-            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
-            <x-hugeicons-presentation-bar-chart-01 />
-            {{ __('Assessments') }}
-        </x-nav-link>
-
         <x-nav-link :href="route('reports')" :active="request()->routeIs('reports')"
             class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-chart-line-data-01 />

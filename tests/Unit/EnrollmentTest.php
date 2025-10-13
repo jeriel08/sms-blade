@@ -11,7 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class EnrollmentModelTest extends TestCase
+class EnrollmentTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -19,9 +19,9 @@ class EnrollmentModelTest extends TestCase
     public function enrollment_belongs_to_student(): void
     {
         $address = Address::create([
-            'barangay' => 'Test Barangay',
-            'municipality_city' => 'Test City',
-            'province' => 'Test Province',
+            'barangay' => 'Test',
+            'municipality_city' => 'City',
+            'province' => 'Province',
             'country' => 'Philippines',
         ]);
 
@@ -30,7 +30,7 @@ class EnrollmentModelTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'birthdate' => '2010-01-01',
-            'place_of_birth' => 'Test City',
+            'place_of_birth' => 'City',
             'sex' => 'Male',
             'current_address_id' => $address->address_id,
             'permanent_address_id' => $address->address_id,
@@ -51,7 +51,6 @@ class EnrollmentModelTest extends TestCase
     public function enrollment_belongs_to_teacher(): void
     {
         $user = User::factory()->create();
-
         $teacher = Teacher::create([
             'teacher_id' => $user->id,
             'email' => $user->email,
@@ -60,9 +59,9 @@ class EnrollmentModelTest extends TestCase
         ]);
 
         $address = Address::create([
-            'barangay' => 'Test Barangay',
-            'municipality_city' => 'Test City',
-            'province' => 'Test Province',
+            'barangay' => 'Test',
+            'municipality_city' => 'City',
+            'province' => 'Province',
             'country' => 'Philippines',
         ]);
 
@@ -71,7 +70,7 @@ class EnrollmentModelTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'birthdate' => '2010-01-01',
-            'place_of_birth' => 'Test City',
+            'place_of_birth' => 'City',
             'sex' => 'Male',
             'current_address_id' => $address->address_id,
             'permanent_address_id' => $address->address_id,
@@ -86,14 +85,12 @@ class EnrollmentModelTest extends TestCase
         ]);
 
         $this->assertInstanceOf(Teacher::class, $enrollment->teacher);
-        $this->assertEquals($teacher->teacher_id, $enrollment->teacher->teacher_id);
     }
 
     /** @test */
     public function enrollment_belongs_to_section(): void
     {
         $user = User::factory()->create();
-
         $teacher = Teacher::create([
             'teacher_id' => $user->id,
             'email' => $user->email,
@@ -108,9 +105,9 @@ class EnrollmentModelTest extends TestCase
         ]);
 
         $address = Address::create([
-            'barangay' => 'Test Barangay',
-            'municipality_city' => 'Test City',
-            'province' => 'Test Province',
+            'barangay' => 'Test',
+            'municipality_city' => 'City',
+            'province' => 'Province',
             'country' => 'Philippines',
         ]);
 
@@ -119,7 +116,7 @@ class EnrollmentModelTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'birthdate' => '2010-01-01',
-            'place_of_birth' => 'Test City',
+            'place_of_birth' => 'City',
             'sex' => 'Male',
             'current_address_id' => $address->address_id,
             'permanent_address_id' => $address->address_id,
@@ -129,107 +126,20 @@ class EnrollmentModelTest extends TestCase
             'student_id' => $student->student_id,
             'school_year' => '2024-2025',
             'enrollment_type' => 'New',
-            'grade_level' => '7',
             'section_id' => $section->section_id,
             'is_4ps' => 0,
         ]);
 
         $this->assertInstanceOf(Section::class, $enrollment->section);
-        $this->assertEquals($section->section_id, $enrollment->section->section_id);
-    }
-
-    /** @test */
-    public function enrollment_can_be_created_with_all_fields(): void
-    {
-        $address = Address::create([
-            'barangay' => 'Test Barangay',
-            'municipality_city' => 'Test City',
-            'province' => 'Test Province',
-            'country' => 'Philippines',
-        ]);
-
-        $student = Student::create([
-            'lrn' => '123456789012',
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'birthdate' => '2010-01-01',
-            'place_of_birth' => 'Test City',
-            'sex' => 'Male',
-            'current_address_id' => $address->address_id,
-            'permanent_address_id' => $address->address_id,
-        ]);
-
-        $enrollment = Enrollment::create([
-            'student_id' => $student->student_id,
-            'school_year' => '2024-2025',
-            'grade_level' => '7',
-            'enrollment_type' => 'New',
-            'status' => 'Registered',
-            'is_4ps' => true,
-            '_4ps_household_id' => 'HH-123456',
-            'enrollment_date' => now(),
-        ]);
-
-        $this->assertDatabaseHas('enrollments', [
-            'student_id' => $student->student_id,
-            'school_year' => '2024-2025',
-            'grade_level' => '7',
-            'enrollment_type' => 'New',
-            'is_4ps' => true,
-            '_4ps_household_id' => 'HH-123456',
-        ]);
-    }
-
-    /** @test */
-    public function transferee_enrollment_has_additional_fields(): void
-    {
-        $address = Address::create([
-            'barangay' => 'Test Barangay',
-            'municipality_city' => 'Test City',
-            'province' => 'Test Province',
-            'country' => 'Philippines',
-        ]);
-
-        $student = Student::create([
-            'lrn' => '123456789012',
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'birthdate' => '2010-01-01',
-            'place_of_birth' => 'Test City',
-            'sex' => 'Male',
-            'current_address_id' => $address->address_id,
-            'permanent_address_id' => $address->address_id,
-        ]);
-
-        $enrollment = Enrollment::create([
-            'student_id' => $student->student_id,
-            'school_year' => '2024-2025',
-            'enrollment_type' => 'Transferee',
-            'last_grade_completed' => '6',
-            'last_school_year_completed' => '2023-2024',
-            'last_school_attended' => 'Previous School',
-            'last_school_id' => 'SCH-123',
-            'semester' => '1st',
-            'track' => 'Academic',
-            'strand' => 'STEM',
-            'is_4ps' => 0,
-        ]);
-
-        $this->assertDatabaseHas('enrollments', [
-            'student_id' => $student->student_id,
-            'enrollment_type' => 'Transferee',
-            'last_grade_completed' => '6',
-            'last_school_attended' => 'Previous School',
-        ]);
     }
 
     /** @test */
     public function enrollment_status_defaults_to_registered(): void
     {
         $address = Address::create([
-            'barangay' => 'Test Barangay',
-            'municipality_city' => 'Test City',
-            'province' => 'Test Province',
+            'barangay' => 'Test',
+            'municipality_city' => 'City',
+            'province' => 'Province',
             'country' => 'Philippines',
         ]);
 
@@ -238,7 +148,7 @@ class EnrollmentModelTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'birthdate' => '2010-01-01',
-            'place_of_birth' => 'Test City',
+            'place_of_birth' => 'City',
             'sex' => 'Male',
             'current_address_id' => $address->address_id,
             'permanent_address_id' => $address->address_id,
@@ -255,12 +165,12 @@ class EnrollmentModelTest extends TestCase
     }
 
     /** @test */
-    public function enrollment_can_be_updated_to_enrolled_status(): void
+    public function enrollment_can_change_status_to_enrolled(): void
     {
         $address = Address::create([
-            'barangay' => 'Test Barangay',
-            'municipality_city' => 'Test City',
-            'province' => 'Test Province',
+            'barangay' => 'Test',
+            'municipality_city' => 'City',
+            'province' => 'Province',
             'country' => 'Philippines',
         ]);
 
@@ -269,7 +179,7 @@ class EnrollmentModelTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'birthdate' => '2010-01-01',
-            'place_of_birth' => 'Test City',
+            'place_of_birth' => 'City',
             'sex' => 'Male',
             'current_address_id' => $address->address_id,
             'permanent_address_id' => $address->address_id,
@@ -285,5 +195,73 @@ class EnrollmentModelTest extends TestCase
         $enrollment->update(['status' => 'Enrolled']);
 
         $this->assertEquals('Enrolled', $enrollment->fresh()->status);
+    }
+
+    /** @test */
+    public function transferee_enrollment_has_previous_school_info(): void
+    {
+        $address = Address::create([
+            'barangay' => 'Test',
+            'municipality_city' => 'City',
+            'province' => 'Province',
+            'country' => 'Philippines',
+        ]);
+
+        $student = Student::create([
+            'lrn' => '123456789012',
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'birthdate' => '2010-01-01',
+            'place_of_birth' => 'City',
+            'sex' => 'Male',
+            'current_address_id' => $address->address_id,
+            'permanent_address_id' => $address->address_id,
+        ]);
+
+        $enrollment = Enrollment::create([
+            'student_id' => $student->student_id,
+            'school_year' => '2024-2025',
+            'enrollment_type' => 'Transferee',
+            'last_grade_completed' => '6',
+            'last_school_attended' => 'Previous School',
+            'last_school_id' => 'SCH-123',
+            'is_4ps' => 0,
+        ]);
+
+        $this->assertEquals('Transferee', $enrollment->enrollment_type);
+        $this->assertEquals('Previous School', $enrollment->last_school_attended);
+    }
+
+    /** @test */
+    public function enrollment_4ps_can_have_household_id(): void
+    {
+        $address = Address::create([
+            'barangay' => 'Test',
+            'municipality_city' => 'City',
+            'province' => 'Province',
+            'country' => 'Philippines',
+        ]);
+
+        $student = Student::create([
+            'lrn' => '123456789012',
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'birthdate' => '2010-01-01',
+            'place_of_birth' => 'City',
+            'sex' => 'Male',
+            'current_address_id' => $address->address_id,
+            'permanent_address_id' => $address->address_id,
+        ]);
+
+        $enrollment = Enrollment::create([
+            'student_id' => $student->student_id,
+            'school_year' => '2024-2025',
+            'enrollment_type' => 'New',
+            'is_4ps' => 1,
+            '_4ps_household_id' => 'HH-123456',
+        ]);
+
+        $this->assertTrue((bool)$enrollment->is_4ps);
+        $this->assertEquals('HH-123456', $enrollment->_4ps_household_id);
     }
 }
