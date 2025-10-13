@@ -21,7 +21,7 @@ return new class extends Migration
             $table->date('birthdate')->notNullable();
             $table->string('place_of_birth', 100)->notNullable();
             $table->enum('sex', ['Male', 'Female'])->notNullable();
-            $table->string('mother_tounge', 50)->nullable();
+            $table->string('mother_tongue', 50)->nullable();
             $table->string('psa_birth_cert_no', 50)->nullable();
             $table->boolean('is_ip')->default(0);
             $table->string('ip_community', 100)->nullable();

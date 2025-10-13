@@ -1,4 +1,5 @@
-<x-app-layout>
+<x-app-layout x-transition>
+    @section('title', 'Enrollments | MBNHS-SMS')
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-1 leading-tight">
             {{ __('ENROLLMENT') }}
@@ -108,55 +109,52 @@
                                 Grade Level
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Section
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Status
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Action
+                                Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($enrollments as $enrollment)
-                            <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                    {{ $enrollment->student->lrn }}
-                                </th>
+                            <tr class="bg-white border-b hover:bg-gray-50">
                                 <td class="px-6 py-4">
-                                    {{ $enrollment->student->first_name }} {{ $enrollment->student->last_name }}
+                                    {{ $enrollment->student->lrn ?? 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    {{ $enrollment->grade_level }}
+                                    {{ $enrollment->student->last_name . ', ' . $enrollment->student->first_name . ' ' . ($enrollment->student->middle_name ? $enrollment->student->middle_name[0] . '.' : '') }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    {{ $enrollment->status }}
+                                    {{ $enrollment->grade_level ?? 'Unassigned' }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    @if ($enrollment->status === 'Registered')
-                                        <x-primary-button 
-                                            class="gap-2" 
-                                            x-data="{}" 
-                                            @click="$dispatch('open-modal', 'enroll-student-{{ $enrollment->enrollment_id }}')"
-                                        >
-                                            {{ __('Enroll') }}
+                                    {{ $enrollment->section->name ?? 'Unassigned' }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 rounded-full text-xs font-medium 
+                                        {{ $enrollment->status === 'Enrolled' ? 'bg-green-100 text-green-800' : 
+                                           ($enrollment->status === 'Registered' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
+                                        {{ $enrollment->status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    @if($enrollment->status === 'Registered')
+                                    <x-tooltip text="Enroll Student" position="bottom">
+                                        <x-primary-button x-on:click="console.log('Dispatching open-modal for enroll-student-{{ $enrollment->enrollment_id }}'); $dispatch('open-modal', 'enroll-student-{{ $enrollment->enrollment_id }}')">
+                                            Assign
                                         </x-primary-button>
-                                    @elseif ($enrollment->status === 'Enrolled')
-                                        <x-primary-button 
-                                            class="gap-2" 
-                                            onclick="window.location.href='{{ route('enrollments.show', $enrollment->enrollment_id) }}'"
-                                        >
-                                            {{ __('Details') }}
-                                        </x-primary-button>
+                                    </x-tooltip>
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-center">
-                                    @if(request('search'))
-                                        No enrollments found for your search criteria.
-                                    @else
-                                        No enrollments found.
-                                    @endif
+                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                    No enrollments found.
                                 </td>
                             </tr>
                         @endforelse
@@ -169,6 +167,7 @@
     </div>
 
     @include('enrollments.modals.student-classification')
+    @include('enrollments.modals.lrn-search')
     @foreach ($enrollments as $enrollment)
         @if ($enrollment->status === 'Registered')
             @include('enrollments.modals.enroll-student', ['enrollment_id' => $enrollment->enrollment_id])
@@ -176,6 +175,38 @@
     @endforeach
 
     <script>
+        let currentStudentType = '';
+        let studentLrn = '';
+
+        function openLrnModal(type) {
+            console.log('Opening LRN modal for type:', type);
+            currentStudentType = type;
+            
+            // Reset LRN modal form
+            setTimeout(() => {
+                const lrnInput = document.getElementById('lrn-input');
+                if (lrnInput) lrnInput.value = '';
+                const studentTypeInput = document.getElementById('student_type_input');
+                if (studentTypeInput) studentTypeInput.value = type;
+                const errorMsg = document.getElementById('error-message');
+                if (errorMsg) {
+                    errorMsg.classList.add('hidden');
+                    errorMsg.textContent = '';
+                }
+            }, 100);
+
+            // Dispatch proper Alpine.js events
+            window.dispatchEvent(new CustomEvent('open-modal', { detail: 'lrn-search' }));
+            window.dispatchEvent(new CustomEvent('close-modal', { detail: 'select-student-type' }));
+            console.log('Dispatched events to open LRN modal');
+        }
+
+        function closeModal(name) {
+            window.dispatchEvent(new CustomEvent('close-modal', { detail: name }));
+            console.log(`Dispatched close event for: ${name}`);
+        }
+
+        // Update sections function remains the same
         function updateSections(enrollmentId) {
             const gradeLevel = document.getElementById(`grade_level_${enrollmentId}`).value || '7';
             const sectionSelect = document.getElementById(`section_id_${enrollmentId}`);
@@ -198,4 +229,23 @@
                 });
         }
     </script>
+
+    @if (session('error'))
+        <script>
+            window.addEventListener('load', () => {
+                window.dispatchEvent(new CustomEvent('open-modal', { detail: 'lrn-search' }));
+                setTimeout(() => {
+                    const errorMsg = document.getElementById('error-message');
+                    if (errorMsg) {
+                        errorMsg.textContent = '{{ session('error') }}';
+                        errorMsg.classList.remove('hidden');
+                    }
+                    // Optional: If you have a toast function
+                    if (typeof showToast === 'function') {
+                        showToast('{{ session('error') }}', 'error');
+                    }
+                }, 100);
+            });
+        </script>
+    @endif
 </x-app-layout>

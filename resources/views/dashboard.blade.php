@@ -1,4 +1,5 @@
 <x-app-layout>
+    @section('title', 'Dashboard | MBNHS-SMS')
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-bold text-2xl text-1 leading-tight">

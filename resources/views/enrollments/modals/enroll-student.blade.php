@@ -1,4 +1,4 @@
-<x-modal name="enroll-student-{{ $enrollment_id }}" maxWidth="md" x-init="updateSections({{ $enrollment_id }})">
+<x-modal name="enroll-student-{{ $enrollment_id }}" maxWidth="md" x-data="{ show: false }" x-init="Alpine.initializeComponent($el); updateSections({{ $enrollment_id }})">
     <div class="p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">
             {{ __('Assign Grade and Section') }}

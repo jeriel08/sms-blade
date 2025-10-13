@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>@yield('title', config('app.name'))</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -32,12 +32,14 @@
                 </header>
             @endisset
 
-            <!-- Page Content -->
-            <main class="flex-1 p-6">
-                {{ $slot }}
-            </main>
+                <!-- Page Content -->
+                <main class="flex-1 p-6">
+                    {{ $slot }}
+                </main>
+
+                <x-toast />
+            </div>
         </div>
-    </div>
 
     @stack('scripts')
 

@@ -11,7 +11,7 @@
                     name="school_year" 
                     type="text" 
                     class="mt-1 block bg-gray-100 cursor-not-allowed" 
-                    value="2025-2026" 
+                    value="{{ $formData['school_year'] ?? '' }}"
                     readonly 
                 />
             </div>
@@ -179,8 +179,8 @@
                     class="mt-1 block w-4xs border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-xs cursor-pointer"
                 >
                     <option value="">Select Gender</option>
-                    <option value="male" {{ isset($formData['gender']) && $formData['gender'] == 'male' ? 'selected' : '' }}>Male</option>
-                    <option value="female" {{ isset($formData['gender']) && $formData['gender'] == 'female' ? 'selected' : '' }}>Female</option>
+                    <option value="male" {{ isset($formData['gender']) && $formData['gender'] == 'Male' ? 'selected' : '' }}>Male</option>
+                    <option value="female" {{ isset($formData['gender']) && $formData['gender'] == 'Female' ? 'selected' : '' }}>Female</option>
                 </select>
             </div>
 
@@ -199,7 +199,7 @@
 
             {{-- Mother Tongue --}}
             <div>
-                <x-input-label for="mother_tongue" value="Mother Tounge" />
+                <x-input-label for="mother_tongue" value="Mother Tongue" />
                 <x-text-input 
                     id="mother_tongue" 
                     name="mother_tongue" 

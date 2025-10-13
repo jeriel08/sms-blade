@@ -21,7 +21,7 @@ class Student extends Model
         'birthdate',
         'place_of_birth',
         'sex',
-        'mother_tounge',
+        'mother_tongue',
         'psa_birth_cert_no',
         'is_ip',
         'ip_community',

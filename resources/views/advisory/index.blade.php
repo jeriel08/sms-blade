@@ -152,7 +152,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-red-600 hover:text-red-800">
-                                                        <x-heroicon-o-trash class="w-4 h-4" />
+                                                        <x-hugeicons-delete-02 />
                                                     </button>
                                                 </form>
                                             </x-tooltip>

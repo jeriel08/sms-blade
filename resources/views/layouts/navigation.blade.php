@@ -19,14 +19,16 @@
             {{ __('Dashboard') }}
         </x-nav-link>
 
+        @if (auth()->user()->hasRole(['adviser']))
         <x-nav-link :href="route('advisory.index')" :active="request()->routeIs('advisory.index')"
             class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-teacher />
             {{ __('Advisory') }}
         </x-nav-link>
+        @endif
 
-        <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.index')"
-            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+        <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')" 
+                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-student />
             {{ __('Students') }}
         </x-nav-link>
@@ -36,12 +38,20 @@
             <x-hugeicons-course />
             {{ __('Courses') }}
         </x-nav-link>
-
-        <x-nav-link :href="route('enrollments.index')" :active="request()->routeIs('enrollments.index')"
-            class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+        
+        <x-nav-link :href="route('enrollments.index')" :active="request()->routeIs('enrollments.*')" 
+                    class="flex gap-2 !justify-start !px-4 !py-auto w-full">
             <x-hugeicons-user-add-01 />
             {{ __('Enrollment') }}
         </x-nav-link>
+
+        @if (auth()->user()->hasRole(['principal', 'head-teacher']))    
+            <x-nav-link :href="route('admin.control.index')" :active="request()->routeIs('admin.*')" 
+                        class="flex gap-2 !justify-start !px-4 !py-auto w-full">
+                <x-hugeicons-shield-user />
+                {{ __('Admin Panel') }}
+            </x-nav-link>
+        @endif
 
         <x-nav-link :href="route('reports')" :active="request()->routeIs('reports')"
             class="flex gap-2 !justify-start !px-4 !py-auto w-full">

@@ -6,6 +6,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\Admin\AdminControlController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\AdvisoryController;
 use App\Http\Controllers\ReportsController;
@@ -19,17 +21,15 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/pending-approval', function () {
+    return view('auth.pending-approval');
+})->middleware(['auth', 'verified'])->name('pending-approval');
+
 // Temporary Routes
 
 Route::get('/courses', function () {
     return view('courses.index');
 })->middleware(['auth', 'verified'])->name('courses');
-
-Route::get('/assessments', function () {
-    return view('assessments.index');
-})->middleware(['auth', 'verified'])->name('assessments');
-
-// Replace the temporary reports route with these:
 
 // Reports Routes
 Route::get('/reports', [App\Http\Controllers\ReportsController::class, 'index'])->name('reports');
@@ -48,7 +48,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     // Student Information System
     Route::prefix('students')->group(function () {
         Route::get('/', [StudentController::class, 'index'])->name('students.index');
@@ -64,21 +64,28 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [EnrollmentController::class, 'index'])->name('enrollments.index');
         Route::match(['get', 'post'], '/create', [EnrollmentController::class, 'create'])->name('enrollments.create');
         Route::post('/', [EnrollmentController::class, 'store'])->name('enrollments.store');
+        Route::post('/search-lrn', [EnrollmentController::class, 'searchLrn'])->name('enrollments.search-lrn');
         Route::get('/settings', [EnrollmentController::class, 'settings'])->name('enrollments.settings');
-        Route::post('/enrollments/{enrollment}/assign', [EnrollmentController::class, 'assignGradeAndSection'])->name('enrollments.assign');
-        Route::get('/enrollments/{enrollment}', [EnrollmentController::class, 'show'])->name('enrollments.show');
-        Route::get('/{enrollment_id}', [EnrollmentController::class, 'show'])->name('enrollments.show');
-        Route::post('/{enrollment_id}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
+        Route::post('/{enrollment}/assign', [EnrollmentController::class, 'assignGradeAndSection'])->name('enrollments.assign');
+        Route::get('/{enrollment}', [EnrollmentController::class, 'show'])->name('enrollments.show');
+        Route::post('/{enrollment}/confirm', [EnrollmentController::class, 'confirm'])->name('enrollments.confirm');
     });
 
-    
     Route::post('/sections/sync', [SectionController::class, 'sync'])->name('sections.sync');
     Route::get('/sections', function (Request $request) {
         $gradeLevel = $request->query('grade_level');
         $sections = Section::where('grade_level', $gradeLevel)->get(['section_id', 'name']);
         return response()->json($sections);
     });
-
 });
+
+// Admin Control (new section)
+Route::prefix('admin')->middleware(['admin', 'auth', 'approved', 'verified'])->group(function () {
+    Route::get('/control', [AdminControlController::class, 'index'])->name('admin.control.index');
+    Route::post('/control/settings', [AdminControlController::class, 'settings'])->name('admin.control.settings');
+    Route::get('/users', [UserManagementController::class, 'index'])->name('admin.users.index');
+    Route::post('/users/{user}/approve', [UserManagementController::class, 'approve'])->name('admin.users.approve');
+});
+
 
 require __DIR__ . '/auth.php';
